@@ -39,9 +39,11 @@
 when using SimpleAppState with Flutter.</p>
 <p>It is important to read this page first,
 before learning any widget-level APIs.</p>
-<p>There is no magic in this system.
-Understanding the rebuild model will make
-everything else easy to reason about.</p>
+<p>There is no magic in this system.</p>
+<p>SimpleAppState makes an explicit trade-off:
+it provides precise state notifications,
+while leaving all rebuild decisions to Flutter.</p>
+<p>Understanding this boundary is essential.</p>
 <section id="two-separate-responsibilities">
 <h2>Two separate responsibilities<a class="headerlink" href="#two-separate-responsibilities" title="Link to this heading">¶</a></h2>
 <p>SimpleAppState and Flutter have <strong>different responsibilities</strong>.</p>

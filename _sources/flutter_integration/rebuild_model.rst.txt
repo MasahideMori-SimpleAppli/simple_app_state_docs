@@ -8,8 +8,12 @@ It is important to read this page first,
 before learning any widget-level APIs.
 
 There is no magic in this system.
-Understanding the rebuild model will make
-everything else easy to reason about.
+
+SimpleAppState makes an explicit trade-off:
+it provides precise state notifications,
+while leaving all rebuild decisions to Flutter.
+
+Understanding this boundary is essential.
 
 Two separate responsibilities
 ------------------------------
