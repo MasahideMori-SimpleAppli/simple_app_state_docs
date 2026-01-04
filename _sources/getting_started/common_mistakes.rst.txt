@@ -132,12 +132,15 @@ Expecting context-based lookups
 
 **Mistake**
 
-Looking for APIs similar to ``context.watch`` or ``Provider.of``.
+Assuming that widgets can implicitly access application state.
 
 **Why this is a problem**
 
-SimpleAppState intentionally avoids implicit context-based access.
-This keeps dependencies explicit and rebuild behavior predictable.
+SimpleAppState intentionally avoids implicit or context-based state access.
+All state dependencies must be explicit and visible in code.
+
+This keeps rebuild behavior predictable and makes it clear
+which state changes can affect a given widget.
 
 **Correct approach**
 

@@ -3,6 +3,9 @@ SimpleAppState Documentation
 
 SimpleAppState is a state-first state management library for Flutter.
 
+SimpleAppState is designed for teams where not everyone is a state-management expert,
+prioritizing explicit ownership and misuse-resistant APIs over flexibility.
+
 This documentation explains not only how to use the package,
 but also why it is designed this way.
 

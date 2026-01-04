@@ -124,10 +124,12 @@ clear ownership boundaries.</p>
 <section id="expecting-context-based-lookups">
 <h2>Expecting context-based lookups<a class="headerlink" href="#expecting-context-based-lookups" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
-<p>Looking for APIs similar to <code class="docutils literal notranslate"><span class="pre">context.watch</span></code> or <code class="docutils literal notranslate"><span class="pre">Provider.of</span></code>.</p>
+<p>Assuming that widgets can implicitly access application state.</p>
 <p><strong>Why this is a problem</strong></p>
-<p>SimpleAppState intentionally avoids implicit context-based access.
-This keeps dependencies explicit and rebuild behavior predictable.</p>
+<p>SimpleAppState intentionally avoids implicit or context-based state access.
+All state dependencies must be explicit and visible in code.</p>
+<p>This keeps rebuild behavior predictable and makes it clear
+which state changes can affect a given widget.</p>
 <p><strong>Correct approach</strong></p>
 <p>Pass or import the required <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> explicitly.
 If a widget rebuilds, you should always be able to point
