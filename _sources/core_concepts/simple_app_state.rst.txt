@@ -69,7 +69,7 @@ you must provide a `caster` function.
 
    final namesSlot = appState.slot<List<String>>(
      'names',
-     caster: (raw) => (raw as List).cast<String>(),
+     caster: (raw) => raw != null ? (raw as List).cast<String>() : null,
    );
 
 **Map<String, T> example:**
@@ -78,15 +78,16 @@ you must provide a `caster` function.
 
    final complexSlot = appState.slot<Map<String, List<String>>>(
      'complex',
-     caster: (raw) => (raw as Map<String, dynamic>).map(
-       (k, v) => MapEntry(k, (v as List).cast<String>()),
-     ),
+     caster: (raw) => raw != null ? (raw as Map<String, dynamic>).map(
+         (k, v) => MapEntry(k, (v as List).cast<String>()),
+     ) : null,
    );
 
 Notes:
 
 - Primitive types (`String`, `int`, `double`, `bool`) or `CloneableFile` do not require a caster.
 - Nested collections always need a caster to ensure type safety.
+- The caster must be able to handle `null` value.
 - After cloning or `fromDict/fromJson`, the caster guarantees that runtime type errors are avoided.
 
 
