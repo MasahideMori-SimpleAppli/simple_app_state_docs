@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Persistence and Restore &#8212; simple_app_state 2026 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=fc6fd62b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Undo and Redo" href="undo_redo.html" />
+    <link rel="prev" title="Advanced Topics" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="persistence-and-restore">
+<h1>Persistence and Restore<a class="headerlink" href="#persistence-and-restore" title="Link to this heading">¶</a></h1>
+<p>This section describes how <strong>SimpleAppState</strong> supports persistence and restore.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>Persistence in <strong>SimpleAppState</strong> is based on dictionary serialization.</p>
+<ul class="simple">
+<li><p>The entire application state is converted into a JSON-compatible dictionary.</p></li>
+<li><p>The state can later be restored by reconstructing objects from that dictionary.</p></li>
+</ul>
+<p>This mechanism relies on:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">toDict()</span></code> for serialization</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fromDict(...)</span></code> for restoration</p></li>
+</ul>
+</section>
+<section id="serialization-with-todict">
+<h2>Serialization with toDict<a class="headerlink" href="#serialization-with-todict" title="Link to this heading">¶</a></h2>
+<p><strong>SimpleAppState</strong> implements <code class="docutils literal notranslate"><span class="pre">toDict()</span></code>, which converts the internal state
+into a dictionary.</p>
+<p>The returned dictionary follows strict rules:</p>
+<ul class="simple">
+<li><p>Only primitive types, <code class="docutils literal notranslate"><span class="pre">null</span></code>, lists, and dictionaries are allowed</p></li>
+<li><p>Nested dictionaries must also follow the same constraints</p></li>
+<li><p>Runtime objects are not included</p></li>
+</ul>
+<p>Objects stored inside the state that extend <code class="docutils literal notranslate"><span class="pre">CloneableFile</span></code> must embed
+their class identity in the serialized form, typically using:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;className&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MyObject&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This allows the object to be restored later.</p>
+</section>
+<section id="restoring-state-with-fromdict">
+<h2>Restoring State with fromDict<a class="headerlink" href="#restoring-state-with-fromdict" title="Link to this heading">¶</a></h2>
+<p>Restoration is performed using the factory constructor
+<code class="docutils literal notranslate"><span class="pre">SimpleAppState.fromDict</span></code>.</p>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">toDict()</span></code>, restoration requires <strong>external knowledge</strong> about
+how to reconstruct each serialized object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app_state</span> <span class="o">=</span> <span class="n">SimpleAppState</span><span class="o">.</span><span class="n">fromDict</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">fromDictMap</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">fromDictMap</span></code> parameter defines how objects are restored.</p>
+<section id="fromdictmap">
+<h3>fromDictMap<a class="headerlink" href="#fromdictmap" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">fromDictMap</span></code> is a mapping from object names to restoration functions.</p>
+<ul class="simple">
+<li><p>The key is the object name</p></li>
+<li><p>It must match the value written as <code class="docutils literal notranslate"><span class="pre">&quot;className&quot;</span></code> during serialization</p></li>
+<li><p>The value is a function that restores the object from a dictionary</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fromDictMap</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;MyObject&quot;</span><span class="p">:</span> <span class="n">MyObject</span><span class="o">.</span><span class="n">fromDict</span><span class="p">,</span>
+    <span class="s2">&quot;AnotherObject&quot;</span><span class="p">:</span> <span class="n">AnotherObject</span><span class="o">.</span><span class="n">fromDict</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>When a dictionary containing a matching <code class="docutils literal notranslate"><span class="pre">className</span></code> field is found,
+the corresponding restoration function is used.</p>
+</section>
+</section>
+<section id="internal-restoration-process">
+<h2>Internal Restoration Process<a class="headerlink" href="#internal-restoration-process" title="Link to this heading">¶</a></h2>
+<p>Internally, <code class="docutils literal notranslate"><span class="pre">SimpleAppState.fromDict</span></code> performs the following steps:</p>
+<ol class="arabic simple">
+<li><p>Extract serialized state data from the dictionary</p></li>
+<li><p>Traverse the data structure recursively</p></li>
+<li><p>When a dictionary with a <code class="docutils literal notranslate"><span class="pre">className</span></code> field is encountered:
+* Look up the corresponding function in <code class="docutils literal notranslate"><span class="pre">fromDictMap</span></code>
+* Restore the object using that function</p></li>
+<li><p>Reconstruct the application state using the restored objects</p></li>
+</ol>
+<p>This logic is implemented using a utility function and is fully deterministic.
+By requiring restoration logic to be provided explicitly via <code class="docutils literal notranslate"><span class="pre">fromDictMap</span></code>,
+<strong>SimpleAppState</strong> keeps persistence flexible and avoids hard-coded
+dependencies on concrete object types.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">simple_app_state</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Advanced Topics</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Persistence and Restore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="undo_redo.html">Undo and Redo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Advanced Topics</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Advanced Topics</a></li>
+      <li>Next: <a href="undo_redo.html" title="next chapter">Undo and Redo</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Masahide Mori.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/advanced/persistence_and_restore.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

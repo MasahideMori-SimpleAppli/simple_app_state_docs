@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Rebuild Model &#8212; simple_app_state 2026 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=fc6fd62b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SlotStatefulWidget" href="slot_stateful_widget.html" />
+    <link rel="prev" title="Flutter Integration" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="rebuild-model">
+<h1>Rebuild Model<a class="headerlink" href="#rebuild-model" title="Link to this heading">¶</a></h1>
+<p>This page explains <strong>how state changes cause widget rebuilds</strong>
+when using SimpleAppState with Flutter.</p>
+<p>It is important to read this page first,
+before learning any widget-level APIs.</p>
+<p>There is no magic in this system.
+Understanding the rebuild model will make
+everything else easy to reason about.</p>
+<section id="two-separate-responsibilities">
+<h2>Two separate responsibilities<a class="headerlink" href="#two-separate-responsibilities" title="Link to this heading">¶</a></h2>
+<p>SimpleAppState and Flutter have <strong>different responsibilities</strong>.</p>
+<p>SimpleAppState:</p>
+<ul class="simple">
+<li><p>stores application state</p></li>
+<li><p>detects state changes</p></li>
+<li><p>notifies subscribers</p></li>
+</ul>
+<p>Flutter:</p>
+<ul class="simple">
+<li><p>decides when widgets rebuild</p></li>
+<li><p>manages the widget tree</p></li>
+<li><p>optimizes rendering</p></li>
+</ul>
+<p>SimpleAppState <strong>does not</strong> control the widget tree.
+Flutter <strong>does not</strong> know about state slots.</p>
+<p>They communicate through a very small boundary.</p>
+</section>
+<section id="what-happens-when-state-changes">
+<h2>What happens when state changes<a class="headerlink" href="#what-happens-when-state-changes" title="Link to this heading">¶</a></h2>
+<p>When you update a slot:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>the following happens:</p>
+<ol class="arabic simple">
+<li><p>SimpleAppState replaces the stored value</p></li>
+<li><p>SimpleAppState finds listeners for that slot</p></li>
+<li><p>listener callbacks are invoked</p></li>
+<li><p>those callbacks typically call <code class="docutils literal notranslate"><span class="pre">setState</span></code></p></li>
+</ol>
+<p>At that point, SimpleAppState’s job is done.</p>
+<p>From there on, Flutter’s normal rebuild process applies.</p>
+</section>
+<section id="simpleappstate-does-not-rebuild-widgets">
+<h2>SimpleAppState does not rebuild widgets<a class="headerlink" href="#simpleappstate-does-not-rebuild-widgets" title="Link to this heading">¶</a></h2>
+<p>SimpleAppState never rebuilds widgets directly.</p>
+<p>It does <strong>not</strong>:</p>
+<ul class="simple">
+<li><p>walk the widget tree</p></li>
+<li><p>decide parent / child rebuild order</p></li>
+<li><p>skip rebuilds based on widget identity</p></li>
+</ul>
+<p>It only calls callbacks.</p>
+<p>Those callbacks live in Flutter widgets,
+and they usually call <code class="docutils literal notranslate"><span class="pre">setState</span></code>.</p>
+<p>Everything after that is pure Flutter behavior.</p>
+</section>
+<section id="why-rebuild-behavior-can-differ">
+<h2>Why rebuild behavior can differ<a class="headerlink" href="#why-rebuild-behavior-can-differ" title="Link to this heading">¶</a></h2>
+<p>Because Flutter controls rebuilding:</p>
+<ul class="simple">
+<li><p>a parent widget may rebuild</p></li>
+<li><p>a child widget may rebuild</p></li>
+<li><p>both may rebuild</p></li>
+<li><p>rebuilds may be merged or skipped</p></li>
+</ul>
+<p>For example, if both a parent and a child
+depend on the same slot,
+they may both rebuild.</p>
+<p>This is <strong>not</strong> a bug in SimpleAppState.</p>
+<p>Flutter decides:</p>
+<ul class="simple">
+<li><p>which widgets rebuild</p></li>
+<li><p>how often they rebuild</p></li>
+<li><p>whether rebuilds are optimized away</p></li>
+</ul>
+<p>SimpleAppState intentionally does not interfere.</p>
+</section>
+<section id="what-batching-guarantees-and-what-it-does-not">
+<h2>What batching guarantees (and what it does not)<a class="headerlink" href="#what-batching-guarantees-and-what-it-does-not" title="Link to this heading">¶</a></h2>
+<p>Batch updates group <strong>notifications</strong>, not rebuilds.</p>
+<p>When using <code class="docutils literal notranslate"><span class="pre">batch</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">total</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>SimpleAppState guarantees:</p>
+<ul class="simple">
+<li><p>each subscriber ID is notified at most once</p></li>
+<li><p>notifications are sent after the batch completes</p></li>
+</ul>
+<p>SimpleAppState does <strong>not</strong> guarantee:</p>
+<ul class="simple">
+<li><p>exactly one widget rebuild</p></li>
+<li><p>no parent-child rebuild overlap</p></li>
+<li><p>identical rebuild behavior in all widget trees</p></li>
+</ul>
+<p>Those details are controlled by Flutter.</p>
+<p>Batching reduces <em>requested rebuilds</em>,
+not Flutter’s rebuild freedom.</p>
+</section>
+<section id="subscriber-ids-and-rebuild-intent">
+<h2>Subscriber IDs and rebuild intent<a class="headerlink" href="#subscriber-ids-and-rebuild-intent" title="Link to this heading">¶</a></h2>
+<p>Each subscribing widget is assigned a <strong>subscriber ID</strong>.</p>
+<p>This ID represents rebuild <em>intent</em>:</p>
+<p>&gt; “This widget should update because state changed.”</p>
+<p>If multiple slots notify the same subscriber ID,
+SimpleAppState merges them.</p>
+<p>This prevents obvious duplicate notifications,
+but it does not override Flutter’s behavior.</p>
+<p>Think of subscriber IDs as:</p>
+<ul class="simple">
+<li><p>a signal to Flutter widgets</p></li>
+<li><p>not a rebuild command</p></li>
+</ul>
+</section>
+<section id="why-this-model-is-intentional">
+<h2>Why this model is intentional<a class="headerlink" href="#why-this-model-is-intentional" title="Link to this heading">¶</a></h2>
+<p>SimpleAppState is designed to work with Flutter,
+without changing Flutter’s rebuild model:</p>
+<ul class="simple">
+<li><p>SimpleAppState does not control the widget tree</p></li>
+<li><p>rebuild decisions belong to Flutter</p></li>
+<li><p>optimization stays inside Flutter</p></li>
+</ul>
+<p>By keeping responsibilities separate:</p>
+<ul class="simple">
+<li><p>state logic stays testable</p></li>
+<li><p>rebuild behavior stays familiar</p></li>
+<li><p>debugging stays straightforward</p></li>
+</ul>
+<p>If a widget rebuilds,
+you can always trace it back to:</p>
+<ul class="simple">
+<li><p>which slot changed</p></li>
+<li><p>which listener was notified</p></li>
+<li><p>which widget called <code class="docutils literal notranslate"><span class="pre">setState</span></code></p></li>
+</ul>
+</section>
+<section id="common-misunderstandings">
+<h2>Common misunderstandings<a class="headerlink" href="#common-misunderstandings" title="Link to this heading">¶</a></h2>
+<p><strong>“SimpleAppState guarantees one rebuild per change”</strong></p>
+<p>No.</p>
+<p>It guarantees controlled notifications,
+not rebuild counts.</p>
+<p><strong>“Batching prevents all duplicate rebuilds”</strong></p>
+<p>No.</p>
+<p>Batching reduces notification noise,
+but Flutter still decides how to rebuild.</p>
+<p><strong>“SimpleAppState replaces Flutter’s rebuild model”</strong></p>
+<p>No.</p>
+<p>It works <em>with</em> Flutter,
+not <em>instead of</em> Flutter.</p>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
+<p>The rebuild model is simple:</p>
+<ul class="simple">
+<li><p>SimpleAppState detects and notifies</p></li>
+<li><p>Flutter rebuilds widgets</p></li>
+<li><p>responsibilities do not overlap</p></li>
+</ul>
+<p>Once you understand this boundary,
+all Flutter integration APIs
+become easy to reason about.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">simple_app_state</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Flutter Integration</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Rebuild Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slot_stateful_widget.html">SlotStatefulWidget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="state_slot_builder.html">StateSlotBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_mistakes.html">Common Mistakes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Flutter Integration</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Flutter Integration</a></li>
+      <li>Next: <a href="slot_stateful_widget.html" title="next chapter">SlotStatefulWidget</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Masahide Mori.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/flutter_integration/rebuild_model.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

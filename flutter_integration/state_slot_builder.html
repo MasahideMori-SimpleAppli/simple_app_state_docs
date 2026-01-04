@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>StateSlotBuilder &#8212; simple_app_state 2026 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=fc6fd62b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Common Mistakes" href="common_mistakes.html" />
+    <link rel="prev" title="SlotStatefulWidget" href="slot_stateful_widget.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="stateslotbuilder">
+<h1>StateSlotBuilder<a class="headerlink" href="#stateslotbuilder" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> is a helper widget that rebuilds when one or more
+<code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> values change.</p>
+<p>It provides a simple and explicit way to connect
+<code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> to Flutter widgets,
+without changing Flutter’s rebuild model.</p>
+<section id="purpose">
+<h2>Purpose<a class="headerlink" href="#purpose" title="Link to this heading">¶</a></h2>
+<p>The purpose of <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> is limited and clear:</p>
+<ul class="simple">
+<li><p>declare which <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> objects a widget depends on</p></li>
+<li><p>rebuild the widget when any of those slots change</p></li>
+</ul>
+<p>It does not store state and does not mutate state.
+State ownership always remains in <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code>.</p>
+</section>
+<section id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">¶</a></h2>
+<p>Here is the complete implementation of <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:flutter/material.dart&#39;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:simple_app_state/simple_app_state.dart&#39;</span><span class="p">;</span>
+
+<span class="c1">/// A builder widget that rebuilds when the specified state slots change.</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">StateSlotBuilder</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotStatefulWidget</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="n">slotList</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">Widget</span><span class="w"> </span><span class="kt">Function</span><span class="p">(</span><span class="n">BuildContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="n">builder</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">StateSlotBuilder</span><span class="p">({</span>
+<span class="w">    </span><span class="kd">required</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">slotList</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">required</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">builder</span><span class="p">,</span>
+<span class="w">    </span><span class="k">super</span><span class="p">.</span><span class="n">key</span><span class="p">,</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">slotList</span><span class="p">;</span>
+
+<span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="n">State</span><span class="o">&lt;</span><span class="n">StateSlotBuilder</span><span class="o">&gt;</span><span class="w"> </span><span class="n">createState</span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_StateSlotBuilderState</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">_StateSlotBuilderState</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotState</span><span class="o">&lt;</span><span class="n">StateSlotBuilder</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="n">Widget</span><span class="w"> </span><span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">widget</span><span class="p">.</span><span class="n">builder</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="basic-usage">
+<h2>Basic usage<a class="headerlink" href="#basic-usage" title="Link to this heading">¶</a></h2>
+<p>A typical usage looks like this:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">StateSlotBuilder</span><span class="p">(</span>
+<span class="w">  </span><span class="nl">slotList:</span><span class="w"> </span><span class="p">[</span><span class="n">countSlot</span><span class="p">,</span><span class="w"> </span><span class="n">nameSlot</span><span class="p">],</span>
+<span class="w">  </span><span class="nl">builder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">countSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nameSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">$</span><span class="n">name</span><span class="s1">: </span><span class="si">$</span><span class="n">count</span><span class="s1">&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<p>Inside the <code class="docutils literal notranslate"><span class="pre">builder</span></code>, the current values are obtained
+by calling <code class="docutils literal notranslate"><span class="pre">get()</span></code> on each <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code>.</p>
+</section>
+<section id="relation-to-slotstatefulwidget">
+<h2>Relation to SlotStatefulWidget<a class="headerlink" href="#relation-to-slotstatefulwidget" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> extends <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>.</p>
+<p>This means:</p>
+<ul class="simple">
+<li><p>it declares its dependencies via the <code class="docutils literal notranslate"><span class="pre">slots</span></code> getter</p></li>
+<li><p>listener registration is handled automatically</p></li>
+<li><p>rebuilds are triggered by slot changes</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">slotList</span></code> field is only used to store the slots.
+The actual dependency declaration is done by overriding <code class="docutils literal notranslate"><span class="pre">slots</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="nd">@override</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">slotList</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This keeps the design explicit and avoids hidden behavior.</p>
+</section>
+<section id="subscriber-ids-and-rebuilds">
+<h2>Subscriber IDs and rebuilds<a class="headerlink" href="#subscriber-ids-and-rebuilds" title="Link to this heading">¶</a></h2>
+<p>Each <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> is internally registered with a unique
+<em>subscriber ID</em>.</p>
+<p>This ensures that:</p>
+<ul class="simple">
+<li><p>even if multiple slots change</p></li>
+<li><p>and even if the widget depends on several slots</p></li>
+</ul>
+<p>the widget rebuilds at most once per update cycle.</p>
+<p>Subscriber IDs are managed internally.
+You do not need to create or manage them yourself.</p>
+</section>
+<section id="batch-updates">
+<h2>Batch updates<a class="headerlink" href="#batch-updates" title="Link to this heading">¶</a></h2>
+<p>When slot updates are grouped using <code class="docutils literal notranslate"><span class="pre">SimpleAppState.batch</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">state</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">countSlot</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">nameSlot</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="s1">&#39;Alice&#39;</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> rebuilds once after the batch completes.</p>
+<p>This behavior is consistent with all widgets based on
+<code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>.</p>
+</section>
+<section id="what-stateslotbuilder-does-not-do">
+<h2>What StateSlotBuilder does not do<a class="headerlink" href="#what-stateslotbuilder-does-not-do" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> intentionally avoids the following:</p>
+<ul class="simple">
+<li><p>it does not control the widget tree</p></li>
+<li><p>it does not decide rebuild timing</p></li>
+<li><p>it does not optimize rendering</p></li>
+</ul>
+<p>Flutter remains responsible for:</p>
+<ul class="simple">
+<li><p>rebuild scheduling</p></li>
+<li><p>widget tree updates</p></li>
+<li><p>rendering and layout optimization</p></li>
+</ul>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> is a thin integration layer between:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> for state ownership</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> for state identity</p></li>
+<li><p>Flutter for widget rebuilding</p></li>
+</ul>
+<p>Its role is intentionally small:</p>
+<p><strong>declare dependencies and let Flutter rebuild when state changes.</strong></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">simple_app_state</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Flutter Integration</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="rebuild_model.html">Rebuild Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slot_stateful_widget.html">SlotStatefulWidget</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">StateSlotBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_mistakes.html">Common Mistakes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Flutter Integration</a><ul>
+      <li>Previous: <a href="slot_stateful_widget.html" title="previous chapter">SlotStatefulWidget</a></li>
+      <li>Next: <a href="common_mistakes.html" title="next chapter">Common Mistakes</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Masahide Mori.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/flutter_integration/state_slot_builder.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

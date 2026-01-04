@@ -1,0 +1,165 @@
+SimpleAppState
+==============
+
+``SimpleAppState`` is the central owner of all application state.
+It is intentionally independent from Flutter widgets and the widget tree.
+
+This page explains what ``SimpleAppState`` is responsible for
+and how it should be used.
+
+What SimpleAppState owns
+------------------------
+
+A ``SimpleAppState`` instance owns:
+
+- all application state values
+- slot definitions and their types
+- listeners and batch update coordination
+
+It does **not** own:
+
+- widgets
+- UI-local objects (controllers, animations, focus nodes)
+- rendering lifecycle
+
+This separation keeps state lifetime explicit and predictable.
+
+
+Creating a SimpleAppState
+-------------------------
+
+In most applications, ``SimpleAppState`` is created once
+and lives for the entire lifetime of the app.
+
+.. code-block:: dart
+
+   final appState = SimpleAppState();
+
+It is usually defined as a global or top-level variable,
+often in ``ui/app_state.dart``.
+
+
+Slots define state, not fields
+------------------------------
+
+``SimpleAppState`` does not expose state as public fields.
+
+Instead, all state is accessed through ``StateSlot<T>`` objects:
+
+.. code-block:: dart
+
+   final count = appState.slot<int>('count', initial: 0);
+
+This design ensures:
+
+- state is explicitly declared
+- slot types are fixed on first access
+- state identity is stable and globally referenceable
+
+
+Value semantics and safety
+--------------------------
+
+All values stored in ``SimpleAppState`` follow value semantics.
+
+When you read a value:
+
+.. code-block:: dart
+
+   final value = count.get();
+
+The returned object is always a **deep copy**.
+
+This guarantees:
+
+- accidental mutation cannot corrupt state
+- state transitions are explicit
+- undo / redo and persistence are reliable
+
+State can only be changed via ``set`` or ``update``.
+
+
+Batch updates
+-------------
+
+``SimpleAppState`` supports explicit batch updates:
+
+.. code-block:: dart
+
+   appState.batch(() {
+     count.set(10);
+     // update other slots
+   });
+
+During a batch:
+
+- state changes are applied immediately
+- widget rebuilds are deferred
+- each subscribed widget rebuilds only once
+- batching can be nested
+
+Batching is a first-class concept and should be used
+whenever multiple slots are updated together.
+
+
+Cloning and snapshots
+---------------------
+
+``SimpleAppState`` supports deep cloning of state data:
+
+.. code-block:: dart
+
+   final snapshot = appState.clone();
+
+A cloned ``SimpleAppState`` is a **pure data snapshot**.
+
+Clones:
+
+- copy all state values deeply
+- do **not** copy slots or listeners
+- contain no widget or runtime bindings
+
+This design is intentional.
+
+A clone represents a detached, serializable snapshot
+that can be safely stored, compared, or restored later.
+
+To restore a snapshot into a running application,
+use ``replaceDataFrom``:
+
+.. code-block:: dart
+
+   appState.replaceDataFrom(snapshot);
+
+This replaces only the stored state values,
+while preserving:
+
+- slot definitions
+- widget subscriptions
+- runtime listeners
+
+Typical use cases include:
+
+- undo / redo stacks
+- testing state transitions
+- persistence and restoration
+- deterministic equality checks
+
+This separation between *state data* and *runtime wiring*
+keeps undo and restore logic explicit and predictable.
+For more information on these topics, see :doc:`../advanced/index`.
+
+
+What SimpleAppState is not
+--------------------------
+
+``SimpleAppState`` is not:
+
+- a dependency injection container
+- a widget tree manager
+- a context-based lookup system
+
+It intentionally avoids magic.
+If a widget rebuilds, you should always be able to answer:
+
+*Which slot caused this rebuild?*

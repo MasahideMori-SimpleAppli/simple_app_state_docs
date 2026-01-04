@@ -1,0 +1,146 @@
+Common Mistakes
+===============
+
+This section lists common mistakes made by new users of SimpleAppState.
+Each mistake is explained together with the correct mental model.
+
+---
+
+Treating state as widget-owned
+------------------------------
+
+**Mistake**
+
+Defining ``SimpleAppState`` or slots inside widgets:
+
+.. code-block:: dart
+
+   class MyWidget extends StatelessWidget {
+     final appState = SimpleAppState(); // ❌
+   }
+
+**Why this is a problem**
+
+Widgets in Flutter are ephemeral.
+They can be rebuilt, recreated, or disposed at any time.
+
+Placing application state inside widgets makes state lifetime
+hard to reason about and breaks persistence and undo/redo use cases.
+
+**Correct approach**
+
+Define application state at a higher level,
+typically as a global or top-level object:
+
+.. code-block:: dart
+
+   final appState = SimpleAppState();
+   final count = appState.slot<int>('count', initial: 0);
+
+Widgets should *subscribe* to state, not own it.
+
+---
+
+Mutating values returned from slots
+-------------------------------------
+
+**Mistake**
+
+Assuming that modifying a value returned from ``get()``
+will update application state:
+
+.. code-block:: dart
+
+   final list = logs.get();
+   list?.add('new entry'); // ❌ has no effect
+
+**Why this is a problem**
+
+Values returned from ``StateSlot.get()`` are always deep-copied.
+This is intentional and enforces value semantics.
+
+This is very important because manipulating object references like this in the normal way usually results in other parts breaking or spaghetti code.
+
+This package forces this to not happen.
+Direct mutation never affects internal state.
+
+**Correct approach**
+
+Always use ``set`` or ``update``:
+
+.. code-block:: dart
+
+   logs.update((old) => [...?old, 'new entry']);
+
+---
+
+Forgetting to declare slot dependencies
+---------------------------------------
+
+**Mistake**
+
+Accessing slot values in a widget without declaring them
+in ``slots``:
+
+.. code-block:: dart
+
+   class CounterView extends SlotStatefulWidget {
+     @override
+     List<StateSlot> get slots => []; // ❌
+   }
+
+**Why this is a problem**
+
+SimpleAppState does not use implicit dependency tracking.
+If a widget does not declare a slot, it will not rebuild
+when that slot changes.
+
+**Correct approach**
+
+Explicitly list all slots the widget depends on:
+
+.. code-block:: dart
+
+   @override
+   List<StateSlot> get slots => [count];
+
+---
+
+Creating many small state objects
+---------------------------------
+
+**Mistake**
+
+Creating multiple ``SimpleAppState`` instances
+for logically related application state.
+
+**Why this is a problem**
+
+Splitting state ownership too early makes it difficult
+to perform coordinated updates and persistence.
+
+**Correct approach**
+
+Start with a single ``SimpleAppState`` instance.
+Introduce multiple state objects only when you have
+clear ownership boundaries.
+
+---
+
+Expecting context-based lookups
+-------------------------------
+
+**Mistake**
+
+Looking for APIs similar to ``context.watch`` or ``Provider.of``.
+
+**Why this is a problem**
+
+SimpleAppState intentionally avoids implicit context-based access.
+This keeps dependencies explicit and rebuild behavior predictable.
+
+**Correct approach**
+
+Pass or import the required ``StateSlot`` explicitly.
+If a widget rebuilds, you should always be able to point
+to the exact slot that caused it.

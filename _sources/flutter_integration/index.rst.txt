@@ -1,0 +1,12 @@
+Flutter Integration
+===================
+
+This section describes how SimpleAppState integrates with Flutter.
+
+.. toctree::
+    :maxdepth: 1
+
+    rebuild_model
+    slot_stateful_widget
+    state_slot_builder
+    common_mistakes

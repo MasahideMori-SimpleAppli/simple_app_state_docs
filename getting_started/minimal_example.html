@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Minimal Example &#8212; simple_app_state 2026 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=fc6fd62b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Common Mistakes" href="common_mistakes.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="minimal-example">
+<h1>Minimal Example<a class="headerlink" href="#minimal-example" title="Link to this heading">¶</a></h1>
+<p>This page shows a minimal but <strong>realistic</strong> project structure
+for Flutter applications using SimpleAppState.</p>
+<p>This example is written for new team members and assumes:</p>
+<ul class="simple">
+<li><p>all application state is defined in one place</p></li>
+<li><p>UI code depends on state, not the other way around</p></li>
+</ul>
+<section id="project-structure">
+<h2>Project structure<a class="headerlink" href="#project-structure" title="Link to this heading">¶</a></h2>
+<p>In SimpleAppState-based projects, application state is usually
+collected into a single file.</p>
+<p>Placing this file at a higher-level directory makes the
+state definition easy to find and reason about.</p>
+<p>A recommended minimal structure is:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>lib/
+├── ui/
+│   ├── app_state.dart
+│   └── pages/
+│       └── counter_view.dart
+└── main.dart
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ui/app_state.dart</span></code> defines <em>all application state</em></p></li>
+<li><p>UI pages live under <code class="docutils literal notranslate"><span class="pre">ui/pages/</span></code></p></li>
+<li><p>Widgets import state, but state never imports widgets</p></li>
+</ul>
+</section>
+<section id="define-application-state-ui-app-state-dart">
+<h2>Define application state (<code class="docutils literal notranslate"><span class="pre">ui/app_state.dart</span></code>)<a class="headerlink" href="#define-application-state-ui-app-state-dart" title="Link to this heading">¶</a></h2>
+<p>First, create a global <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> instance.
+In most applications, this object lives for the entire
+lifetime of the app.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// ui/app_state.dart</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">appState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Next, define all state slots in the same file.
+This makes the complete state surface visible at a glance.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// Counter value (int)</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>All application state is defined in one file</p></li>
+<li><p>Slot types are fixed on first access</p></li>
+<li><p>Slot names must be unique within the same state</p></li>
+<li><p>Complex state or data classes can be configured as serializable classes (extends CloneableFile), lists, maps, etc.</p></li>
+</ul>
+</section>
+<section id="update-state">
+<h2>Update state<a class="headerlink" href="#update-state" title="Link to this heading">¶</a></h2>
+<p>State can be updated using <code class="docutils literal notranslate"><span class="pre">set</span></code> or <code class="docutils literal notranslate"><span class="pre">update</span></code>.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">update</span></code> is useful when the new value depends
+on the previous value.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">old</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>State updates are applied immediately.
+Subscribed widgets will rebuild automatically.</p>
+</section>
+<section id="bind-state-to-a-widget-ui-pages-counter-view-dart">
+<h2>Bind state to a widget (<code class="docutils literal notranslate"><span class="pre">ui/pages/counter_view.dart</span></code>)<a class="headerlink" href="#bind-state-to-a-widget-ui-pages-counter-view-dart" title="Link to this heading">¶</a></h2>
+<p>Widgets import state slots and declare which ones they depend on.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// ui/pages/counter_view.dart</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">CounterView</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotStatefulWidget</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CounterView</span><span class="p">({</span><span class="k">super</span><span class="p">.</span><span class="n">key</span><span class="p">});</span>
+
+<span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">count</span><span class="p">];</span>
+
+<span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="n">State</span><span class="o">&lt;</span><span class="n">CounterView</span><span class="o">&gt;</span><span class="w"> </span><span class="n">createState</span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_CounterViewState</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">_CounterViewState</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotState</span><span class="o">&lt;</span><span class="n">CounterView</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="n">Widget</span><span class="w"> </span><span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count</span><span class="p">.</span><span class="kd">get</span><span class="p">()</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="m">0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Column</span><span class="p">(</span>
+<span class="w">      </span><span class="nl">children:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39;Count: </span><span class="si">$</span><span class="n">value</span><span class="s1">&#39;</span><span class="p">),</span>
+<span class="w">        </span><span class="n">ElevatedButton</span><span class="p">(</span>
+<span class="w">          </span><span class="nl">onPressed:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">count</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
+<span class="w">          </span><span class="p">},</span>
+<span class="w">          </span><span class="nl">child:</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39;Increment&#39;</span><span class="p">),</span>
+<span class="w">        </span><span class="p">),</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Widgets do not own application state</p></li>
+<li><p>Widgets explicitly declare slot dependencies</p></li>
+<li><p>Rebuilds are deterministic and minimal</p></li>
+</ul>
+</section>
+<section id="why-this-structure-is-recommended">
+<h2>Why this structure is recommended<a class="headerlink" href="#why-this-structure-is-recommended" title="Link to this heading">¶</a></h2>
+<p>This layout enforces a clear separation of responsibilities:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">app_state.dart</span></code> defines <em>what</em> the application state is</p></li>
+<li><p>UI widgets define <em>how</em> the state is presented and modified</p></li>
+</ul>
+<p>New developers can always answer:</p>
+<ul class="simple">
+<li><p>“Where is this state defined?”</p></li>
+<li><p>“Which widgets depend on it?”</p></li>
+</ul>
+<p>without searching through widget trees or contexts.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">simple_app_state</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Getting Started</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Minimal Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_mistakes.html">Common Mistakes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Getting Started</a><ul>
+      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="common_mistakes.html" title="next chapter">Common Mistakes</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Masahide Mori.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/getting_started/minimal_example.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,194 @@
+Value Semantics
+===============
+
+SimpleAppState uses **value semantics** for all application state.
+
+This means:
+
+**State is treated as values, not as mutable objects.**
+
+You do not change state by modifying objects.
+You change state by *replacing values*.
+
+This page explains what value semantics means in practice
+and why SimpleAppState is designed this way.
+
+
+The most important rule
+-----------------------
+
+If you remember only one rule, remember this:
+
+**Changing an object returned from ``get()`` never changes state.**
+
+Example:
+
+.. code-block:: dart
+
+   final list = logs.get();
+   list?.add('new entry'); // ❌ state is NOT updated
+
+This is not a bug.
+It is the core design.
+
+
+Why get() returns a copy
+------------------------
+
+When you call ``get()``:
+
+.. code-block:: dart
+
+   final value = slot.get();
+
+the returned object is always a **deep copy**.
+
+This prevents accidental changes such as:
+
+- modifying a list
+- editing a map
+- changing fields inside an object
+
+Without this rule, state could change *silently*,
+without SimpleAppState noticing.
+
+Silent changes are dangerous because:
+
+- widgets may not rebuild
+- undo / redo becomes unreliable
+- bugs become very hard to track
+
+Returning a copy makes all state changes explicit.
+
+
+How state should be updated
+---------------------------
+
+To change state, you must use ``set`` or ``update``.
+
+Example with ``set``:
+
+.. code-block:: dart
+
+   settings.set(
+     AppSettings(theme: 'dark'),
+   );
+
+Example with ``update``:
+
+.. code-block:: dart
+
+   logs.update((old) => [...?old, 'new entry']);
+
+In both cases:
+
+- a **new value** is created
+- the old value is replaced
+- SimpleAppState is notified of the change
+
+This is the only way state can change.
+
+
+Thinking in "before" and "after"
+--------------------------------
+
+Value semantics encourages a simple mental model:
+
+- there is a **previous value**
+- you create a **next value**
+- the old one is discarded
+
+You never think about:
+
+- “Who else is holding this object?”
+- “What happens if I mutate this list?”
+
+Each update is a clear state transition.
+
+This model is easy to reason about,
+especially for beginners.
+
+
+Why this matters for widgets
+----------------------------
+
+Widgets rebuild when state changes.
+
+If state could be mutated silently:
+
+- rebuilds might not happen
+- UI could become inconsistent
+
+Because SimpleAppState controls all writes:
+
+- it always knows when a value changes
+- it knows exactly which slot changed
+- it can rebuild only the affected widgets
+
+This is why rebuild behavior is predictable.
+
+
+Value semantics and undo / redo
+-------------------------------
+
+Undo and redo work by storing **snapshots** of state.
+
+With value semantics:
+
+- each snapshot is a clean copy
+- no snapshot shares mutable objects
+- restoring a snapshot is safe
+
+This makes features like:
+
+- undo / redo
+- persistence
+- time-travel debugging
+
+much easier to implement correctly.
+
+
+What values can be stored
+-------------------------
+
+Values stored in slots must be:
+
+- safely copyable, or
+- serializable
+
+SimpleAppState validates values on ``set`` and ``update``
+to ensure they are safe to store.
+
+This prevents subtle bugs caused by
+non-copyable or externally mutable objects.
+
+
+This may feel unfamiliar at first
+---------------------------------
+
+If you are used to mutating objects directly,
+this design may feel strict.
+
+However, it has important benefits:
+
+- fewer hidden bugs
+- clearer state flow
+- easier debugging
+- safer refactoring
+
+After some time, many developers find it
+*more comfortable* than mutable state.
+
+
+Summary
+-------
+
+Value semantics means:
+
+- state is replaced, not mutated
+- ``get()`` always returns a copy
+- ``set`` and ``update`` are the only write paths
+- state changes are explicit and traceable
+
+Once you accept this rule,
+SimpleAppState becomes much easier to understand.

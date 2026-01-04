@@ -1,0 +1,12 @@
+Getting Started
+===============
+
+This section helps you get started with SimpleAppState
+and reach a first successful application state quickly.
+
+.. toctree::
+   :maxdepth: 1
+
+   installation
+   minimal_example
+   common_mistakes

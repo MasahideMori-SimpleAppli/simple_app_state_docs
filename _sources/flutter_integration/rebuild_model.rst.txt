@@ -1,0 +1,213 @@
+Rebuild Model
+=============
+
+This page explains **how state changes cause widget rebuilds**
+when using SimpleAppState with Flutter.
+
+It is important to read this page first,
+before learning any widget-level APIs.
+
+There is no magic in this system.
+Understanding the rebuild model will make
+everything else easy to reason about.
+
+Two separate responsibilities
+------------------------------
+
+SimpleAppState and Flutter have **different responsibilities**.
+
+SimpleAppState:
+
+- stores application state
+- detects state changes
+- notifies subscribers
+
+Flutter:
+
+- decides when widgets rebuild
+- manages the widget tree
+- optimizes rendering
+
+SimpleAppState **does not** control the widget tree.
+Flutter **does not** know about state slots.
+
+They communicate through a very small boundary.
+
+What happens when state changes
+-------------------------------
+
+When you update a slot:
+
+.. code-block:: dart
+
+   count.set(1);
+
+the following happens:
+
+1. SimpleAppState replaces the stored value
+2. SimpleAppState finds listeners for that slot
+3. listener callbacks are invoked
+4. those callbacks typically call ``setState``
+
+At that point, SimpleAppState’s job is done.
+
+From there on, Flutter’s normal rebuild process applies.
+
+SimpleAppState does not rebuild widgets
+---------------------------------------
+
+SimpleAppState never rebuilds widgets directly.
+
+It does **not**:
+
+- walk the widget tree
+- decide parent / child rebuild order
+- skip rebuilds based on widget identity
+
+It only calls callbacks.
+
+Those callbacks live in Flutter widgets,
+and they usually call ``setState``.
+
+Everything after that is pure Flutter behavior.
+
+
+Why rebuild behavior can differ
+-------------------------------
+
+Because Flutter controls rebuilding:
+
+- a parent widget may rebuild
+- a child widget may rebuild
+- both may rebuild
+- rebuilds may be merged or skipped
+
+For example, if both a parent and a child
+depend on the same slot,
+they may both rebuild.
+
+This is **not** a bug in SimpleAppState.
+
+Flutter decides:
+
+- which widgets rebuild
+- how often they rebuild
+- whether rebuilds are optimized away
+
+SimpleAppState intentionally does not interfere.
+
+
+What batching guarantees (and what it does not)
+-----------------------------------------------
+
+Batch updates group **notifications**, not rebuilds.
+
+When using ``batch``:
+
+.. code-block:: dart
+
+   appState.batch(() {
+     count.set(1);
+     total.set(10);
+   });
+
+SimpleAppState guarantees:
+
+- each subscriber ID is notified at most once
+- notifications are sent after the batch completes
+
+SimpleAppState does **not** guarantee:
+
+- exactly one widget rebuild
+- no parent-child rebuild overlap
+- identical rebuild behavior in all widget trees
+
+Those details are controlled by Flutter.
+
+Batching reduces *requested rebuilds*,
+not Flutter’s rebuild freedom.
+
+
+Subscriber IDs and rebuild intent
+---------------------------------
+
+Each subscribing widget is assigned a **subscriber ID**.
+
+This ID represents rebuild *intent*:
+
+> “This widget should update because state changed.”
+
+If multiple slots notify the same subscriber ID,
+SimpleAppState merges them.
+
+This prevents obvious duplicate notifications,
+but it does not override Flutter’s behavior.
+
+Think of subscriber IDs as:
+
+- a signal to Flutter widgets
+- not a rebuild command
+
+Why this model is intentional
+-----------------------------
+
+SimpleAppState is designed to work with Flutter,
+without changing Flutter’s rebuild model:
+
+- SimpleAppState does not control the widget tree
+- rebuild decisions belong to Flutter
+- optimization stays inside Flutter
+
+By keeping responsibilities separate:
+
+- state logic stays testable
+- rebuild behavior stays familiar
+- debugging stays straightforward
+
+If a widget rebuilds,
+you can always trace it back to:
+
+- which slot changed
+- which listener was notified
+- which widget called ``setState``
+
+
+Common misunderstandings
+------------------------
+
+**“SimpleAppState guarantees one rebuild per change”**
+
+No.
+
+It guarantees controlled notifications,
+not rebuild counts.
+
+
+**“Batching prevents all duplicate rebuilds”**
+
+No.
+
+Batching reduces notification noise,
+but Flutter still decides how to rebuild.
+
+
+**“SimpleAppState replaces Flutter’s rebuild model”**
+
+No.
+
+It works *with* Flutter,
+not *instead of* Flutter.
+
+
+Summary
+-------
+
+The rebuild model is simple:
+
+- SimpleAppState detects and notifies
+- Flutter rebuilds widgets
+- responsibilities do not overlap
+
+Once you understand this boundary,
+all Flutter integration APIs
+become easy to reason about.

@@ -1,0 +1,192 @@
+======================================
+Undo and Redo
+======================================
+
+This section explains how **SimpleAppState** supports undo and redo operations.
+
+Undo / redo is implemented by integrating
+the **file_state_manager** package with the internal state structure of
+**SimpleAppState**.
+
+Overview
+========
+
+Undo and redo in **SimpleAppState** are based on snapshot history.
+
+* Each finalized state change is stored as a cloned snapshot
+* Undo moves backward in the snapshot history
+* Redo moves forward in the snapshot history
+
+This mechanism relies on:
+
+* ``CloneableFile.clone()`` for snapshot creation
+* ``FileStateManager`` for history management
+* ``replaceDataFrom()`` for applying restored state
+
+State Snapshots
+===============
+
+**SimpleAppState** implements the ``CloneableFile`` interface.
+
+This allows the entire application state to be:
+
+* Deep-copied using ``clone()``
+* Managed as an immutable snapshot by ``FileStateManager``
+
+Each snapshot represents a complete and self-contained application state
+at a specific point in time.
+
+Snapshots are used exclusively for undo / redo and are independent of
+persistence mechanisms such as ``toDict()`` and ``fromDict()``.
+
+FileStateManager Integration
+============================
+
+To enable undo / redo support, register a **SimpleAppState** instance
+with ``FileStateManager``.
+
+.. code-block:: dart
+
+   final state = SimpleAppState();
+   final fsm = FileStateManager(state, stackSize: 20);
+
+The manager stores cloned snapshots and tracks the current position
+in the history stack.
+
+State Listener and Push Timing
+==============================
+
+Undo / redo history must be updated **only when a state change is finalized**.
+
+For this purpose, **SimpleAppState** provides a dedicated state listener.
+
+.. code-block:: dart
+
+   /// Adds a listener suitable for undo / redo management.
+   /// This listener is notified only when a state change is finalized.
+   /// Batch updates trigger the notification only once.
+   void setStateListener(StateListener? listener) {
+     _stateListener = listener;
+   }
+
+A typical integration looks like this:
+
+.. code-block:: dart
+
+   state.setStateListener((SimpleAppState mState) {
+     fsm.push(mState);
+   });
+
+This design ensures that:
+
+* Intermediate mutations are not recorded
+* Batch updates produce a single history entry
+* Each undo step corresponds to a meaningful user action
+
+Undo Operation
+==============
+
+Calling ``undo()`` retrieves the previous snapshot from the history stack.
+
+.. code-block:: dart
+
+   final previous = fsm.undo();
+
+If undo is possible, a cloned snapshot is returned.
+The returned snapshot must then be applied to the current state.
+
+Applying a Snapshot Safely
+--------------------------
+
+When restoring a snapshot using ``replaceDataFrom()``,
+the internal state of **SimpleAppState** is replaced.
+
+This operation **finalizes a state change**, which would normally trigger
+the state listener.
+
+To prevent the restored snapshot from being recorded as a new history entry,
+you must suppress the next push operation.
+
+``FileStateManager`` provides ``skipNextPush()`` for this purpose.
+
+.. code-block:: dart
+
+   final previous = fsm.undo();
+   fsm.skipNextPush();
+   state.replaceDataFrom(previous);
+
+Key characteristics of ``replaceDataFrom()``:
+
+* The current ``SimpleAppState`` instance remains active
+* Only internal data is replaced
+* No new history entry is created when ``skipNextPush()`` is used
+
+Redo Operation
+==============
+
+Redo retrieves the next snapshot in the history stack.
+
+.. code-block:: dart
+
+   final next = fsm.redo();
+   fsm.skipNextPush();
+   state.replaceDataFrom(next);
+
+Redo follows the same rules as undo and must also suppress
+automatic history pushes during restoration.
+
+Complete Example
+================
+
+The following test demonstrates a complete undo / redo flow:
+
+.. code-block:: dart
+
+   test('undo and redo', () {
+     final state = SimpleAppState();
+     final intSlot = state.slot<int>('count', initial: 1);
+     final fsm = FileStateManager(state, stackSize: 20);
+
+     state.setStateListener((SimpleAppState mState) {
+       fsm.push(mState);
+     });
+
+     intSlot.set(2);
+     intSlot.set(3);
+
+     // undo
+     final prev = fsm.undo();
+     fsm.skipNextPush();
+     state.replaceDataFrom(prev as SimpleAppState);
+     expect(intSlot.get(), 2);
+
+     // redo
+     final next = fsm.redo();
+     fsm.skipNextPush();
+     state.replaceDataFrom(next as SimpleAppState);
+     expect(intSlot.get(), 3);
+   });
+
+Design Rationale
+================
+
+This design provides several important guarantees:
+
+* Undo history reflects logical state changes, not low-level mutations
+* Restored states do not pollute the history stack
+* Undo / redo logic remains decoupled from state mutation logic
+* Slot references remain valid across undo / redo operations
+
+By explicitly controlling push timing,
+**SimpleAppState** ensures predictable and intuitive undo / redo behavior.
+
+Design Separation
+=================
+
+Undo / redo is intentionally separated from persistence.
+
+* Persistence uses ``toDict()`` and ``fromDict()``
+* Undo / redo uses ``clone()`` and snapshot replacement
+
+Keeping these mechanisms independent maintains clarity and avoids
+unexpected interactions between state restoration and persistence.

@@ -1,0 +1,106 @@
+======================================
+Testing
+======================================
+
+This section describes how **SimpleAppState** can be tested effectively.
+
+Because **SimpleAppState** is deterministic and side-effect free by design,
+most tests are simple and predictable.
+
+Overview
+========
+
+Testing **SimpleAppState** is based on observing state changes.
+
+A dedicated debug listener allows developers to:
+
+* Track every state mutation
+* Observe old and new values
+* Inspect behavior without modifying application logic
+
+Debug Listener
+==============
+
+**SimpleAppState** provides a debug listener intended for development
+and testing.
+
+.. code-block:: dart
+
+   void setDebugListener(DebugListener? listener) {
+     _debugListener = listener;
+   }
+
+The debug listener is notified **whenever any value changes**,
+including intermediate updates inside batch operations.
+
+DebugListener Signature
+-----------------------
+
+.. code-block:: dart
+
+   typedef DebugListener =
+       void Function(StateSlot key, dynamic oldValue, dynamic newValue);
+
+Each callback provides:
+
+* The ``StateSlot`` that changed
+* The previous value
+* The new value
+
+This makes every state transition observable.
+
+Using StateSlot as a Test Key
+=============================
+
+``StateSlot`` acts as a stable observation key.
+
+Each slot has:
+
+* A unique, stable name
+* A reference to its owning state
+* Strong equality and hashing guarantees
+
+In Flutter applications, widgets subscribe explicitly to slots.
+As a result, observing slot changes is often sufficient to reason
+about UI behavior.
+
+Example
+=======
+
+.. code-block:: dart
+
+   final state = SimpleAppState();
+   final changes = <String>[];
+
+   state.setDebugListener((key, oldValue, newValue) {
+     changes.add('${key.name}: $oldValue -> $newValue');
+   });
+
+   final count = state.slot<int>('count');
+   count.set(1);
+   count.update((v) => (v ?? 0) + 1);
+
+The collected log provides a complete trace of state transitions.
+
+Deterministic Behavior
+======================
+
+**SimpleAppState** is fully deterministic:
+
+* State updates are synchronous
+* No background processing occurs
+* No hidden side effects are introduced
+
+This allows tests to assert results immediately after updates,
+without timing control or async handling.
+
+Testing Perspective
+===================
+
+Because ``StateSlot`` sits at the boundary between state and UI:
+
+* Tests can focus on slot changes instead of widget trees
+* UI refactoring does not invalidate state-level tests
+* Behavior can be reasoned about from an observer's perspective
+
+This encourages clear, robust, and maintainable tests.

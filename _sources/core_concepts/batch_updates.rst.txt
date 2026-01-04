@@ -1,0 +1,232 @@
+Batch Updates
+=============
+
+Batch updates allow you to update multiple state slots
+while **grouping listener notifications**.
+
+This helps reduce unnecessary rebuilds
+and keeps state transitions clear and intentional.
+
+This page explains:
+
+- what batching is
+- what it guarantees
+- what it deliberately does *not* control
+
+
+The problem batching solves
+---------------------------
+
+Consider this code:
+
+.. code-block:: dart
+
+   count.set(1);
+   total.set(10);
+   status.set('ready');
+
+Each call updates state and notifies UI listeners.
+
+If these updates belong to one logical action,
+notifying UI listeners after every change is often unnecessary.
+
+Batch updates exist to group these notifications.
+
+
+What batch() does
+-----------------
+
+``batch`` delays **UI listener notifications**, not state updates.
+
+Example:
+
+.. code-block:: dart
+
+   appState.batch(() {
+     count.set(1);
+     total.set(10);
+     status.set('ready');
+   });
+
+Inside ``batch``:
+
+- state values are updated immediately
+- updates run in normal order
+- UI listener callbacks are *collected*
+
+After the batch finishes:
+
+- collected notifications are flushed
+- UI listeners are notified once per subscriber ID (That is, once for each widget's state that needs to be updated)
+
+
+Batching does not delay logic
+-----------------------------
+
+Batching does **not** change execution order.
+
+Inside a batch:
+
+- ``set`` and ``update`` execute immediately
+- later operations see earlier changes
+
+Example:
+
+.. code-block:: dart
+
+   appState.batch(() {
+     count.set(1);
+     count.update((v) => (v ?? 0) + 1);
+   });
+
+The final value is ``2``.
+
+Batching only controls *when UI listeners are notified*,
+not *how state changes*.
+
+
+UI listener grouping by subscriber ID
+--------------------------------------
+
+UI listeners are grouped by **subscriber ID**.
+
+Typically:
+
+- one widget state corresponds to one subscriber ID
+- a widget may subscribe to multiple slots
+- notifications for the same subscriber ID are merged
+
+This means that, from SimpleAppState’s perspective:
+
+- a subscriber is notified at most once per batch
+
+However, **SimpleAppState does not control Flutter’s widget tree**.
+
+If both a parent and a child widget rebuild
+in response to the same state change,
+that behavior is managed by Flutter itself.
+
+Batching ensures that:
+
+- SimpleAppState does not *request* duplicate rebuilds
+- notification intent is minimal and explicit
+
+
+Nested batches are safe
+-----------------------
+
+Batches can be nested:
+
+.. code-block:: dart
+
+   appState.batch(() {
+     count.set(1);
+     appState.batch(() {
+       total.set(10);
+     });
+   });
+
+Only the **outermost batch** flushes notifications.
+
+This allows helper functions to use ``batch``
+without needing to know whether they are already
+inside another batch.
+
+
+State-level listener (undo / redo, persistence)
+-----------------------------------------------
+
+In addition to UI listeners,
+SimpleAppState supports a **state-level listener**.
+
+This listener is designed for:
+
+- undo / redo stacks
+- persistence
+- observing finalized state transitions
+
+Unlike UI listeners:
+
+- it is **not** called for every slot update
+- it is called **once**, after a batch completes
+- it receives the finalized state
+
+Example:
+
+.. code-block:: dart
+
+   appState.setStateListener((nowState) {
+     undoStack.add(nowState.clone());
+   });
+
+With batching:
+
+.. code-block:: dart
+
+   appState.batch(() {
+     count.set(1);
+     total.set(10);
+   });
+
+The state listener is called **once**,
+after both updates are applied.
+
+Intermediate states inside the batch
+are intentionally not reported.
+
+
+Batching during loading and restore
+-----------------------------------
+
+Batch updates are also used internally.
+
+Examples include:
+
+- loading state from storage
+- restoring a snapshot
+- replacing all state data
+
+In these cases:
+
+- many slots may be updated
+- notifications are grouped
+- the UI observes a consistent state
+
+This prevents partial updates
+and unintended intermediate rebuilds.
+
+
+When you should use batch()
+---------------------------
+
+Use ``batch`` when:
+
+- multiple slot updates represent one action
+- you want UI listeners to observe only the final state
+- undo / redo or persistence should record one step
+
+Typical cases:
+
+- form submission
+- initialization
+- applying settings
+- undo / redo operations
+
+For single-slot updates,
+batching is usually unnecessary.
+
+
+Summary
+-------
+
+Batch updates:
+
+- group UI listener notifications
+- do not delay or reorder state changes
+- notify each subscriber ID at most once per batch
+- report finalized state to state-level listeners
+
+Batching is explicit and predictable.
+
+When several changes belong together,
+wrap them in ``batch``.

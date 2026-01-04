@@ -1,0 +1,218 @@
+SlotStatefulWidget
+==================
+
+``SlotStatefulWidget`` is the primary way
+to connect Flutter widgets to ``StateSlot`` values.
+
+It allows a widget to:
+
+- declare which slots it depends on
+- rebuild when those slots change
+- stay independent from state ownership
+
+This page explains how ``SlotStatefulWidget`` works
+and how it fits into the rebuild model described earlier.
+
+
+What SlotStatefulWidget does
+----------------------------
+
+``SlotStatefulWidget`` is a small helper on top of Flutter’s
+normal ``StatefulWidget``.
+
+Its job is simple:
+
+- register listeners for specified slots
+- register those listeners with a **subscriber ID**
+- call ``setState`` when notified
+- clean up listeners when the widget is disposed
+
+It does **not**:
+
+- own state
+- store values
+- decide rebuild order
+
+Those responsibilities stay where they belong.
+
+What is a subscriber ID?
+------------------------
+
+A **subscriber ID** is an internal identifier
+used to represent *one widget instance*.
+
+SlotStatefulWidget automatically assigns
+one subscriber ID per widget state.
+
+This ID is used to:
+
+- merge notifications from multiple slots
+- avoid duplicate rebuild requests
+- support batch updates
+
+You usually do not need to manage subscriber IDs yourself.
+
+They exist so that SimpleAppState can say:
+
+> “This widget should rebuild now”
+
+without caring *which slot* triggered the change.
+
+Details of how notifications are grouped
+are explained in :doc:`rebuild_model`.
+
+Declaring slot dependencies
+---------------------------
+
+A widget declares its state dependencies
+by overriding the ``slots`` getter:
+
+.. code-block:: dart
+
+   class CounterView extends SlotStatefulWidget {
+     const CounterView({super.key});
+
+     @override
+     List<StateSlot> get slots => [count];
+
+     @override
+     State<CounterView> createState() => _CounterViewState();
+   }
+
+This declaration answers a simple question:
+
+> “Which state slots should cause this widget to update?”
+
+Nothing is inferred automatically.
+If a slot is not listed, the widget will not rebuild
+when that slot changes.
+
+Reading slot values in build()
+------------------------------
+
+Inside ``build``, you read slot values normally:
+
+.. code-block:: dart
+
+   class _CounterViewState extends SlotState<CounterView> {
+     @override
+     Widget build(BuildContext context) {
+       final value = count.get() ?? 0;
+
+       return Text('Count: $value');
+     }
+   }
+
+Important points:
+
+- ``get()`` always returns a copy
+- reading does not subscribe implicitly
+- subscription is controlled only by ``slots``
+
+This keeps dependencies explicit and visible.
+
+How rebuilds are triggered
+--------------------------
+
+When a listed slot changes:
+
+1. SimpleAppState notifies listeners
+2. ``SlotState`` receives the notification
+3. ``setState`` is called
+4. Flutter schedules a rebuild
+
+After that, Flutter behaves normally.
+
+``SlotStatefulWidget`` does not bypass
+Flutter’s rebuild system.
+
+Multiple slots, one widget
+--------------------------
+
+A widget can depend on multiple slots:
+
+.. code-block:: dart
+
+   @override
+   List<StateSlot> get slots => [count, total];
+
+If any of these slots change:
+
+- the widget is notified
+- ``setState`` is called
+- the widget rebuilds
+
+During batch updates:
+
+- notifications are merged by subscriber ID
+- ``setState`` is requested only once per batch
+
+Actual rebuild behavior is still controlled by Flutter.
+
+
+Lifecycle and cleanup
+---------------------
+
+``SlotStatefulWidget`` handles listener cleanup automatically.
+
+When the widget is disposed:
+
+- all registered listeners are removed
+- no stale callbacks remain
+- state continues to live independently
+
+This prevents common issues such as:
+
+- memory leaks
+- updates to disposed widgets
+- unexpected rebuilds
+
+
+Why this widget exists
+----------------------
+
+Without ``SlotStatefulWidget``,
+you would need to manually:
+
+- register listeners
+- manage subscriber IDs
+- call ``setState`` correctly
+- remove listeners on dispose
+
+``SlotStatefulWidget`` packages this logic
+into a small, explicit abstraction.
+
+It is not required,
+but it is strongly recommended for clarity and safety.
+
+
+What SlotStatefulWidget is not
+------------------------------
+
+``SlotStatefulWidget`` is not:
+
+- a state container
+- a replacement for Flutter state
+- an implicit dependency tracker
+- a performance optimization trick
+
+It is simply a bridge
+between ``StateSlot`` notifications
+and Flutter’s rebuild mechanism.
+
+
+Summary
+-------
+
+``SlotStatefulWidget``:
+
+- connects widgets to state slots
+- makes dependencies explicit
+- rebuilds widgets via normal Flutter rules
+- keeps state ownership outside the widget tree
+
+If you understand how Flutter rebuilds widgets,
+``SlotStatefulWidget`` will feel familiar.
+
+It adds structure,
+not magic.

@@ -1,0 +1,40 @@
+Glossary
+========
+
+Definitions of terms used throughout the documentation.
+
+StateSlot
+----------------------------
+
+A typed handle to a single piece of application state.
+Each slot has a fixed type and name, and all reads and writes go through it.
+Slots are used as the unit of change detection and notification.
+
+SimpleAppState
+----------------------------
+
+A container that holds all StateSlots and their values.
+It manages updates, batching, listeners, cloning, and serialization.
+Applications typically have one or a few instances of this class.
+
+Batch
+----------------------------
+
+A mechanism that groups multiple state updates into a single commit.
+Values are updated immediately, but listener notifications are delayed and merged.
+This is mainly used to avoid redundant UI updates and commits.
+
+Listener
+----------------------------
+
+A callback that is triggered when state changes occur.
+There are multiple kinds of listeners: UI listeners (per subscriber),
+debug listeners (called on every change), and state listeners (called on commit).
+Listeners react to changes but do not modify state directly.
+
+Commit
+----------------------------
+
+The moment when state changes are considered finalized.
+A commit happens after a non-batch update or when a batch finishes.
+State listeners are notified at this point, making it suitable for undo/redo logic.

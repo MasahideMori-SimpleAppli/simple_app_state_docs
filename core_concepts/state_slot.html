@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>StateSlot &#8212; simple_app_state 2026 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=fc6fd62b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Value Semantics" href="value_semantics.html" />
+    <link rel="prev" title="SimpleAppState" href="simple_app_state.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="stateslot">
+<h1>StateSlot<a class="headerlink" href="#stateslot" title="Link to this heading">¶</a></h1>
+<p>A <code class="docutils literal notranslate"><span class="pre">StateSlot&lt;T&gt;</span></code> is the way you <em>read and update</em>
+application state in SimpleAppState.</p>
+<p>If you already understand this sentence:</p>
+<p><em>“I get a value from a slot, and I update it through the slot.”</em></p>
+<p>then you already understand the most important part.</p>
+<p>This page explains what a <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> is,
+how it is used,
+and why SimpleAppState uses slots instead of fields.</p>
+<section id="what-is-a-stateslot">
+<h2>What is a StateSlot?<a class="headerlink" href="#what-is-a-stateslot" title="Link to this heading">¶</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> represents <strong>one piece of application state</strong>.</p>
+<p>For example:</p>
+<ul class="simple">
+<li><p>a counter value</p></li>
+<li><p>a selected item ID</p></li>
+<li><p>a list of logs</p></li>
+<li><p>a settings object</p></li>
+</ul>
+<p>Each slot:</p>
+<ul class="simple">
+<li><p>has a <strong>name</strong></p></li>
+<li><p>has a <strong>fixed type</strong></p></li>
+<li><p>belongs to <strong>one SimpleAppState</strong></p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Here:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">count</span></code> is the slot</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code> is the value type</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'count'</span></code> is the slot name</p></li>
+</ul>
+<p>You never access state directly.
+You always go through the slot.</p>
+</section>
+<section id="why-simpleappstate-uses-slots">
+<h2>Why SimpleAppState uses slots<a class="headerlink" href="#why-simpleappstate-uses-slots" title="Link to this heading">¶</a></h2>
+<p>SimpleAppState does not expose state as fields like:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// ❌ not supported</span>
+</pre></div>
+</div>
+<p>Instead, it uses slots.</p>
+<p>This design makes state:</p>
+<ul class="simple">
+<li><p>easy to find</p></li>
+<li><p>easy to track</p></li>
+<li><p>safe to update</p></li>
+<li><p>predictable to rebuild</p></li>
+</ul>
+<p>When all state access goes through slots,
+SimpleAppState can clearly see:</p>
+<ul class="simple">
+<li><p><em>what changed</em></p></li>
+<li><p><em>which widgets depend on it</em></p></li>
+<li><p><em>when to rebuild</em></p></li>
+</ul>
+<p>Nothing happens implicitly.</p>
+</section>
+<section id="reading-state-get">
+<h2>Reading state: get()<a class="headerlink" href="#reading-state-get" title="Link to this heading">¶</a></h2>
+<p>To read a value from a slot, use <code class="docutils literal notranslate"><span class="pre">get()</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Important things to know:</p>
+<ul class="simple">
+<li><p>the value can be <code class="docutils literal notranslate"><span class="pre">null</span></code></p></li>
+<li><p>the returned value is a <strong>copy</strong></p></li>
+<li><p>changing it does <strong>not</strong> change state</p></li>
+</ul>
+<p>This means:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logs</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
+<span class="n">list</span><span class="o">?</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new item&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ does nothing</span>
+</pre></div>
+</div>
+<p>This behavior is intentional.
+It prevents accidental state changes.</p>
+</section>
+<section id="updating-state-set">
+<h2>Updating state: set()<a class="headerlink" href="#updating-state-set" title="Link to this heading">¶</a></h2>
+<p>To replace a value, use <code class="docutils literal notranslate"><span class="pre">set()</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This:</p>
+<ul class="simple">
+<li><p>replaces the old value</p></li>
+<li><p>notifies subscribed widgets</p></li>
+<li><p>triggers rebuilds if needed</p></li>
+</ul>
+<p>You should think of state as:</p>
+<p>&gt; “I replace the value with a new one.”</p>
+<p>not:</p>
+<p>&gt; “I modify the existing object.”</p>
+</section>
+<section id="updating-based-on-the-previous-value-update">
+<h2>Updating based on the previous value: update()<a class="headerlink" href="#updating-based-on-the-previous-value-update" title="Link to this heading">¶</a></h2>
+<p>Often, the new value depends on the old one.</p>
+<p>For this, use <code class="docutils literal notranslate"><span class="pre">update()</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">old</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">update</span></code> works like this:</p>
+<ol class="arabic simple">
+<li><p>get the current value</p></li>
+<li><p>create a new value from it</p></li>
+<li><p>store the new value</p></li>
+</ol>
+<p>This makes state changes clear and safe.</p>
+</section>
+<section id="slot-types-are-fixed">
+<h2>Slot types are fixed<a class="headerlink" href="#slot-types-are-fixed" title="Link to this heading">¶</a></h2>
+<p>Each slot has a fixed type.</p>
+<p>If a slot is defined as:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Then that slot will always store <code class="docutils literal notranslate"><span class="pre">int</span></code> values.</p>
+<p>This prevents bugs such as:</p>
+<ul class="simple">
+<li><p>accidentally storing a wrong type</p></li>
+<li><p>silently breaking widgets that read the slot</p></li>
+</ul>
+<p>Type errors are caught early.</p>
+</section>
+<section id="slots-belong-to-simpleappstate">
+<h2>Slots belong to SimpleAppState<a class="headerlink" href="#slots-belong-to-simpleappstate" title="Link to this heading">¶</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> does not store data by itself.</p>
+<p>All data lives inside <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code>.</p>
+<p>The slot is only a <em>key</em> that points to that data.</p>
+<p>Because of this:</p>
+<ul class="simple">
+<li><p>state can be cloned without widgets</p></li>
+<li><p>listeners can stay alive when data is replaced</p></li>
+<li><p>undo / redo becomes simple</p></li>
+</ul>
+<p>You usually do not need to think about this,
+but it explains why slots exist as objects.</p>
+</section>
+<section id="slots-and-widgets">
+<h2>Slots and widgets<a class="headerlink" href="#slots-and-widgets" title="Link to this heading">¶</a></h2>
+<p>Widgets do not own slots.</p>
+<p>Widgets <em>declare</em> which slots they depend on.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="nd">@override</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">count</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">count</span></code> changes:</p>
+<ul class="simple">
+<li><p>SimpleAppState detects the change</p></li>
+<li><p>subscribed widgets rebuild</p></li>
+<li><p>unrelated widgets stay untouched</p></li>
+</ul>
+<p>This makes rebuild behavior explicit and predictable.</p>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code>:</p>
+<ul class="simple">
+<li><p>represents one piece of application state</p></li>
+<li><p>is the only way to read and update that state</p></li>
+<li><p>has a fixed type and a stable name</p></li>
+<li><p>works together with SimpleAppState to trigger rebuilds</p></li>
+</ul>
+<p>If you remember only one rule:</p>
+<p><strong>Always read and write state through slots.</strong></p>
+<p>Everything else builds on top of that.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">simple_app_state</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Core Concepts</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="simple_app_state.html">SimpleAppState</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">StateSlot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="value_semantics.html">Value Semantics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_updates.html">Batch Updates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Core Concepts</a><ul>
+      <li>Previous: <a href="simple_app_state.html" title="previous chapter">SimpleAppState</a></li>
+      <li>Next: <a href="value_semantics.html" title="next chapter">Value Semantics</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Masahide Mori.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/core_concepts/state_slot.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

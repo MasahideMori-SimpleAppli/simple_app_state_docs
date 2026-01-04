@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Common Mistakes &#8212; simple_app_state 2026 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=fc6fd62b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Core Concepts" href="../core_concepts/index.html" />
+    <link rel="prev" title="Minimal Example" href="minimal_example.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="common-mistakes">
+<h1>Common Mistakes<a class="headerlink" href="#common-mistakes" title="Link to this heading">¶</a></h1>
+<p>This section lists common mistakes made by new users of SimpleAppState.
+Each mistake is explained together with the correct mental model.</p>
+<p>—</p>
+<section id="treating-state-as-widget-owned">
+<h2>Treating state as widget-owned<a class="headerlink" href="#treating-state-as-widget-owned" title="Link to this heading">¶</a></h2>
+<p><strong>Mistake</strong></p>
+<p>Defining <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> or slots inside widgets:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">MyWidget</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">StatelessWidget</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">appState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span><span class="w"> </span><span class="c1">// ❌</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Why this is a problem</strong></p>
+<p>Widgets in Flutter are ephemeral.
+They can be rebuilt, recreated, or disposed at any time.</p>
+<p>Placing application state inside widgets makes state lifetime
+hard to reason about and breaks persistence and undo/redo use cases.</p>
+<p><strong>Correct approach</strong></p>
+<p>Define application state at a higher level,
+typically as a global or top-level object:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">appState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Widgets should <em>subscribe</em> to state, not own it.</p>
+<p>—</p>
+</section>
+<section id="mutating-values-returned-from-slots">
+<h2>Mutating values returned from slots<a class="headerlink" href="#mutating-values-returned-from-slots" title="Link to this heading">¶</a></h2>
+<p><strong>Mistake</strong></p>
+<p>Assuming that modifying a value returned from <code class="docutils literal notranslate"><span class="pre">get()</span></code>
+will update application state:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logs</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
+<span class="n">list</span><span class="o">?</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ has no effect</span>
+</pre></div>
+</div>
+<p><strong>Why this is a problem</strong></p>
+<p>Values returned from <code class="docutils literal notranslate"><span class="pre">StateSlot.get()</span></code> are always deep-copied.
+This is intentional and enforces value semantics.</p>
+<p>This is very important because manipulating object references like this in the normal way usually results in other parts breaking or spaghetti code.</p>
+<p>This package forces this to not happen.
+Direct mutation never affects internal state.</p>
+<p><strong>Correct approach</strong></p>
+<p>Always use <code class="docutils literal notranslate"><span class="pre">set</span></code> or <code class="docutils literal notranslate"><span class="pre">update</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[...</span><span class="o">?</span><span class="n">old</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;new entry&#39;</span><span class="p">]);</span>
+</pre></div>
+</div>
+<p>—</p>
+</section>
+<section id="forgetting-to-declare-slot-dependencies">
+<h2>Forgetting to declare slot dependencies<a class="headerlink" href="#forgetting-to-declare-slot-dependencies" title="Link to this heading">¶</a></h2>
+<p><strong>Mistake</strong></p>
+<p>Accessing slot values in a widget without declaring them
+in <code class="docutils literal notranslate"><span class="pre">slots</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">CounterView</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotStatefulWidget</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[];</span><span class="w"> </span><span class="c1">// ❌</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Why this is a problem</strong></p>
+<p>SimpleAppState does not use implicit dependency tracking.
+If a widget does not declare a slot, it will not rebuild
+when that slot changes.</p>
+<p><strong>Correct approach</strong></p>
+<p>Explicitly list all slots the widget depends on:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="nd">@override</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">count</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>—</p>
+</section>
+<section id="creating-many-small-state-objects">
+<h2>Creating many small state objects<a class="headerlink" href="#creating-many-small-state-objects" title="Link to this heading">¶</a></h2>
+<p><strong>Mistake</strong></p>
+<p>Creating multiple <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> instances
+for logically related application state.</p>
+<p><strong>Why this is a problem</strong></p>
+<p>Splitting state ownership too early makes it difficult
+to perform coordinated updates and persistence.</p>
+<p><strong>Correct approach</strong></p>
+<p>Start with a single <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> instance.
+Introduce multiple state objects only when you have
+clear ownership boundaries.</p>
+<p>—</p>
+</section>
+<section id="expecting-context-based-lookups">
+<h2>Expecting context-based lookups<a class="headerlink" href="#expecting-context-based-lookups" title="Link to this heading">¶</a></h2>
+<p><strong>Mistake</strong></p>
+<p>Looking for APIs similar to <code class="docutils literal notranslate"><span class="pre">context.watch</span></code> or <code class="docutils literal notranslate"><span class="pre">Provider.of</span></code>.</p>
+<p><strong>Why this is a problem</strong></p>
+<p>SimpleAppState intentionally avoids implicit context-based access.
+This keeps dependencies explicit and rebuild behavior predictable.</p>
+<p><strong>Correct approach</strong></p>
+<p>Pass or import the required <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> explicitly.
+If a widget rebuilds, you should always be able to point
+to the exact slot that caused it.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">simple_app_state</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Getting Started</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minimal_example.html">Minimal Example</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Common Mistakes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Getting Started</a><ul>
+      <li>Previous: <a href="minimal_example.html" title="previous chapter">Minimal Example</a></li>
+      <li>Next: <a href="../core_concepts/index.html" title="next chapter">Core Concepts</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Masahide Mori.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/getting_started/common_mistakes.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

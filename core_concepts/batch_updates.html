@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Batch Updates &#8212; simple_app_state 2026 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=fc6fd62b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Flutter Integration" href="../flutter_integration/index.html" />
+    <link rel="prev" title="Value Semantics" href="value_semantics.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="batch-updates">
+<h1>Batch Updates<a class="headerlink" href="#batch-updates" title="Link to this heading">¶</a></h1>
+<p>Batch updates allow you to update multiple state slots
+while <strong>grouping listener notifications</strong>.</p>
+<p>This helps reduce unnecessary rebuilds
+and keeps state transitions clear and intentional.</p>
+<p>This page explains:</p>
+<ul class="simple">
+<li><p>what batching is</p></li>
+<li><p>what it guarantees</p></li>
+<li><p>what it deliberately does <em>not</em> control</p></li>
+</ul>
+<section id="the-problem-batching-solves">
+<h2>The problem batching solves<a class="headerlink" href="#the-problem-batching-solves" title="Link to this heading">¶</a></h2>
+<p>Consider this code:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+<span class="n">total</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
+<span class="n">status</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="s1">&#39;ready&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Each call updates state and notifies UI listeners.</p>
+<p>If these updates belong to one logical action,
+notifying UI listeners after every change is often unnecessary.</p>
+<p>Batch updates exist to group these notifications.</p>
+</section>
+<section id="what-batch-does">
+<h2>What batch() does<a class="headerlink" href="#what-batch-does" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">batch</span></code> delays <strong>UI listener notifications</strong>, not state updates.</p>
+<p>Example:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">total</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
+<span class="w">  </span><span class="n">status</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="s1">&#39;ready&#39;</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>Inside <code class="docutils literal notranslate"><span class="pre">batch</span></code>:</p>
+<ul class="simple">
+<li><p>state values are updated immediately</p></li>
+<li><p>updates run in normal order</p></li>
+<li><p>UI listener callbacks are <em>collected</em></p></li>
+</ul>
+<p>After the batch finishes:</p>
+<ul class="simple">
+<li><p>collected notifications are flushed</p></li>
+<li><p>UI listeners are notified once per subscriber ID (That is, once for each widget’s state that needs to be updated)</p></li>
+</ul>
+</section>
+<section id="batching-does-not-delay-logic">
+<h2>Batching does not delay logic<a class="headerlink" href="#batching-does-not-delay-logic" title="Link to this heading">¶</a></h2>
+<p>Batching does <strong>not</strong> change execution order.</p>
+<p>Inside a batch:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span></code> and <code class="docutils literal notranslate"><span class="pre">update</span></code> execute immediately</p></li>
+<li><p>later operations see earlier changes</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">count</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>The final value is <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
+<p>Batching only controls <em>when UI listeners are notified</em>,
+not <em>how state changes</em>.</p>
+</section>
+<section id="ui-listener-grouping-by-subscriber-id">
+<h2>UI listener grouping by subscriber ID<a class="headerlink" href="#ui-listener-grouping-by-subscriber-id" title="Link to this heading">¶</a></h2>
+<p>UI listeners are grouped by <strong>subscriber ID</strong>.</p>
+<p>Typically:</p>
+<ul class="simple">
+<li><p>one widget state corresponds to one subscriber ID</p></li>
+<li><p>a widget may subscribe to multiple slots</p></li>
+<li><p>notifications for the same subscriber ID are merged</p></li>
+</ul>
+<p>This means that, from SimpleAppState’s perspective:</p>
+<ul class="simple">
+<li><p>a subscriber is notified at most once per batch</p></li>
+</ul>
+<p>However, <strong>SimpleAppState does not control Flutter’s widget tree</strong>.</p>
+<p>If both a parent and a child widget rebuild
+in response to the same state change,
+that behavior is managed by Flutter itself.</p>
+<p>Batching ensures that:</p>
+<ul class="simple">
+<li><p>SimpleAppState does not <em>request</em> duplicate rebuilds</p></li>
+<li><p>notification intent is minimal and explicit</p></li>
+</ul>
+</section>
+<section id="nested-batches-are-safe">
+<h2>Nested batches are safe<a class="headerlink" href="#nested-batches-are-safe" title="Link to this heading">¶</a></h2>
+<p>Batches can be nested:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">total</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>Only the <strong>outermost batch</strong> flushes notifications.</p>
+<p>This allows helper functions to use <code class="docutils literal notranslate"><span class="pre">batch</span></code>
+without needing to know whether they are already
+inside another batch.</p>
+</section>
+<section id="state-level-listener-undo-redo-persistence">
+<h2>State-level listener (undo / redo, persistence)<a class="headerlink" href="#state-level-listener-undo-redo-persistence" title="Link to this heading">¶</a></h2>
+<p>In addition to UI listeners,
+SimpleAppState supports a <strong>state-level listener</strong>.</p>
+<p>This listener is designed for:</p>
+<ul class="simple">
+<li><p>undo / redo stacks</p></li>
+<li><p>persistence</p></li>
+<li><p>observing finalized state transitions</p></li>
+</ul>
+<p>Unlike UI listeners:</p>
+<ul class="simple">
+<li><p>it is <strong>not</strong> called for every slot update</p></li>
+<li><p>it is called <strong>once</strong>, after a batch completes</p></li>
+<li><p>it receives the finalized state</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">setStateListener</span><span class="p">((</span><span class="n">nowState</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">undoStack</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">nowState</span><span class="p">.</span><span class="n">clone</span><span class="p">());</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>With batching:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">total</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>The state listener is called <strong>once</strong>,
+after both updates are applied.</p>
+<p>Intermediate states inside the batch
+are intentionally not reported.</p>
+</section>
+<section id="batching-during-loading-and-restore">
+<h2>Batching during loading and restore<a class="headerlink" href="#batching-during-loading-and-restore" title="Link to this heading">¶</a></h2>
+<p>Batch updates are also used internally.</p>
+<p>Examples include:</p>
+<ul class="simple">
+<li><p>loading state from storage</p></li>
+<li><p>restoring a snapshot</p></li>
+<li><p>replacing all state data</p></li>
+</ul>
+<p>In these cases:</p>
+<ul class="simple">
+<li><p>many slots may be updated</p></li>
+<li><p>notifications are grouped</p></li>
+<li><p>the UI observes a consistent state</p></li>
+</ul>
+<p>This prevents partial updates
+and unintended intermediate rebuilds.</p>
+</section>
+<section id="when-you-should-use-batch">
+<h2>When you should use batch()<a class="headerlink" href="#when-you-should-use-batch" title="Link to this heading">¶</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">batch</span></code> when:</p>
+<ul class="simple">
+<li><p>multiple slot updates represent one action</p></li>
+<li><p>you want UI listeners to observe only the final state</p></li>
+<li><p>undo / redo or persistence should record one step</p></li>
+</ul>
+<p>Typical cases:</p>
+<ul class="simple">
+<li><p>form submission</p></li>
+<li><p>initialization</p></li>
+<li><p>applying settings</p></li>
+<li><p>undo / redo operations</p></li>
+</ul>
+<p>For single-slot updates,
+batching is usually unnecessary.</p>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
+<p>Batch updates:</p>
+<ul class="simple">
+<li><p>group UI listener notifications</p></li>
+<li><p>do not delay or reorder state changes</p></li>
+<li><p>notify each subscriber ID at most once per batch</p></li>
+<li><p>report finalized state to state-level listeners</p></li>
+</ul>
+<p>Batching is explicit and predictable.</p>
+<p>When several changes belong together,
+wrap them in <code class="docutils literal notranslate"><span class="pre">batch</span></code>.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">simple_app_state</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Core Concepts</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="simple_app_state.html">SimpleAppState</a></li>
+<li class="toctree-l2"><a class="reference internal" href="state_slot.html">StateSlot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="value_semantics.html">Value Semantics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Batch Updates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Core Concepts</a><ul>
+      <li>Previous: <a href="value_semantics.html" title="previous chapter">Value Semantics</a></li>
+      <li>Next: <a href="../flutter_integration/index.html" title="next chapter">Flutter Integration</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Masahide Mori.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/core_concepts/batch_updates.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

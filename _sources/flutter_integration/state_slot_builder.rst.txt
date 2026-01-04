@@ -1,0 +1,166 @@
+========================
+StateSlotBuilder
+========================
+
+``StateSlotBuilder`` is a helper widget that rebuilds when one or more
+``StateSlot`` values change.
+
+It provides a simple and explicit way to connect
+``SimpleAppState`` to Flutter widgets,
+without changing Flutter’s rebuild model.
+
+
+Purpose
+=======
+
+The purpose of ``StateSlotBuilder`` is limited and clear:
+
+* declare which ``StateSlot`` objects a widget depends on
+* rebuild the widget when any of those slots change
+
+It does not store state and does not mutate state.
+State ownership always remains in ``SimpleAppState``.
+
+
+Implementation
+==============
+
+Here is the complete implementation of ``StateSlotBuilder``:
+
+.. code-block:: dart
+
+   import 'package:flutter/material.dart';
+   import 'package:simple_app_state/simple_app_state.dart';
+
+   /// A builder widget that rebuilds when the specified state slots change.
+   class StateSlotBuilder extends SlotStatefulWidget {
+     final List<StateSlot> slotList;
+     final Widget Function(BuildContext context) builder;
+
+     const StateSlotBuilder({
+       required this.slotList,
+       required this.builder,
+       super.key,
+     });
+
+     @override
+     List<StateSlot> get slots => slotList;
+
+     @override
+     State<StateSlotBuilder> createState() => _StateSlotBuilderState();
+   }
+
+   class _StateSlotBuilderState extends SlotState<StateSlotBuilder> {
+     @override
+     Widget build(BuildContext context) {
+       return widget.builder(context);
+     }
+   }
+
+
+Basic usage
+===========
+
+A typical usage looks like this:
+
+.. code-block:: dart
+
+   StateSlotBuilder(
+     slotList: [countSlot, nameSlot],
+     builder: (context) {
+       final count = countSlot.get();
+       final name = nameSlot.get();
+
+       return Text('$name: $count');
+     },
+   );
+
+Inside the ``builder``, the current values are obtained
+by calling ``get()`` on each ``StateSlot``.
+
+
+Relation to SlotStatefulWidget
+==============================
+
+``StateSlotBuilder`` extends ``SlotStatefulWidget``.
+
+This means:
+
+* it declares its dependencies via the ``slots`` getter
+* listener registration is handled automatically
+* rebuilds are triggered by slot changes
+
+The ``slotList`` field is only used to store the slots.
+The actual dependency declaration is done by overriding ``slots``:
+
+.. code-block:: dart
+
+   @override
+   List<StateSlot> get slots => slotList;
+
+This keeps the design explicit and avoids hidden behavior.
+
+
+Subscriber IDs and rebuilds
+===========================
+
+Each ``SlotStatefulWidget`` is internally registered with a unique
+*subscriber ID*.
+
+This ensures that:
+
+* even if multiple slots change
+* and even if the widget depends on several slots
+
+the widget rebuilds at most once per update cycle.
+
+Subscriber IDs are managed internally.
+You do not need to create or manage them yourself.
+
+
+Batch updates
+=============
+
+When slot updates are grouped using ``SimpleAppState.batch``:
+
+.. code-block:: dart
+
+   state.batch(() {
+     countSlot.set(1);
+     nameSlot.set('Alice');
+   });
+
+``StateSlotBuilder`` rebuilds once after the batch completes.
+
+This behavior is consistent with all widgets based on
+``SlotStatefulWidget``.
+
+
+What StateSlotBuilder does not do
+=================================
+
+``StateSlotBuilder`` intentionally avoids the following:
+
+* it does not control the widget tree
+* it does not decide rebuild timing
+* it does not optimize rendering
+
+Flutter remains responsible for:
+
+* rebuild scheduling
+* widget tree updates
+* rendering and layout optimization
+
+
+Summary
+=======
+
+``StateSlotBuilder`` is a thin integration layer between:
+
+* ``SimpleAppState`` for state ownership
+* ``StateSlot`` for state identity
+* Flutter for widget rebuilding
+
+Its role is intentionally small:
+
+**declare dependencies and let Flutter rebuild when state changes.**

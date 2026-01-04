@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Testing &#8212; simple_app_state 2026 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=fc6fd62b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Appendix" href="../appendix/index.html" />
+    <link rel="prev" title="Undo and Redo" href="undo_redo.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="testing">
+<h1>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h1>
+<p>This section describes how <strong>SimpleAppState</strong> can be tested effectively.</p>
+<p>Because <strong>SimpleAppState</strong> is deterministic and side-effect free by design,
+most tests are simple and predictable.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>Testing <strong>SimpleAppState</strong> is based on observing state changes.</p>
+<p>A dedicated debug listener allows developers to:</p>
+<ul class="simple">
+<li><p>Track every state mutation</p></li>
+<li><p>Observe old and new values</p></li>
+<li><p>Inspect behavior without modifying application logic</p></li>
+</ul>
+</section>
+<section id="debug-listener">
+<h2>Debug Listener<a class="headerlink" href="#debug-listener" title="Link to this heading">¶</a></h2>
+<p><strong>SimpleAppState</strong> provides a debug listener intended for development
+and testing.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">setDebugListener</span><span class="p">(</span><span class="n">DebugListener</span><span class="o">?</span><span class="w"> </span><span class="n">listener</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">_debugListener</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listener</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The debug listener is notified <strong>whenever any value changes</strong>,
+including intermediate updates inside batch operations.</p>
+<section id="debuglistener-signature">
+<h3>DebugListener Signature<a class="headerlink" href="#debuglistener-signature" title="Link to this heading">¶</a></h3>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">typedef</span><span class="w"> </span><span class="n">DebugListener</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="kt">Function</span><span class="p">(</span><span class="n">StateSlot</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="w"> </span><span class="n">oldValue</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="w"> </span><span class="n">newValue</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Each callback provides:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> that changed</p></li>
+<li><p>The previous value</p></li>
+<li><p>The new value</p></li>
+</ul>
+<p>This makes every state transition observable.</p>
+</section>
+</section>
+<section id="using-stateslot-as-a-test-key">
+<h2>Using StateSlot as a Test Key<a class="headerlink" href="#using-stateslot-as-a-test-key" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> acts as a stable observation key.</p>
+<p>Each slot has:</p>
+<ul class="simple">
+<li><p>A unique, stable name</p></li>
+<li><p>A reference to its owning state</p></li>
+<li><p>Strong equality and hashing guarantees</p></li>
+</ul>
+<p>In Flutter applications, widgets subscribe explicitly to slots.
+As a result, observing slot changes is often sufficient to reason
+about UI behavior.</p>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">changes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">[];</span>
+
+<span class="n">state</span><span class="p">.</span><span class="n">setDebugListener</span><span class="p">((</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">oldValue</span><span class="p">,</span><span class="w"> </span><span class="n">newValue</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">changes</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">${</span><span class="n">key</span><span class="p">.</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">$</span><span class="n">oldValue</span><span class="s1"> -&gt; </span><span class="si">$</span><span class="n">newValue</span><span class="s1">&#39;</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">);</span>
+<span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+<span class="n">count</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The collected log provides a complete trace of state transitions.</p>
+</section>
+<section id="deterministic-behavior">
+<h2>Deterministic Behavior<a class="headerlink" href="#deterministic-behavior" title="Link to this heading">¶</a></h2>
+<p><strong>SimpleAppState</strong> is fully deterministic:</p>
+<ul class="simple">
+<li><p>State updates are synchronous</p></li>
+<li><p>No background processing occurs</p></li>
+<li><p>No hidden side effects are introduced</p></li>
+</ul>
+<p>This allows tests to assert results immediately after updates,
+without timing control or async handling.</p>
+</section>
+<section id="testing-perspective">
+<h2>Testing Perspective<a class="headerlink" href="#testing-perspective" title="Link to this heading">¶</a></h2>
+<p>Because <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> sits at the boundary between state and UI:</p>
+<ul class="simple">
+<li><p>Tests can focus on slot changes instead of widget trees</p></li>
+<li><p>UI refactoring does not invalidate state-level tests</p></li>
+<li><p>Behavior can be reasoned about from an observer’s perspective</p></li>
+</ul>
+<p>This encourages clear, robust, and maintainable tests.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">simple_app_state</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Advanced Topics</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="persistence_and_restore.html">Persistence and Restore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="undo_redo.html">Undo and Redo</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Advanced Topics</a><ul>
+      <li>Previous: <a href="undo_redo.html" title="previous chapter">Undo and Redo</a></li>
+      <li>Next: <a href="../appendix/index.html" title="next chapter">Appendix</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Masahide Mori.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/advanced/testing.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

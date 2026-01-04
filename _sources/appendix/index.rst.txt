@@ -1,0 +1,9 @@
+Appendix
+========
+
+Reference materials and supplementary information.
+
+.. toctree::
+    :maxdepth: 1
+
+    glossary

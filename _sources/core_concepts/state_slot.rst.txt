@@ -1,0 +1,225 @@
+StateSlot
+=========
+
+A ``StateSlot<T>`` is the way you *read and update*
+application state in SimpleAppState.
+
+If you already understand this sentence:
+
+*“I get a value from a slot, and I update it through the slot.”*
+
+then you already understand the most important part.
+
+This page explains what a ``StateSlot`` is,
+how it is used,
+and why SimpleAppState uses slots instead of fields.
+
+
+What is a StateSlot?
+--------------------
+
+A ``StateSlot`` represents **one piece of application state**.
+
+For example:
+
+- a counter value
+- a selected item ID
+- a list of logs
+- a settings object
+
+Each slot:
+
+- has a **name**
+- has a **fixed type**
+- belongs to **one SimpleAppState**
+
+Example:
+
+.. code-block:: dart
+
+   final count = appState.slot<int>('count', initial: 0);
+
+Here:
+
+- ``count`` is the slot
+- ``int`` is the value type
+- ``'count'`` is the slot name
+
+You never access state directly.
+You always go through the slot.
+
+
+Why SimpleAppState uses slots
+-----------------------------
+
+SimpleAppState does not expose state as fields like:
+
+.. code-block:: dart
+
+   appState.count = 1; // ❌ not supported
+
+Instead, it uses slots.
+
+This design makes state:
+
+- easy to find
+- easy to track
+- safe to update
+- predictable to rebuild
+
+When all state access goes through slots,
+SimpleAppState can clearly see:
+
+- *what changed*
+- *which widgets depend on it*
+- *when to rebuild*
+
+Nothing happens implicitly.
+
+
+Reading state: get()
+--------------------
+
+To read a value from a slot, use ``get()``:
+
+.. code-block:: dart
+
+   final value = count.get();
+
+Important things to know:
+
+- the value can be ``null``
+- the returned value is a **copy**
+- changing it does **not** change state
+
+This means:
+
+.. code-block:: dart
+
+   final list = logs.get();
+   list?.add('new item'); // ❌ does nothing
+
+This behavior is intentional.
+It prevents accidental state changes.
+
+
+Updating state: set()
+---------------------
+
+To replace a value, use ``set()``:
+
+.. code-block:: dart
+
+   count.set(10);
+
+This:
+
+- replaces the old value
+- notifies subscribed widgets
+- triggers rebuilds if needed
+
+You should think of state as:
+
+> “I replace the value with a new one.”
+
+not:
+
+> “I modify the existing object.”
+
+
+Updating based on the previous value: update()
+----------------------------------------------
+
+Often, the new value depends on the old one.
+
+For this, use ``update()``:
+
+.. code-block:: dart
+
+   count.update((old) => (old ?? 0) + 1);
+
+``update`` works like this:
+
+1. get the current value
+2. create a new value from it
+3. store the new value
+
+This makes state changes clear and safe.
+
+
+Slot types are fixed
+--------------------
+
+Each slot has a fixed type.
+
+If a slot is defined as:
+
+.. code-block:: dart
+
+   final count = appState.slot<int>('count');
+
+Then that slot will always store ``int`` values.
+
+This prevents bugs such as:
+
+- accidentally storing a wrong type
+- silently breaking widgets that read the slot
+
+Type errors are caught early.
+
+
+Slots belong to SimpleAppState
+------------------------------
+
+A ``StateSlot`` does not store data by itself.
+
+All data lives inside ``SimpleAppState``.
+
+The slot is only a *key* that points to that data.
+
+Because of this:
+
+- state can be cloned without widgets
+- listeners can stay alive when data is replaced
+- undo / redo becomes simple
+
+You usually do not need to think about this,
+but it explains why slots exist as objects.
+
+
+Slots and widgets
+-----------------
+
+Widgets do not own slots.
+
+Widgets *declare* which slots they depend on.
+
+.. code-block:: dart
+
+   @override
+   List<StateSlot> get slots => [count];
+
+When ``count`` changes:
+
+- SimpleAppState detects the change
+- subscribed widgets rebuild
+- unrelated widgets stay untouched
+
+This makes rebuild behavior explicit and predictable.
+
+
+Summary
+-------
+
+A ``StateSlot``:
+
+- represents one piece of application state
+- is the only way to read and update that state
+- has a fixed type and a stable name
+- works together with SimpleAppState to trigger rebuilds
+
+If you remember only one rule:
+
+**Always read and write state through slots.**
+
+Everything else builds on top of that.

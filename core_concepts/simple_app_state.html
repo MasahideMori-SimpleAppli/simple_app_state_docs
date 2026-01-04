@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SimpleAppState &#8212; simple_app_state 2026 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=fc6fd62b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="StateSlot" href="state_slot.html" />
+    <link rel="prev" title="Core Concepts" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="simpleappstate">
+<h1>SimpleAppState<a class="headerlink" href="#simpleappstate" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> is the central owner of all application state.
+It is intentionally independent from Flutter widgets and the widget tree.</p>
+<p>This page explains what <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> is responsible for
+and how it should be used.</p>
+<section id="what-simpleappstate-owns">
+<h2>What SimpleAppState owns<a class="headerlink" href="#what-simpleappstate-owns" title="Link to this heading">¶</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> instance owns:</p>
+<ul class="simple">
+<li><p>all application state values</p></li>
+<li><p>slot definitions and their types</p></li>
+<li><p>listeners and batch update coordination</p></li>
+</ul>
+<p>It does <strong>not</strong> own:</p>
+<ul class="simple">
+<li><p>widgets</p></li>
+<li><p>UI-local objects (controllers, animations, focus nodes)</p></li>
+<li><p>rendering lifecycle</p></li>
+</ul>
+<p>This separation keeps state lifetime explicit and predictable.</p>
+</section>
+<section id="creating-a-simpleappstate">
+<h2>Creating a SimpleAppState<a class="headerlink" href="#creating-a-simpleappstate" title="Link to this heading">¶</a></h2>
+<p>In most applications, <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> is created once
+and lives for the entire lifetime of the app.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">appState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>It is usually defined as a global or top-level variable,
+often in <code class="docutils literal notranslate"><span class="pre">ui/app_state.dart</span></code>.</p>
+</section>
+<section id="slots-define-state-not-fields">
+<h2>Slots define state, not fields<a class="headerlink" href="#slots-define-state-not-fields" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> does not expose state as public fields.</p>
+<p>Instead, all state is accessed through <code class="docutils literal notranslate"><span class="pre">StateSlot&lt;T&gt;</span></code> objects:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This design ensures:</p>
+<ul class="simple">
+<li><p>state is explicitly declared</p></li>
+<li><p>slot types are fixed on first access</p></li>
+<li><p>state identity is stable and globally referenceable</p></li>
+</ul>
+</section>
+<section id="value-semantics-and-safety">
+<h2>Value semantics and safety<a class="headerlink" href="#value-semantics-and-safety" title="Link to this heading">¶</a></h2>
+<p>All values stored in <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> follow value semantics.</p>
+<p>When you read a value:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>The returned object is always a <strong>deep copy</strong>.</p>
+<p>This guarantees:</p>
+<ul class="simple">
+<li><p>accidental mutation cannot corrupt state</p></li>
+<li><p>state transitions are explicit</p></li>
+<li><p>undo / redo and persistence are reliable</p></li>
+</ul>
+<p>State can only be changed via <code class="docutils literal notranslate"><span class="pre">set</span></code> or <code class="docutils literal notranslate"><span class="pre">update</span></code>.</p>
+</section>
+<section id="batch-updates">
+<h2>Batch updates<a class="headerlink" href="#batch-updates" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> supports explicit batch updates:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// update other slots</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>During a batch:</p>
+<ul class="simple">
+<li><p>state changes are applied immediately</p></li>
+<li><p>widget rebuilds are deferred</p></li>
+<li><p>each subscribed widget rebuilds only once</p></li>
+<li><p>batching can be nested</p></li>
+</ul>
+<p>Batching is a first-class concept and should be used
+whenever multiple slots are updated together.</p>
+</section>
+<section id="cloning-and-snapshots">
+<h2>Cloning and snapshots<a class="headerlink" href="#cloning-and-snapshots" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> supports deep cloning of state data:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">snapshot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">clone</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>A cloned <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> is a <strong>pure data snapshot</strong>.</p>
+<p>Clones:</p>
+<ul class="simple">
+<li><p>copy all state values deeply</p></li>
+<li><p>do <strong>not</strong> copy slots or listeners</p></li>
+<li><p>contain no widget or runtime bindings</p></li>
+</ul>
+<p>This design is intentional.</p>
+<p>A clone represents a detached, serializable snapshot
+that can be safely stored, compared, or restored later.</p>
+<p>To restore a snapshot into a running application,
+use <code class="docutils literal notranslate"><span class="pre">replaceDataFrom</span></code>:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">replaceDataFrom</span><span class="p">(</span><span class="n">snapshot</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This replaces only the stored state values,
+while preserving:</p>
+<ul class="simple">
+<li><p>slot definitions</p></li>
+<li><p>widget subscriptions</p></li>
+<li><p>runtime listeners</p></li>
+</ul>
+<p>Typical use cases include:</p>
+<ul class="simple">
+<li><p>undo / redo stacks</p></li>
+<li><p>testing state transitions</p></li>
+<li><p>persistence and restoration</p></li>
+<li><p>deterministic equality checks</p></li>
+</ul>
+<p>This separation between <em>state data</em> and <em>runtime wiring</em>
+keeps undo and restore logic explicit and predictable.
+For more information on these topics, see <a class="reference internal" href="../advanced/index.html"><span class="doc">Advanced Topics</span></a>.</p>
+</section>
+<section id="what-simpleappstate-is-not">
+<h2>What SimpleAppState is not<a class="headerlink" href="#what-simpleappstate-is-not" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> is not:</p>
+<ul class="simple">
+<li><p>a dependency injection container</p></li>
+<li><p>a widget tree manager</p></li>
+<li><p>a context-based lookup system</p></li>
+</ul>
+<p>It intentionally avoids magic.
+If a widget rebuilds, you should always be able to answer:</p>
+<p><em>Which slot caused this rebuild?</em></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">simple_app_state</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Core Concepts</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SimpleAppState</a></li>
+<li class="toctree-l2"><a class="reference internal" href="state_slot.html">StateSlot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="value_semantics.html">Value Semantics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_updates.html">Batch Updates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Core Concepts</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Core Concepts</a></li>
+      <li>Next: <a href="state_slot.html" title="next chapter">StateSlot</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Masahide Mori.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/core_concepts/simple_app_state.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,260 @@
+=====================
+Common Mistakes
+=====================
+
+This section describes common mistakes when using
+``SimpleAppState`` with Flutter.
+
+All examples below may *compile*,
+but they violate the design philosophy and may lead to
+unpredictable rebuilds or hard-to-maintain code.
+
+
+Storing state in widgets
+========================
+
+**Mistake:**
+
+Storing application state inside a ``StatefulWidget``.
+
+.. code-block:: dart
+
+   class CounterWidget extends StatefulWidget {
+     @override
+     State<CounterWidget> createState() => _CounterWidgetState();
+   }
+
+   class _CounterWidgetState extends State<CounterWidget> {
+     int count = 0; // ❌ application state
+
+     @override
+     Widget build(BuildContext context) {
+       return Text('$count');
+     }
+   }
+
+**Why this is a problem**
+
+* the state is tied to the widget lifecycle
+* it is lost when the widget is rebuilt or replaced
+* it cannot be shared or persisted easily
+
+**Correct approach**
+
+Application state should live in ``SimpleAppState``.
+Widgets should only *read* state and rebuild when it changes.
+
+
+Mutating values returned by get()
+=================================
+
+**Mistake:**
+
+Modifying an object returned by ``StateSlot.get()``.
+
+.. code-block:: dart
+
+   final list = itemsSlot.get();
+   list?.add('new item'); // ❌ no state update
+
+**Why this is a problem**
+
+* ``get()`` always returns a deep copy
+* mutating it does not affect the actual state
+* no listeners are notified
+
+**Correct approach**
+
+Always update state via ``set`` or ``update``:
+
+.. code-block:: dart
+
+   itemsSlot.update((old) {
+     final list = old ?? [];
+     return [...list, 'new item'];
+   });
+
+
+Calling set() during build
+==========================
+
+**Mistake:**
+
+Updating state during ``build()`` in a way that changes the value.
+
+.. code-block:: dart
+
+   @override
+   Widget build(BuildContext context) {
+     countSlot.update((v) => (v ?? 0) + 1); // ❌
+     return const Text('Hello');
+   }
+
+or:
+
+.. code-block:: dart
+
+   @override
+   Widget build(BuildContext context) {
+     final list = itemsSlot.get();
+     list?.add('new item');
+     itemsSlot.set(list); // ❌
+     return const Text('Hello');
+   }
+
+**Why this is a problem**
+
+* ``build()`` may be called many times by Flutter
+* updates that actually change values trigger notifications
+* this can cause repeated rebuilds and unstable behavior
+
+``SimpleAppState`` does guard against *no-op updates*:
+
+.. code-block:: dart
+
+   if (oldValue == value) return key;
+
+This means that calling ``set()`` with the same value
+does not trigger notifications.
+
+However:
+
+* ``update()`` almost always produces a new value
+* mutating a value obtained from ``get()`` and setting it back
+  also produces a change
+
+These cases are **not** guarded and will trigger rebuilds.
+
+
+Correct approach
+================
+
+State updates should be performed in response to:
+
+* user interactions (button presses)
+* lifecycle callbacks (``initState``, ``didChangeDependencies``)
+* external events (timers, streams, async results)
+
+Never perform value-changing updates inside ``build()``.
+
+
+Key takeaway
+============
+
+* Calling ``set()`` with the same value is harmless but useless
+* Any update that changes state during ``build()`` is unsafe
+* ``build()`` must remain a pure function of current state
+
+
+Reading state without declaring dependencies
+=============================================
+
+**Mistake:**
+
+Reading a slot value without using ``SlotStatefulWidget``.
+
+.. code-block:: dart
+
+   Widget build(BuildContext context) {
+     final count = countSlot.get(); // ❌
+     return Text('$count');
+   }
+
+**Why this is a problem**
+
+* the widget is not registered as a listener
+* it will not rebuild when the slot changes
+* UI becomes stale
+
+**Correct approach**
+
+Use ``StateSlotBuilder`` or ``SlotStatefulWidget``
+to declare dependencies explicitly.
+
+
+Using widget identity as state identity
+=======================================
+
+**Mistake:**
+
+Creating slots dynamically based on widget instances.
+
+.. code-block:: dart
+
+   final slot = state.slot<int>('count_${widget.hashCode}'); // ❌
+
+**Why this is a problem**
+
+* slot identity becomes unstable
+* restored or persisted state cannot be reused
+* undo / redo breaks
+
+**Correct approach**
+
+State slots must have **stable, global identities**.
+Declare all slots in a fixed location (for example ``app_state.dart``).
+
+
+Expecting SimpleAppState to control rebuilds
+============================================
+
+**Mistake:**
+
+Assuming ``SimpleAppState`` decides when widgets rebuild.
+
+**Why this is a problem**
+
+* Flutter owns the widget tree
+* rebuild timing is a Flutter responsibility
+* SimpleAppState only *requests* rebuilds
+
+**Correct approach**
+
+Think in layers:
+
+* ``SimpleAppState`` owns data
+* ``StateSlot`` defines identity
+* Flutter decides rebuild timing and rendering
+
+
+Overusing batch()
+=================
+
+**Mistake:**
+
+Wrapping every update in ``batch()``.
+
+.. code-block:: dart
+
+   state.batch(() {
+     countSlot.set(1);
+   });
+
+**Why this is unnecessary**
+
+* single updates already notify efficiently
+* excessive batching reduces clarity
+* batch is intended for grouped changes
+
+**Correct approach**
+
+Use ``batch()`` only when:
+
+* multiple slots are updated together
+* you want a single rebuild after all changes
+
+
+Summary
+=======
+
+Most mistakes come from mixing responsibilities.
+
+Remember these simple rules:
+
+* ``SimpleAppState`` owns application state
+* ``StateSlot`` defines what the state *is*
+* widgets declare dependencies and rebuild
+* Flutter controls the widget tree
+
+Keeping these boundaries clear leads to
+predictable behavior and maintainable code.

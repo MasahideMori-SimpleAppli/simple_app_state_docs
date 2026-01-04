@@ -1,0 +1,21 @@
+SimpleAppState Documentation
+============================
+
+SimpleAppState is a state-first state management library for Flutter.
+
+This documentation explains not only how to use the package,
+but also why it is designed this way.
+
+If you are new to SimpleAppState, start with *Getting Started*.
+If you want to understand the design philosophy, read *Core Concepts*.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents
+
+   getting_started/index
+   core_concepts/index
+   flutter_integration/index
+   advanced/index
+   appendix/index
+   notice
