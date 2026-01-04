@@ -56,6 +56,39 @@ This design ensures:
 - slot types are fixed on first access
 - state identity is stable and globally referenceable
 
+Caster for typed collections
+-----------------------------
+
+Sometimes you store typed collections like `List<T>` or `Map<String, T>` in a slot.
+To preserve the element types when cloning or restoring from a dictionary,
+you must provide a `caster` function.
+
+**List<T> example:**
+
+.. code-block:: dart
+
+   final namesSlot = appState.slot<List<String>>(
+     'names',
+     caster: (raw) => (raw as List).cast<String>(),
+   );
+
+**Map<String, T> example:**
+
+.. code-block:: dart
+
+   final complexSlot = appState.slot<Map<String, List<String>>>(
+     'complex',
+     caster: (raw) => (raw as Map<String, dynamic>).map(
+       (k, v) => MapEntry(k, (v as List).cast<String>()),
+     ),
+   );
+
+Notes:
+
+- Primitive types (`String`, `int`, `double`, `bool`) or `CloneableFile` do not require a caster.
+- Nested collections always need a caster to ensure type safety.
+- After cloning or `fromDict/fromJson`, the caster guarantees that runtime type errors are avoided.
+
 
 Value semantics and safety
 --------------------------
