@@ -167,6 +167,7 @@ without searching through widget trees or contexts.
 
 Next step
 ---------------------------------
-Now let's take what we've learned and look at some working code.
+Now let’s take what we’ve learned and look at a complete,
+working example.
 
 Go to :doc:`single_file_example` section.

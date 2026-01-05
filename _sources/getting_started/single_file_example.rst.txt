@@ -234,7 +234,9 @@ not by changing concepts.
 
 Next step
 ---------------------------------
-Next, let's look at some common beginner mistakes.
-Once you understand these, you'll be able to put them to use in your projects.
+Next, let’s look at some common beginner mistakes.
+
+Once you understand these patterns, you’ll be able to use
+SimpleAppState more confidently in your own projects.
 
 Go to :doc:`common_mistakes` section.

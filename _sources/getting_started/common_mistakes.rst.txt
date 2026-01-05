@@ -140,8 +140,13 @@ to the exact slot that caused it.
 
 Next step
 ---------------------------------
-Congratulations! You've mastered the basics of SimpleAppState.
+Congratulations! You’ve mastered the basics of **SimpleAppState**.
 
-If you'd like to learn more, check out our :doc:`../core_concepts/index`, :doc:`../flutter_integration/index`, and :doc:`../advanced/index`.
+From here, you can explore more advanced topics depending
+on your interests:
+
+- :doc:`../core_concepts/index`
+- :doc:`../flutter_integration/index`
+- :doc:`../advanced/index`
 
 Happy development!
