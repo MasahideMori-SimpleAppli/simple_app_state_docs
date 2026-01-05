@@ -14,7 +14,7 @@
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Common Mistakes" href="common_mistakes.html" />
+    <link rel="next" title="Single-file example" href="single_file_example.html" />
     <link rel="prev" title="Installation" href="installation.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -140,6 +140,31 @@ Subscribed widgets will rebuild automatically.</p>
 <li><p>Rebuilds are deterministic and minimal</p></li>
 </ul>
 </section>
+<section id="builder-based-subscription-optional">
+<h2>Builder-based subscription (optional)<a class="headerlink" href="#builder-based-subscription-optional" title="Link to this heading">¶</a></h2>
+<p>In addition to subclassing <cite>SlotStatefulWidget</cite>,
+SimpleAppState provides a builder-style widget
+called <cite>StateSlotBuilder</cite>.</p>
+<p>This is a small convenience API for cases where:</p>
+<ul class="simple">
+<li><p>you want to subscribe to slots without creating a widget subclass</p></li>
+<li><p>the UI fragment is simple or read-only</p></li>
+<li><p>you prefer a more local, inline definition</p></li>
+</ul>
+<p>The behavior is the same as <cite>SlotStatefulWidget</cite>:
+widgets rebuild deterministically when the subscribed
+slots change.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">StateSlotBuilder</span><span class="p">(</span>
+<span class="w">  </span><span class="nl">slotList:</span><span class="w"> </span><span class="p">[</span><span class="n">count</span><span class="p">],</span>
+<span class="w">  </span><span class="nl">builder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39;Count: </span><span class="si">${</span><span class="n">count</span><span class="p">.</span><span class="kd">get</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<p>This form does not introduce any additional magic.
+It is simply a different way to declare slot dependencies.</p>
+</section>
 <section id="why-this-structure-is-recommended">
 <h2>Why this structure is recommended<a class="headerlink" href="#why-this-structure-is-recommended" title="Link to this heading">¶</a></h2>
 <p>This layout enforces a clear separation of responsibilities:</p>
@@ -153,6 +178,11 @@ Subscribed widgets will rebuild automatically.</p>
 <li><p>“Which widgets depend on it?”</p></li>
 </ul>
 <p>without searching through widget trees or contexts.</p>
+</section>
+<section id="next-step">
+<h2>Next step<a class="headerlink" href="#next-step" title="Link to this heading">¶</a></h2>
+<p>Now let’s take what we’ve learned and look at some working code.</p>
+<p>Go to <a class="reference internal" href="single_file_example.html"><span class="doc">Single-file example</span></a> section.</p>
 </section>
 </section>
 
@@ -187,6 +217,7 @@ Subscribed widgets will rebuild automatically.</p>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Getting Started</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Minimal Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single_file_example.html">Single-file example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="common_mistakes.html">Common Mistakes</a></li>
 </ul>
 </li>
@@ -203,7 +234,7 @@ Subscribed widgets will rebuild automatically.</p>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Getting Started</a><ul>
       <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
-      <li>Next: <a href="common_mistakes.html" title="next chapter">Common Mistakes</a></li>
+      <li>Next: <a href="single_file_example.html" title="next chapter">Single-file example</a></li>
   </ul></li>
   </ul></li>
 </ul>

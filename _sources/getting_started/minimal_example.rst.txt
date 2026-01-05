@@ -120,6 +120,35 @@ Widgets import state slots and declare which ones they depend on.
 - Widgets explicitly declare slot dependencies
 - Rebuilds are deterministic and minimal
 
+Builder-based subscription (optional)
+-------------------------------------
+
+In addition to subclassing `SlotStatefulWidget`,
+SimpleAppState provides a builder-style widget
+called `StateSlotBuilder`.
+
+This is a small convenience API for cases where:
+
+- you want to subscribe to slots without creating a widget subclass
+- the UI fragment is simple or read-only
+- you prefer a more local, inline definition
+
+The behavior is the same as `SlotStatefulWidget`:
+widgets rebuild deterministically when the subscribed
+slots change.
+
+.. code-block:: dart
+
+   StateSlotBuilder(
+     slotList: [count],
+     builder: (context) {
+       return Text('Count: ${count.get()}');
+     },
+   );
+
+This form does not introduce any additional magic.
+It is simply a different way to declare slot dependencies.
+
 
 Why this structure is recommended
 ---------------------------------
@@ -135,3 +164,9 @@ New developers can always answer:
 - "Which widgets depend on it?"
 
 without searching through widget trees or contexts.
+
+Next step
+---------------------------------
+Now let's take what we've learned and look at some working code.
+
+Go to :doc:`single_file_example` section.

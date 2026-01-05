@@ -4,8 +4,6 @@ Common Mistakes
 This section lists common mistakes made by new users of SimpleAppState.
 Each mistake is explained together with the correct mental model.
 
----
-
 Treating state as widget-owned
 ------------------------------
 
@@ -39,8 +37,6 @@ typically as a global or top-level object:
 
 Widgets should *subscribe* to state, not own it.
 
----
-
 Mutating values returned from slots
 -------------------------------------
 
@@ -72,8 +68,6 @@ Always use ``set`` or ``update``:
 
    logs.update((old) => [...?old, 'new entry']);
 
----
-
 Forgetting to declare slot dependencies
 ---------------------------------------
 
@@ -104,8 +98,6 @@ Explicitly list all slots the widget depends on:
    @override
    List<StateSlot> get slots => [count];
 
----
-
 Creating many small state objects
 ---------------------------------
 
@@ -124,8 +116,6 @@ to perform coordinated updates and persistence.
 Start with a single ``SimpleAppState`` instance.
 Introduce multiple state objects only when you have
 clear ownership boundaries.
-
----
 
 Expecting context-based lookups
 -------------------------------
@@ -147,3 +137,11 @@ which state changes can affect a given widget.
 Pass or import the required ``StateSlot`` explicitly.
 If a widget rebuilds, you should always be able to point
 to the exact slot that caused it.
+
+Next step
+---------------------------------
+Congratulations! You've mastered the basics of SimpleAppState.
+
+If you'd like to learn more, check out our :doc:`../core_concepts/index`, :doc:`../flutter_integration/index`, and :doc:`../advanced/index`.
+
+Happy development!

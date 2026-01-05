@@ -223,3 +223,8 @@ If you remember only one rule:
 **Always read and write state through slots.**
 
 Everything else builds on top of that.
+
+
+API
+--------------------------
+`StateSlot <https://pub.dev/documentation/simple_app_state/latest/simple_app_state/StateSlot-class.html>`_

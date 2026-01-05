@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Core Concepts" href="../core_concepts/index.html" />
-    <link rel="prev" title="Minimal Example" href="minimal_example.html" />
+    <link rel="prev" title="Single-file example" href="single_file_example.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -37,7 +37,6 @@
 <h1>Common Mistakes<a class="headerlink" href="#common-mistakes" title="Link to this heading">¶</a></h1>
 <p>This section lists common mistakes made by new users of SimpleAppState.
 Each mistake is explained together with the correct mental model.</p>
-<p>—</p>
 <section id="treating-state-as-widget-owned">
 <h2>Treating state as widget-owned<a class="headerlink" href="#treating-state-as-widget-owned" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
@@ -60,7 +59,6 @@ typically as a global or top-level object:</p>
 </pre></div>
 </div>
 <p>Widgets should <em>subscribe</em> to state, not own it.</p>
-<p>—</p>
 </section>
 <section id="mutating-values-returned-from-slots">
 <h2>Mutating values returned from slots<a class="headerlink" href="#mutating-values-returned-from-slots" title="Link to this heading">¶</a></h2>
@@ -82,7 +80,6 @@ Direct mutation never affects internal state.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[...</span><span class="o">?</span><span class="n">old</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;new entry&#39;</span><span class="p">]);</span>
 </pre></div>
 </div>
-<p>—</p>
 </section>
 <section id="forgetting-to-declare-slot-dependencies">
 <h2>Forgetting to declare slot dependencies<a class="headerlink" href="#forgetting-to-declare-slot-dependencies" title="Link to this heading">¶</a></h2>
@@ -105,7 +102,6 @@ when that slot changes.</p>
 <span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">count</span><span class="p">];</span>
 </pre></div>
 </div>
-<p>—</p>
 </section>
 <section id="creating-many-small-state-objects">
 <h2>Creating many small state objects<a class="headerlink" href="#creating-many-small-state-objects" title="Link to this heading">¶</a></h2>
@@ -119,7 +115,6 @@ to perform coordinated updates and persistence.</p>
 <p>Start with a single <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> instance.
 Introduce multiple state objects only when you have
 clear ownership boundaries.</p>
-<p>—</p>
 </section>
 <section id="expecting-context-based-lookups">
 <h2>Expecting context-based lookups<a class="headerlink" href="#expecting-context-based-lookups" title="Link to this heading">¶</a></h2>
@@ -134,6 +129,12 @@ which state changes can affect a given widget.</p>
 <p>Pass or import the required <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> explicitly.
 If a widget rebuilds, you should always be able to point
 to the exact slot that caused it.</p>
+</section>
+<section id="next-step">
+<h2>Next step<a class="headerlink" href="#next-step" title="Link to this heading">¶</a></h2>
+<p>Congratulations! You’ve mastered the basics of SimpleAppState.</p>
+<p>If you’d like to learn more, check out our <a class="reference internal" href="../core_concepts/index.html"><span class="doc">Core Concepts</span></a>, <a class="reference internal" href="../flutter_integration/index.html"><span class="doc">Flutter Integration</span></a>, and <a class="reference internal" href="../advanced/index.html"><span class="doc">Advanced Topics</span></a>.</p>
+<p>Happy development!</p>
 </section>
 </section>
 
@@ -168,6 +169,7 @@ to the exact slot that caused it.</p>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Getting Started</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="minimal_example.html">Minimal Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="single_file_example.html">Single-file example</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Common Mistakes</a></li>
 </ul>
 </li>
@@ -183,7 +185,7 @@ to the exact slot that caused it.</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Getting Started</a><ul>
-      <li>Previous: <a href="minimal_example.html" title="previous chapter">Minimal Example</a></li>
+      <li>Previous: <a href="single_file_example.html" title="previous chapter">Single-file example</a></li>
       <li>Next: <a href="../core_concepts/index.html" title="next chapter">Core Concepts</a></li>
   </ul></li>
   </ul></li>
