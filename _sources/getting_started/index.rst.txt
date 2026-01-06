@@ -7,7 +7,7 @@ and reach a first successful application state quickly.
 .. toctree::
    :maxdepth: 1
 
-   installation
-   minimal_example
+   setup_and_first_run
+   project_structure
    single_file_example
    common_mistakes

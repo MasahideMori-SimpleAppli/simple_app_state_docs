@@ -103,13 +103,12 @@ SimpleAppState can clearly see:</p>
 </div>
 <p>Important things to know:</p>
 <ul class="simple">
-<li><p>the value can be <code class="docutils literal notranslate"><span class="pre">null</span></code></p></li>
 <li><p>the returned value is a <strong>copy</strong></p></li>
 <li><p>changing it does <strong>not</strong> change state</p></li>
 </ul>
 <p>This means:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logs</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
-<span class="n">list</span><span class="o">?</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new item&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ does nothing</span>
+<span class="n">list</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new item&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ does nothing</span>
 </pre></div>
 </div>
 <p>This behavior is intentional.
@@ -136,7 +135,7 @@ It prevents accidental state changes.</p>
 <h2>Updating based on the previous value: update()<a class="headerlink" href="#updating-based-on-the-previous-value-update" title="Link to this heading">¶</a></h2>
 <p>Often, the new value depends on the old one.</p>
 <p>For this, use <code class="docutils literal notranslate"><span class="pre">update()</span></code>:</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">old</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">old</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">update</span></code> works like this:</p>

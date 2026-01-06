@@ -48,7 +48,7 @@ and why SimpleAppState is designed this way.</p>
 <p><strong>Changing an object returned from ``get()`` never changes state.</strong></p>
 <p>Example:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logs</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
-<span class="n">list</span><span class="o">?</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ state is NOT updated</span>
+<span class="n">list</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ state is NOT updated</span>
 </pre></div>
 </div>
 <p>This is not a bug.
@@ -87,7 +87,11 @@ without SimpleAppState noticing.</p>
 </pre></div>
 </div>
 <p>Example with <code class="docutils literal notranslate"><span class="pre">update</span></code>:</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[...</span><span class="o">?</span><span class="n">old</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;new entry&#39;</span><span class="p">]);</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
+<span class="w">  </span><span class="n">next</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">next</span><span class="p">;</span>
+<span class="p">});</span>
 </pre></div>
 </div>
 <p>In both cases:</p>

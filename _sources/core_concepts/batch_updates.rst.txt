@@ -76,7 +76,7 @@ Example:
 
    appState.batch(() {
      count.set(1);
-     count.update((v) => (v ?? 0) + 1);
+     count.update((v) => v + 1);
    });
 
 The final value is ``2``.

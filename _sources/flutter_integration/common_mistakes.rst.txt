@@ -55,7 +55,7 @@ Modifying an object returned by ``StateSlot.get()``.
 .. code-block:: dart
 
    final list = itemsSlot.get();
-   list?.add('new item'); // ❌ no state update
+   list.add('new item'); // ❌ no state update
 
 **Why this is a problem**
 
@@ -69,10 +69,11 @@ Always update state via ``set`` or ``update``:
 
 .. code-block:: dart
 
-   itemsSlot.update((old) {
-     final list = old ?? [];
-     return [...list, 'new item'];
-   });
+    itemsSlot.update((old) {
+      final next = List<String>.from(old);
+      next.add('new item');
+      return next;
+    });
 
 
 Calling set() during build
@@ -86,7 +87,7 @@ Updating state during ``build()`` in a way that changes the value.
 
    @override
    Widget build(BuildContext context) {
-     countSlot.update((v) => (v ?? 0) + 1); // ❌
+     countSlot.update((v) => v + 1); // ❌
      return const Text('Hello');
    }
 
@@ -97,7 +98,7 @@ or:
    @override
    Widget build(BuildContext context) {
      final list = itemsSlot.get();
-     list?.add('new item');
+     list.add('new item');
      itemsSlot.set(list); // ❌
      return const Text('Hello');
    }
@@ -112,7 +113,7 @@ or:
 
 .. code-block:: dart
 
-   if (oldValue == value) return key;
+   if (oldValue == value) return;
 
 This means that calling ``set()`` with the same value
 does not trigger notifications.

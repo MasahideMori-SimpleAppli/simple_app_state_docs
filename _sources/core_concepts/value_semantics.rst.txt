@@ -26,7 +26,7 @@ Example:
 .. code-block:: dart
 
    final list = logs.get();
-   list?.add('new entry'); // ❌ state is NOT updated
+   list.add('new entry'); // ❌ state is NOT updated
 
 This is not a bug.
 It is the core design.
@@ -78,7 +78,11 @@ Example with ``update``:
 
 .. code-block:: dart
 
-   logs.update((old) => [...?old, 'new entry']);
+    logs.update((old) {
+      final next = List<String>.from(old);
+      next.add('new entry');
+      return next;
+    });
 
 In both cases:
 

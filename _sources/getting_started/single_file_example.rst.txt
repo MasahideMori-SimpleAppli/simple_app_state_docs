@@ -39,7 +39,7 @@ Complete example
     final logsSlot = appState.slot<List<String>>(
       'logs',
       initial: [],
-      caster: (raw) => raw != null ? (raw as List).cast<String>() : null,
+      caster: (raw) => (raw as List).cast<String>(),
     );
 
     void main() {
@@ -107,10 +107,10 @@ Complete example
               ElevatedButton(
                 onPressed: () {
                   appState.batch(() {
-                    countSlot.update((v) => (v ?? 0) + 1);
+                    countSlot.update((v) => v + 1);
 
-                    logsSlot.update((list) {
-                      final next = List<String>.from(list ?? const []);
+                    logsSlot.update((old) {
+                      final next = List<String>.from(old);
                       next.add('Increment at ${DateTime.now()}');
                       return next;
                     });
@@ -125,7 +125,7 @@ Complete example
                 child: StateSlotBuilder(
                   slotList: [logsSlot],
                   builder: (context) {
-                    final items = logsSlot.get() ?? [];
+                    final items = logsSlot.get();
                     return ListView.builder(
                       itemCount: items.length,
                       itemBuilder: (context, index) {
@@ -184,12 +184,17 @@ a builder-style convenience widget.
 
 .. code-block:: dart
 
-   StateSlotBuilder(
-     slotList: [countSlot],
-     builder: (context) {
-       return Text('Count: ${countSlot.get()}');
-     },
-   );
+          /// Minimal example of a single slot dependency
+          StateSlotBuilder(
+            slotList: [countSlot],
+            builder: (context) {
+              final count = countSlot.get();
+              return Text(
+                'Count: $count',
+                style: Theme.of(context).textTheme.headlineMedium,
+              );
+            },
+          ),
 
 This form does not introduce additional behavior.
 It is simply a concise way to declare slot dependencies.

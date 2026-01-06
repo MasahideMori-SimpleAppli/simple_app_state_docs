@@ -88,7 +88,6 @@ To read a value from a slot, use ``get()``:
 
 Important things to know:
 
-- the value can be ``null``
 - the returned value is a **copy**
 - changing it does **not** change state
 
@@ -97,7 +96,7 @@ This means:
 .. code-block:: dart
 
    final list = logs.get();
-   list?.add('new item'); // ❌ does nothing
+   list.add('new item'); // ❌ does nothing
 
 This behavior is intentional.
 It prevents accidental state changes.
@@ -136,7 +135,7 @@ For this, use ``update()``:
 
 .. code-block:: dart
 
-   count.update((old) => (old ?? 0) + 1);
+   count.update((old) => old + 1);
 
 ``update`` works like this:
 

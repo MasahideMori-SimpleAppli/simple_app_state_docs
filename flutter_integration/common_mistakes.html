@@ -74,7 +74,7 @@ Widgets should only <em>read</em> state and rebuild when it changes.</p>
 <p><strong>Mistake:</strong></p>
 <p>Modifying an object returned by <code class="docutils literal notranslate"><span class="pre">StateSlot.get()</span></code>.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">itemsSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
-<span class="n">list</span><span class="o">?</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new item&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ no state update</span>
+<span class="n">list</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new item&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ no state update</span>
 </pre></div>
 </div>
 <p><strong>Why this is a problem</strong></p>
@@ -86,8 +86,9 @@ Widgets should only <em>read</em> state and rebuild when it changes.</p>
 <p><strong>Correct approach</strong></p>
 <p>Always update state via <code class="docutils literal notranslate"><span class="pre">set</span></code> or <code class="docutils literal notranslate"><span class="pre">update</span></code>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">itemsSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">old</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="p">[];</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">[...</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;new item&#39;</span><span class="p">];</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
+<span class="w">  </span><span class="n">next</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new item&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">next</span><span class="p">;</span>
 <span class="p">});</span>
 </pre></div>
 </div>
@@ -98,7 +99,7 @@ Widgets should only <em>read</em> state and rebuild when it changes.</p>
 <p>Updating state during <code class="docutils literal notranslate"><span class="pre">build()</span></code> in a way that changes the value.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="nd">@override</span>
 <span class="n">Widget</span><span class="w"> </span><span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">countSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌</span>
+<span class="w">  </span><span class="n">countSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌</span>
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
@@ -107,7 +108,7 @@ Widgets should only <em>read</em> state and rebuild when it changes.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="nd">@override</span>
 <span class="n">Widget</span><span class="w"> </span><span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">itemsSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
-<span class="w">  </span><span class="n">list</span><span class="o">?</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new item&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">list</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new item&#39;</span><span class="p">);</span>
 <span class="w">  </span><span class="n">itemsSlot</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="n">list</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌</span>
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">);</span>
 <span class="p">}</span>
@@ -120,7 +121,7 @@ Widgets should only <em>read</em> state and rebuild when it changes.</p>
 <li><p>this can cause repeated rebuilds and unstable behavior</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> does guard against <em>no-op updates</em>:</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">oldValue</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">key</span><span class="p">;</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">oldValue</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>This means that calling <code class="docutils literal notranslate"><span class="pre">set()</span></code> with the same value

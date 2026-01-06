@@ -56,7 +56,8 @@ State ownership always remains in <code class="docutils literal notranslate"><sp
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:flutter/material.dart&#39;</span><span class="p">;</span>
 <span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:simple_app_state/simple_app_state.dart&#39;</span><span class="p">;</span>
 
-<span class="c1">/// A builder widget that rebuilds when the specified state slots change.</span>
+<span class="c1">/// A builder that can be used when you want to update a widget depending</span>
+<span class="c1">/// on the value of a slot.</span>
 <span class="kd">class</span><span class="w"> </span><span class="nc">StateSlotBuilder</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotStatefulWidget</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="n">slotList</span><span class="p">;</span>
 <span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">Widget</span><span class="w"> </span><span class="kt">Function</span><span class="p">(</span><span class="n">BuildContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="n">builder</span><span class="p">;</span>

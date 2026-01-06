@@ -97,7 +97,7 @@ Inside ``build``, you read slot values normally:
    class _CounterViewState extends SlotState<CounterView> {
      @override
      Widget build(BuildContext context) {
-       final value = count.get() ?? 0;
+       final value = count.get();
 
        return Text('Count: $value');
      }

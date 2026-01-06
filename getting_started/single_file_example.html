@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Common Mistakes" href="common_mistakes.html" />
-    <link rel="prev" title="Minimal Example" href="minimal_example.html" />
+    <link rel="prev" title="From Single File to Project Structure" href="project_structure.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -67,7 +67,7 @@ understand the full data flow at once.</p>
 <span class="kd">final</span><span class="w"> </span><span class="n">logsSlot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;&gt;</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;logs&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="nl">initial:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">  </span><span class="nl">caster:</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">raw</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">List</span><span class="p">).</span><span class="n">cast</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">caster:</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">List</span><span class="p">).</span><span class="n">cast</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(),</span>
 <span class="p">);</span>
 
 <span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
@@ -135,10 +135,10 @@ understand the full data flow at once.</p>
 <span class="w">          </span><span class="n">ElevatedButton</span><span class="p">(</span>
 <span class="w">            </span><span class="nl">onPressed:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">              </span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="n">countSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
+<span class="w">                </span><span class="n">countSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
 
-<span class="w">                </span><span class="n">logsSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">list</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                  </span><span class="kd">final</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">list</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">[]);</span>
+<span class="w">                </span><span class="n">logsSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                  </span><span class="kd">final</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
 <span class="w">                  </span><span class="n">next</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;Increment at </span><span class="si">${</span><span class="n">DateTime</span><span class="p">.</span><span class="n">now</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
 <span class="w">                  </span><span class="k">return</span><span class="w"> </span><span class="n">next</span><span class="p">;</span>
 <span class="w">                </span><span class="p">});</span>
@@ -153,7 +153,7 @@ understand the full data flow at once.</p>
 <span class="w">            </span><span class="nl">child:</span><span class="w"> </span><span class="n">StateSlotBuilder</span><span class="p">(</span>
 <span class="w">              </span><span class="nl">slotList:</span><span class="w"> </span><span class="p">[</span><span class="n">logsSlot</span><span class="p">],</span>
 <span class="w">              </span><span class="nl">builder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="kd">final</span><span class="w"> </span><span class="n">items</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logsSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">()</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="p">[];</span>
+<span class="w">                </span><span class="kd">final</span><span class="w"> </span><span class="n">items</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logsSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
 <span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">ListView</span><span class="p">.</span><span class="n">builder</span><span class="p">(</span>
 <span class="w">                  </span><span class="nl">itemCount:</span><span class="w"> </span><span class="n">items</span><span class="p">.</span><span class="n">length</span><span class="p">,</span>
 <span class="w">                  </span><span class="nl">itemBuilder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -205,12 +205,17 @@ and reason about.</p>
 <h2>Slot subscription<a class="headerlink" href="#slot-subscription" title="Link to this heading">¶</a></h2>
 <p>Widgets subscribe to state using <cite>StateSlotBuilder</cite>,
 a builder-style convenience widget.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">StateSlotBuilder</span><span class="p">(</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">/// Minimal example of a single slot dependency</span>
+<span class="n">StateSlotBuilder</span><span class="p">(</span>
 <span class="w">  </span><span class="nl">slotList:</span><span class="w"> </span><span class="p">[</span><span class="n">countSlot</span><span class="p">],</span>
 <span class="w">  </span><span class="nl">builder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39;Count: </span><span class="si">${</span><span class="n">countSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">countSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span>
+<span class="w">      </span><span class="s1">&#39;Count: </span><span class="si">$</span><span class="n">count</span><span class="s1">&#39;</span><span class="p">,</span>
+<span class="w">      </span><span class="nl">style:</span><span class="w"> </span><span class="n">Theme</span><span class="p">.</span><span class="n">of</span><span class="p">(</span><span class="n">context</span><span class="p">).</span><span class="n">textTheme</span><span class="p">.</span><span class="n">headlineMedium</span><span class="p">,</span>
+<span class="w">    </span><span class="p">);</span>
 <span class="w">  </span><span class="p">},</span>
-<span class="p">);</span>
+<span class="p">),</span>
 </pre></div>
 </div>
 <p>This form does not introduce additional behavior.
@@ -287,8 +292,8 @@ SimpleAppState more confidently in your own projects.</p>
 <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Getting Started</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="minimal_example.html">Minimal Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup_and_first_run.html">Setup and First Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project_structure.html">From Single File to Project Structure</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Single-file example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="common_mistakes.html">Common Mistakes</a></li>
 </ul>
@@ -305,7 +310,7 @@ SimpleAppState more confidently in your own projects.</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Getting Started</a><ul>
-      <li>Previous: <a href="minimal_example.html" title="previous chapter">Minimal Example</a></li>
+      <li>Previous: <a href="project_structure.html" title="previous chapter">From Single File to Project Structure</a></li>
       <li>Next: <a href="common_mistakes.html" title="next chapter">Common Mistakes</a></li>
   </ul></li>
   </ul></li>

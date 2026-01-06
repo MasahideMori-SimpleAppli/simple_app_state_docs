@@ -48,7 +48,7 @@ will update application state:
 .. code-block:: dart
 
    final list = logs.get();
-   list?.add('new entry'); // ❌ has no effect
+   list.add('new entry'); // ❌ has no effect
 
 **Why this is a problem**
 
@@ -60,13 +60,26 @@ This is very important because manipulating object references like this in the n
 This package forces this to not happen.
 Direct mutation never affects internal state.
 
+For the same reason, SimpleAppState intentionally does not provide
+an "unsafe" API for storing non-copyable or non-serializable objects.
+
+Temporary or UI-specific state (such as controllers, animation state,
+or ephemeral flags) should live inside widgets, not in application state.
+
+This clear boundary prevents hidden coupling and keeps state evolution
+easy to reason about.
+
 **Correct approach**
 
 Always use ``set`` or ``update``:
 
 .. code-block:: dart
 
-   logs.update((old) => [...?old, 'new entry']);
+    logs.update((old) {
+      final next = List<String>.from(old);
+      next.add('new entry');
+      return next;
+    });
 
 Forgetting to declare slot dependencies
 ---------------------------------------
@@ -137,6 +150,35 @@ which state changes can affect a given widget.
 Pass or import the required ``StateSlot`` explicitly.
 If a widget rebuilds, you should always be able to point
 to the exact slot that caused it.
+
+Updating state during build
+---------------------------
+
+**Mistake**
+
+Updating application state during widget build:
+
+.. code-block:: dart
+
+   @override
+   Widget build(BuildContext context) {
+     countSlot.update((v) => v + 1); // ❌
+     return const Text('Hello');
+   }
+
+**Why this is a problem**
+
+Widget build methods must be pure.
+They may run many times, and changing state during build
+can cause repeated rebuilds or unstable behavior.
+
+**Correct approach**
+
+Only update state in response to events
+(such as user actions or lifecycle callbacks).
+
+For a detailed explanation, see:
+:doc:`../flutter_integration/common_mistakes`
 
 Next step
 ---------------------------------

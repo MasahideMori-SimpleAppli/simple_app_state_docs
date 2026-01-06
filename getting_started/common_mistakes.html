@@ -66,7 +66,7 @@ typically as a global or top-level object:</p>
 <p>Assuming that modifying a value returned from <code class="docutils literal notranslate"><span class="pre">get()</span></code>
 will update application state:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logs</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
-<span class="n">list</span><span class="o">?</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ has no effect</span>
+<span class="n">list</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ has no effect</span>
 </pre></div>
 </div>
 <p><strong>Why this is a problem</strong></p>
@@ -75,9 +75,19 @@ This is intentional and enforces value semantics.</p>
 <p>This is very important because manipulating object references like this in the normal way usually results in other parts breaking or spaghetti code.</p>
 <p>This package forces this to not happen.
 Direct mutation never affects internal state.</p>
+<p>For the same reason, SimpleAppState intentionally does not provide
+an “unsafe” API for storing non-copyable or non-serializable objects.</p>
+<p>Temporary or UI-specific state (such as controllers, animation state,
+or ephemeral flags) should live inside widgets, not in application state.</p>
+<p>This clear boundary prevents hidden coupling and keeps state evolution
+easy to reason about.</p>
 <p><strong>Correct approach</strong></p>
 <p>Always use <code class="docutils literal notranslate"><span class="pre">set</span></code> or <code class="docutils literal notranslate"><span class="pre">update</span></code>:</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[...</span><span class="o">?</span><span class="n">old</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;new entry&#39;</span><span class="p">]);</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
+<span class="w">  </span><span class="n">next</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">next</span><span class="p">;</span>
+<span class="p">});</span>
 </pre></div>
 </div>
 </section>
@@ -130,6 +140,27 @@ which state changes can affect a given widget.</p>
 If a widget rebuilds, you should always be able to point
 to the exact slot that caused it.</p>
 </section>
+<section id="updating-state-during-build">
+<h2>Updating state during build<a class="headerlink" href="#updating-state-during-build" title="Link to this heading">¶</a></h2>
+<p><strong>Mistake</strong></p>
+<p>Updating application state during widget build:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="nd">@override</span>
+<span class="n">Widget</span><span class="w"> </span><span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">countSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Why this is a problem</strong></p>
+<p>Widget build methods must be pure.
+They may run many times, and changing state during build
+can cause repeated rebuilds or unstable behavior.</p>
+<p><strong>Correct approach</strong></p>
+<p>Only update state in response to events
+(such as user actions or lifecycle callbacks).</p>
+<p>For a detailed explanation, see:
+<a class="reference internal" href="../flutter_integration/common_mistakes.html"><span class="doc">Common Mistakes</span></a></p>
+</section>
 <section id="next-step">
 <h2>Next step<a class="headerlink" href="#next-step" title="Link to this heading">¶</a></h2>
 <p>Congratulations! You’ve mastered the basics of <strong>SimpleAppState</strong>.</p>
@@ -173,8 +204,8 @@ on your interests:</p>
 <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Getting Started</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="minimal_example.html">Minimal Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup_and_first_run.html">Setup and First Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project_structure.html">From Single File to Project Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="single_file_example.html">Single-file example</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Common Mistakes</a></li>
 </ul>
