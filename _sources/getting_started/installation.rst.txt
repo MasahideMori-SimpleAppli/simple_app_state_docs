@@ -1,9 +1,0 @@
-Installation
-============
-
-Add SimpleAppState to your ``pubspec.yaml``:
-
-.. code-block:: yaml
-
-   dependencies:
-     simple_app_state: any
