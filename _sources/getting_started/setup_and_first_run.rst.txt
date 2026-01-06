@@ -1,0 +1,263 @@
+Setup and First Run
+====================
+
+This page walks you through your **first successful run**
+of a Flutter application using **SimpleAppState**.
+
+By the end of this page, you will have:
+
+- a working Flutter project
+- SimpleAppState added as a dependency
+- a running example that you can modify and experiment with
+
+No prior knowledge of SimpleAppState is required.
+
+
+Prerequisites
+-------------
+
+You need a working Flutter development environment.
+
+If Flutter is not yet installed, follow the official guide:
+
+- Flutter SDK installation:
+  https://docs.flutter.dev/get-started/install
+
+You can use any supported IDE:
+
+- Android Studio:
+  https://developer.android.com/studio
+- VS Code:
+  https://code.visualstudio.com/
+
+After installation, verify your setup:
+
+.. code-block:: bash
+
+   flutter doctor
+
+Make sure there are no blocking issues before continuing.
+
+
+Create a new Flutter project
+----------------------------
+
+First, create a new Flutter project:
+
+.. code-block:: bash
+
+   flutter create simple_app_state_demo
+   cd simple_app_state_demo
+
+Run the default counter app once to confirm everything works:
+
+.. code-block:: bash
+
+   flutter run
+
+You should see Flutter’s standard counter example running.
+This confirms that your environment is set up correctly.
+
+
+Add SimpleAppState
+------------------
+
+Open ``pubspec.yaml`` and add **SimpleAppState**
+to your dependencies:
+
+.. code-block:: yaml
+
+   dependencies:
+     flutter:
+       sdk: flutter
+     simple_app_state: any
+
+Then fetch the dependencies:
+
+.. code-block:: bash
+
+   flutter pub get
+
+
+Replace ``lib/main.dart``
+-------------------------
+
+Next, replace the contents of ``lib/main.dart``
+with the following **complete example**.
+
+This single file contains:
+
+- application state definition
+- Flutter setup
+- UI code
+
+Copy and paste the code exactly as shown.
+
+Complete example
+----------------
+
+.. code-block:: dart
+
+    import 'package:flutter/foundation.dart';
+    import 'package:flutter/material.dart';
+    import 'package:simple_app_state/simple_app_state.dart';
+
+    ///////////////////////////////////////////////////////////////////////////////
+    ///
+    /// Application State Definition (This is usually written in lib/ui/app_state.dart.)
+    ///
+    /// - Widgets do NOT own application state.
+    /// - StateSlots are defined once and reused everywhere.
+    ///
+    ///////////////////////////////////////////////////////////////////////////////
+
+    /// A state container shared across the app
+    final appState = SimpleAppState();
+
+    /// counter value（`int`）
+    final countSlot = appState.slot<int>('count', initial: 0);
+
+    /// log（`List<String>`）
+    final logsSlot = appState.slot<List<String>>(
+      'logs',
+      initial: [],
+      caster: (raw) => (raw as List).cast<String>(),
+    );
+
+    void main() {
+      /// You can easily define a debugger to use only during development.
+      if (kDebugMode) {
+        appState.setDebugListener((slot, oldV, newV) {
+          /// You can also use slot.name here to print only in a specific slot.
+          debugPrint(
+            "Changed Slot:${slot.name}, Value changed from:$oldV, to:$newV",
+          );
+        });
+      }
+      runApp(const MyApp());
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    ///
+    /// Flutter Application
+    ///
+    ///////////////////////////////////////////////////////////////////////////////
+
+    class MyApp extends StatelessWidget {
+      const MyApp({super.key});
+
+      @override
+      Widget build(BuildContext context) {
+        return const MaterialApp(home: CounterPage());
+      }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    ///
+    /// UI Layer
+    ///
+    /// Widgets subscribe to StateSlots.
+    /// They never store application state themselves.
+    ///
+    ///////////////////////////////////////////////////////////////////////////////
+
+    class CounterPage extends StatelessWidget {
+      const CounterPage({super.key});
+
+      @override
+      Widget build(BuildContext context) {
+        return Scaffold(
+          appBar: AppBar(title: const Text('SimpleAppState Example')),
+          body: Column(
+            children: [
+              const SizedBox(height: 32),
+
+              /// Minimal example of a single slot dependency
+              StateSlotBuilder(
+                slotList: [countSlot],
+                builder: (context) {
+                  final count = countSlot.get();
+                  return Text(
+                    'Count: $count',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  );
+                },
+              ),
+              const SizedBox(height: 24),
+
+              /// Batch multiple slot updates
+              ElevatedButton(
+                onPressed: () {
+                  appState.batch(() {
+                    countSlot.update((v) => v + 1);
+
+                    logsSlot.update((old) {
+                      final next = List<String>.from(old);
+                      next.add('Increment at ${DateTime.now()}');
+                      return next;
+                    });
+                  });
+                },
+                child: const Text('Increment (batched)'),
+              ),
+              const Divider(height: 32),
+
+              /// Read-only UI based on deep copy
+              Expanded(
+                child: StateSlotBuilder(
+                  slotList: [logsSlot],
+                  builder: (context) {
+                    final items = logsSlot.get();
+                    return ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(title: Text(items[index]));
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+
+Run the application
+-------------------
+
+Save the file and run the app again:
+
+.. code-block:: bash
+
+   flutter run
+
+Tap the **Increment** button.
+You should see the counter value update immediately.
+
+Congratulations — you are now running
+a Flutter app powered by **SimpleAppState** 🎉
+
+
+What just happened?
+-------------------
+
+Even in this small example, several important ideas are visible:
+
+- application state is defined **outside widgets**
+- widgets **subscribe** to state explicitly
+- state updates are performed via ``update``
+- UI rebuilds are deterministic and predictable
+
+Do not worry if all details are not clear yet.
+The next pages explain these ideas step by step.
+
+
+Next step
+---------
+
+Now that you have a working example,
+let’s look at how this code is typically organized
+in real projects.
+
+Go to :doc:`project_structure` section.
