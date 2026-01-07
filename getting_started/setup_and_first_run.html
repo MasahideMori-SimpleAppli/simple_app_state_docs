@@ -201,10 +201,11 @@ with the following <strong>complete example</strong>.</p>
 <span class="w">              </span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                </span><span class="n">countSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
 
-<span class="w">                </span><span class="n">logsSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                  </span><span class="kd">final</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
-<span class="w">                  </span><span class="n">next</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;Increment at </span><span class="si">${</span><span class="n">DateTime</span><span class="p">.</span><span class="n">now</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
-<span class="w">                  </span><span class="k">return</span><span class="w"> </span><span class="n">next</span><span class="p">;</span>
+<span class="w">                </span><span class="n">logsSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">oldCopy</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                  </span><span class="c1">// Since &#39;oldCopy&#39; is already a deep copy,</span>
+<span class="w">                  </span><span class="c1">// you can safely mutate it using methods like .add() or .remove().</span>
+<span class="w">                  </span><span class="n">oldCopy</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;Increment at </span><span class="si">${</span><span class="n">DateTime</span><span class="p">.</span><span class="n">now</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
+<span class="w">                  </span><span class="k">return</span><span class="w"> </span><span class="n">oldCopy</span><span class="p">;</span>
 <span class="w">                </span><span class="p">});</span>
 <span class="w">              </span><span class="p">});</span>
 <span class="w">            </span><span class="p">},</span>

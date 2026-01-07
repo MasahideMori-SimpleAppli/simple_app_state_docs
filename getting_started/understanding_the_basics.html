@@ -57,6 +57,18 @@
 </dl>
 </li>
 </ul>
+<section id="note-why-do-we-need-a-caster">
+<h3>Note: Why do we need a <code class="docutils literal notranslate"><span class="pre">caster</span></code>?<a class="headerlink" href="#note-why-do-we-need-a-caster" title="Link to this heading">¶</a></h3>
+<p>You might notice the <code class="docutils literal notranslate"><span class="pre">caster</span></code> property in the <code class="docutils literal notranslate"><span class="pre">logsSlot</span></code> definition:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="nl">caster:</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">List</span><span class="p">).</span><span class="n">cast</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(),</span>
+</pre></div>
+</div>
+<p>SimpleAppState is designed to keep your data safe by performing “deep copies” (creating a fresh duplicate of your data). However, because of how Dart works, when a List or Map is copied, it sometimes “loses” its specific type information (e.g., it becomes a generic <code class="docutils literal notranslate"><span class="pre">List&lt;dynamic&gt;</span></code> instead of <code class="docutils literal notranslate"><span class="pre">List&lt;String&gt;</span></code>).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">caster</span></code> is a simple helper function that:
+- Ensures the data <strong>maintains the correct type</strong> after being copied.
+- Acts as a <strong>safety guard</strong> to make sure only the correct type of data enters the slot.</p>
+<p>For simple types like <code class="docutils literal notranslate"><span class="pre">int</span></code> or <code class="docutils literal notranslate"><span class="pre">String</span></code>, you don’t need a caster. But for <strong>Lists and Maps</strong>, always include it to keep your code type-safe and prevent errors.</p>
+</section>
 </section>
 <section id="reactive-ui-how-widgets-listen">
 <h2>2. Reactive UI: How Widgets “Listen”<a class="headerlink" href="#reactive-ui-how-widgets-listen" title="Link to this heading">¶</a></h2>
@@ -82,19 +94,36 @@
 <span class="n">countSlot</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
 
 <span class="c1">// Update based on the previous value</span>
-<span class="n">countSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
+<span class="n">countSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">oldCopy</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">oldCopy</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
 </pre></div>
 </div>
+<section id="the-triple-layer-safety-total-isolation">
+<h3>The Triple-Layer Safety: Total Isolation<a class="headerlink" href="#the-triple-layer-safety-total-isolation" title="Link to this heading">¶</a></h3>
+<p>SimpleAppState ensures that your application state is a “Fortress.” Once data is handled by a slot, it is completely isolated from the rest of your code’s memory. This is achieved through three layers of protection:</p>
+<ol class="arabic simple">
+<li><p><strong>Protection on Definition (``initial``):</strong> Even the initial value you provide is deep-copied immediately. If you change the original object after defining the slot, the state remains safe.</p></li>
+<li><p><strong>Protection on Exit (``get`` / ``update``):</strong> When you retrieve a value, you get a fresh deep copy. Mutating this copy will never accidentally change the “source of truth” inside the slot.</p></li>
+<li><p><strong>Protection on Entry (``set`` / ``update``):</strong> When you save a new value, SimpleAppState performs another deep copy before storing it. This prevents the state from being affected by any future changes to the variable you just passed in.</p></li>
+</ol>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">myData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="o">:</span><span class="w"> </span><span class="m">1</span><span class="p">};</span>
+<span class="c1">// 1. Initial value is copied.</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">mySlot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;mySlot&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="n">myData</span><span class="p">);</span>
+
+<span class="n">myData</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">999</span><span class="p">;</span><span class="w"> </span><span class="c1">// ❌ This has NO effect on the slot.</span>
+
+<span class="n">print</span><span class="p">(</span><span class="n">mySlot</span><span class="p">.</span><span class="kd">get</span><span class="p">()[</span><span class="s1">&#39;id&#39;</span><span class="p">]);</span><span class="w"> </span><span class="c1">// Always 1</span>
+</pre></div>
+</div>
+</section>
 <section id="batching-updates">
 <h3>Batching Updates<a class="headerlink" href="#batching-updates" title="Link to this heading">¶</a></h3>
 <p>When you need to update multiple slots at once, use <code class="docutils literal notranslate"><span class="pre">appState.batch()</span></code>. This is useful when several changes represent a single logical action.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">countSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
 
-<span class="w">  </span><span class="n">logsSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
-<span class="w">    </span><span class="n">next</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;Increment at </span><span class="si">${</span><span class="n">DateTime</span><span class="p">.</span><span class="n">now</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">next</span><span class="p">;</span>
+<span class="w">  </span><span class="n">logsSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">oldCopy</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">oldCopy</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;Increment at </span><span class="si">${</span><span class="n">DateTime</span><span class="p">.</span><span class="n">now</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">oldCopy</span><span class="p">;</span>
 <span class="w">  </span><span class="p">});</span>
 <span class="p">});</span>
 </pre></div>

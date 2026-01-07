@@ -23,6 +23,23 @@ In SimpleAppState, application state lives **outside** the widget tree. This mak
     * Has a **strict type** (e.g., `<int>`), ensuring type safety throughout the app.
     * Is **globally accessible**, so any widget can find it without passing data through constructors.
 
+Note: Why do we need a ``caster``?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You might notice the ``caster`` property in the ``logsSlot`` definition:
+
+.. code-block:: dart
+
+    caster: (raw) => (raw as List).cast<String>(),
+
+SimpleAppState is designed to keep your data safe by performing "deep copies" (creating a fresh duplicate of your data). However, because of how Dart works, when a List or Map is copied, it sometimes "loses" its specific type information (e.g., it becomes a generic ``List<dynamic>`` instead of ``List<String>``).
+
+The ``caster`` is a simple helper function that:
+- Ensures the data **maintains the correct type** after being copied.
+- Acts as a **safety guard** to make sure only the correct type of data enters the slot.
+
+For simple types like ``int`` or ``String``, you don't need a caster. But for **Lists and Maps**, always include it to keep your code type-safe and prevent errors.
+
 2. Reactive UI: How Widgets "Listen"
 ------------------------------------
 
@@ -52,7 +69,28 @@ To change the UI, you change the state. SimpleAppState provides two ways to modi
     countSlot.set(10);
 
     // Update based on the previous value
-    countSlot.update((v) => v + 1);
+    countSlot.update((oldCopy) => oldCopy + 1);
+
+The Triple-Layer Safety: Total Isolation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SimpleAppState ensures that your application state is a "Fortress." Once data is handled by a slot, it is completely isolated from the rest of your code's memory. This is achieved through three layers of protection:
+
+1. **Protection on Definition (``initial``):** Even the initial value you provide is deep-copied immediately. If you change the original object after defining the slot, the state remains safe.
+
+2. **Protection on Exit (``get`` / ``update``):** When you retrieve a value, you get a fresh deep copy. Mutating this copy will never accidentally change the "source of truth" inside the slot.
+
+3. **Protection on Entry (``set`` / ``update``):** When you save a new value, SimpleAppState performs another deep copy before storing it. This prevents the state from being affected by any future changes to the variable you just passed in.
+
+.. code-block:: dart
+
+    final myData = {'id': 1};
+    // 1. Initial value is copied.
+    final mySlot = appState.slot<Map>('mySlot', initial: myData);
+
+    myData['id'] = 999; // ❌ This has NO effect on the slot.
+
+    print(mySlot.get()['id']); // Always 1
 
 Batching Updates
 ~~~~~~~~~~~~~~~~
@@ -64,10 +102,9 @@ When you need to update multiple slots at once, use ``appState.batch()``. This i
     appState.batch(() {
       countSlot.update((v) => v + 1);
 
-      logsSlot.update((old) {
-        final next = List<String>.from(old);
-        next.add('Increment at ${DateTime.now()}');
-        return next;
+      logsSlot.update((oldCopy) {
+        oldCopy.add('Increment at ${DateTime.now()}');
+        return oldCopy;
       });
     });
 

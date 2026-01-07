@@ -62,10 +62,10 @@ Crucially, in SimpleAppState, the ``old Value`` passed to the ``update`` closure
 .. code-block:: dart
 
     // Correct and safe:
-    // The 'old' list is already a copy, so you can mutate it directly.
-    logs.update((old) {
-      old.add('new entry');
-      return old;
+    // The 'oldCopy' list is already a copy, so you can mutate it directly.
+    logs.update((oldCopy) {
+      oldCopy.add('new entry');
+      return oldCopy;
     });
 
     // Also works for custom objects:
@@ -167,10 +167,9 @@ from utility or helper functions:
 
    // util.dart
    static void addLog(String message) {
-     logs.update((old) {
-       final next = List<String>.from(old);
-       next.add(message);
-       return next;
+     logs.update((oldCopy) {
+       oldCopy.add(message);
+       return oldCopy;
      });
    }
 
@@ -196,14 +195,13 @@ State updates should happen at the call site:
 .. code-block:: dart
 
    // util.dart
-   static List<String> addLog(List<String> old, String message) {
-     final next = List<String>.from(old);
-     next.add(message);
-     return next;
+   static List<String> addLog(List<String> oldCopy, String message) {
+     oldCopy.add(message);
+     return oldCopy;
    }
 
    // call site
-   logs.update((old) => addLog(old, message));
+   logs.update((oldCopy) => addLog(oldCopy, message));
 
 Utilities transform values.
 StateSlots own state.

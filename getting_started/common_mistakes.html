@@ -74,10 +74,10 @@ typically as a global or top-level object:</p>
 <p>Always use <code class="docutils literal notranslate"><span class="pre">set()</span></code> or <code class="docutils literal notranslate"><span class="pre">update()</span></code>.</p>
 <p>Crucially, in SimpleAppState, the <code class="docutils literal notranslate"><span class="pre">old</span> <span class="pre">Value</span></code> passed to the <code class="docutils literal notranslate"><span class="pre">update</span></code> closure is <strong>already a deep-copy</strong>. This means you can safely mutate it directly and return it. You don’t need to manually create a new List or Map instance.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// Correct and safe:</span>
-<span class="c1">// The &#39;old&#39; list is already a copy, so you can mutate it directly.</span>
-<span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">old</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">old</span><span class="p">;</span>
+<span class="c1">// The &#39;oldCopy&#39; list is already a copy, so you can mutate it directly.</span>
+<span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">oldCopy</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">oldCopy</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">oldCopy</span><span class="p">;</span>
 <span class="p">});</span>
 
 <span class="c1">// Also works for custom objects:</span>
@@ -151,10 +151,9 @@ clear ownership boundaries.</p>
 from utility or helper functions:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// util.dart</span>
 <span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">addLog</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
-<span class="w">    </span><span class="n">next</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">next</span><span class="p">;</span>
+<span class="w">  </span><span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">oldCopy</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">oldCopy</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">oldCopy</span><span class="p">;</span>
 <span class="w">  </span><span class="p">});</span>
 <span class="p">}</span>
 </pre></div>
@@ -174,14 +173,13 @@ They should not own or mutate application state.</p>
 <p>Pass data <em>into</em> utilities, and return new values <em>out</em>.
 State updates should happen at the call site:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// util.dart</span>
-<span class="kd">static</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">addLog</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">old</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
-<span class="w">  </span><span class="n">next</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">next</span><span class="p">;</span>
+<span class="kd">static</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">addLog</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">oldCopy</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">oldCopy</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">oldCopy</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="c1">// call site</span>
-<span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">addLog</span><span class="p">(</span><span class="n">old</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">));</span>
+<span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">oldCopy</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">addLog</span><span class="p">(</span><span class="n">oldCopy</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">));</span>
 </pre></div>
 </div>
 <p>Utilities transform values.
