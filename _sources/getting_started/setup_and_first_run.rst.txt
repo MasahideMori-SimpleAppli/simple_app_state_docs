@@ -260,4 +260,4 @@ Now that you have a working example,
 let’s look at how this code is typically organized
 in real projects.
 
-Go to :doc:`project_structure` section.
+Go to :doc:`understanding_the_basics` section.

@@ -42,44 +42,39 @@ Mutating values returned from slots
 
 **Mistake**
 
-Assuming that modifying a value returned from ``get()``
-will update application state:
+Assuming that modifying a value returned from ``get()`` will update application state:
 
 .. code-block:: dart
 
    final list = logs.get();
-   list.add('new entry'); // ❌ has no effect
+   list.add('new entry'); // ❌ has no effect on the original state
 
 **Why this is a problem**
 
-Values returned from ``StateSlot.get()`` are always deep-copied.
-This is intentional and enforces value semantics.
-
-This is very important because manipulating object references like this in the normal way usually results in other parts breaking or spaghetti code.
-
-This package forces this to not happen.
-Direct mutation never affects internal state.
-
-For the same reason, SimpleAppState intentionally does not provide
-an "unsafe" API for storing non-copyable or non-serializable objects.
-
-Temporary or UI-specific state (such as controllers, animation state,
-or ephemeral flags) should live inside widgets, not in application state.
-
-This clear boundary prevents hidden coupling and keeps state evolution
-easy to reason about.
+Values returned from ``StateSlot.get()`` are always **deep-copied**. This is a safety feature to prevent accidental side effects. Direct mutation of a value obtained via ``get()`` never affects the internal state of the slot, and therefore won't trigger UI rebuilds.
 
 **Correct approach**
 
-Always use ``set`` or ``update``:
+Always use ``set()`` or ``update()``.
+
+Crucially, in SimpleAppState, the ``old Value`` passed to the ``update`` closure is **already a deep-copy**. This means you can safely mutate it directly and return it. You don't need to manually create a new List or Map instance.
 
 .. code-block:: dart
 
+    // Correct and safe:
+    // The 'old' list is already a copy, so you can mutate it directly.
     logs.update((old) {
-      final next = List<String>.from(old);
-      next.add('new entry');
-      return next;
+      old.add('new entry');
+      return old;
     });
+
+    // Also works for custom objects:
+    userSlot.update((user) {
+      user.name = 'New Name';
+      return user;
+    });
+
+SimpleAppState ensures that these mutations remain local to the update process and do not leak into other parts of your application, keeping your code clean and predictable.
 
 Forgetting to declare slot dependencies
 ---------------------------------------
@@ -129,6 +124,90 @@ to perform coordinated updates and persistence.
 Start with a single ``SimpleAppState`` instance.
 Introduce multiple state objects only when you have
 clear ownership boundaries.
+
+
+Mixing Import Types
+-------------------
+
+**Mistake**
+
+Mixing relative imports and absolute package imports for the same file:
+
+.. code-block:: dart
+
+   // In main.dart
+   import 'package:my_app/ui/app_state.dart';
+
+   // In counter_page.dart
+   import '../app_state.dart'; // ❌ Mixing with relative import
+
+**Why this is a problem**
+
+Dart treats absolute and relative imports as different libraries. This means the ``appState`` object in ``main.dart`` will be a **different instance** from the one in ``counter_page.dart``.
+
+If you update the state in one file, the UI listening in the other file will not reflect the change, leading to extremely hard-to-debug issues.
+
+**Correct approach**
+
+Always use **absolute package imports** for any file that defines or uses your application state:
+
+.. code-block:: dart
+
+   import 'package:my_app/ui/app_state.dart';
+
+
+Accessing slots from utility functions
+---------------------------------------
+**Mistake**
+
+Accessing ``StateSlot`` or ``SimpleAppState`` directly
+from utility or helper functions:
+
+.. code-block:: dart
+
+   // util.dart
+   static void addLog(String message) {
+     logs.update((old) {
+       final next = List<String>.from(old);
+       next.add(message);
+       return next;
+     });
+   }
+
+**Why this is a problem**
+
+Utility functions are, by definition, stateless.
+They should not own or mutate application state.
+
+When utilities access slots directly:
+
+- State mutations become hidden and hard to trace
+- Call sites no longer reveal which state is affected
+- Testing and reasoning about state flow becomes difficult
+
+This breaks one of the core principles of SimpleAppState:
+**all state access must be explicit and visible**.
+
+**Correct approach**
+
+Pass data *into* utilities, and return new values *out*.
+State updates should happen at the call site:
+
+.. code-block:: dart
+
+   // util.dart
+   static List<String> addLog(List<String> old, String message) {
+     final next = List<String>.from(old);
+     next.add(message);
+     return next;
+   }
+
+   // call site
+   logs.update((old) => addLog(old, message));
+
+Utilities transform values.
+StateSlots own state.
+
 
 Expecting context-based lookups
 -------------------------------

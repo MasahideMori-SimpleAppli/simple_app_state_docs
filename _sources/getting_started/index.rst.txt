@@ -8,6 +8,6 @@ and reach a first successful application state quickly.
    :maxdepth: 1
 
    setup_and_first_run
+   understanding_the_basics
    project_structure
-   single_file_example
    common_mistakes

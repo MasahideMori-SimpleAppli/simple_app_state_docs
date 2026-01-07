@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Core Concepts" href="../core_concepts/index.html" />
-    <link rel="prev" title="Single-file example" href="single_file_example.html" />
+    <link rel="prev" title="Scaling to a Real Project Structure" href="project_structure.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -63,33 +63,31 @@ typically as a global or top-level object:</p>
 <section id="mutating-values-returned-from-slots">
 <h2>Mutating values returned from slots<a class="headerlink" href="#mutating-values-returned-from-slots" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
-<p>Assuming that modifying a value returned from <code class="docutils literal notranslate"><span class="pre">get()</span></code>
-will update application state:</p>
+<p>Assuming that modifying a value returned from <code class="docutils literal notranslate"><span class="pre">get()</span></code> will update application state:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logs</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
-<span class="n">list</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ has no effect</span>
+<span class="n">list</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ has no effect on the original state</span>
 </pre></div>
 </div>
 <p><strong>Why this is a problem</strong></p>
-<p>Values returned from <code class="docutils literal notranslate"><span class="pre">StateSlot.get()</span></code> are always deep-copied.
-This is intentional and enforces value semantics.</p>
-<p>This is very important because manipulating object references like this in the normal way usually results in other parts breaking or spaghetti code.</p>
-<p>This package forces this to not happen.
-Direct mutation never affects internal state.</p>
-<p>For the same reason, SimpleAppState intentionally does not provide
-an “unsafe” API for storing non-copyable or non-serializable objects.</p>
-<p>Temporary or UI-specific state (such as controllers, animation state,
-or ephemeral flags) should live inside widgets, not in application state.</p>
-<p>This clear boundary prevents hidden coupling and keeps state evolution
-easy to reason about.</p>
+<p>Values returned from <code class="docutils literal notranslate"><span class="pre">StateSlot.get()</span></code> are always <strong>deep-copied</strong>. This is a safety feature to prevent accidental side effects. Direct mutation of a value obtained via <code class="docutils literal notranslate"><span class="pre">get()</span></code> never affects the internal state of the slot, and therefore won’t trigger UI rebuilds.</p>
 <p><strong>Correct approach</strong></p>
-<p>Always use <code class="docutils literal notranslate"><span class="pre">set</span></code> or <code class="docutils literal notranslate"><span class="pre">update</span></code>:</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
-<span class="w">  </span><span class="n">next</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">next</span><span class="p">;</span>
+<p>Always use <code class="docutils literal notranslate"><span class="pre">set()</span></code> or <code class="docutils literal notranslate"><span class="pre">update()</span></code>.</p>
+<p>Crucially, in SimpleAppState, the <code class="docutils literal notranslate"><span class="pre">old</span> <span class="pre">Value</span></code> passed to the <code class="docutils literal notranslate"><span class="pre">update</span></code> closure is <strong>already a deep-copy</strong>. This means you can safely mutate it directly and return it. You don’t need to manually create a new List or Map instance.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// Correct and safe:</span>
+<span class="c1">// The &#39;old&#39; list is already a copy, so you can mutate it directly.</span>
+<span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">old</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">old</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="c1">// Also works for custom objects:</span>
+<span class="n">userSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">user</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">user</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;New Name&#39;</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">user</span><span class="p">;</span>
 <span class="p">});</span>
 </pre></div>
 </div>
+<p>SimpleAppState ensures that these mutations remain local to the update process and do not leak into other parts of your application, keeping your code clean and predictable.</p>
 </section>
 <section id="forgetting-to-declare-slot-dependencies">
 <h2>Forgetting to declare slot dependencies<a class="headerlink" href="#forgetting-to-declare-slot-dependencies" title="Link to this heading">¶</a></h2>
@@ -125,6 +123,69 @@ to perform coordinated updates and persistence.</p>
 <p>Start with a single <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> instance.
 Introduce multiple state objects only when you have
 clear ownership boundaries.</p>
+</section>
+<section id="mixing-import-types">
+<h2>Mixing Import Types<a class="headerlink" href="#mixing-import-types" title="Link to this heading">¶</a></h2>
+<p><strong>Mistake</strong></p>
+<p>Mixing relative imports and absolute package imports for the same file:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// In main.dart</span>
+<span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:my_app/ui/app_state.dart&#39;</span><span class="p">;</span>
+
+<span class="c1">// In counter_page.dart</span>
+<span class="k">import</span><span class="w"> </span><span class="s1">&#39;../app_state.dart&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// ❌ Mixing with relative import</span>
+</pre></div>
+</div>
+<p><strong>Why this is a problem</strong></p>
+<p>Dart treats absolute and relative imports as different libraries. This means the <code class="docutils literal notranslate"><span class="pre">appState</span></code> object in <code class="docutils literal notranslate"><span class="pre">main.dart</span></code> will be a <strong>different instance</strong> from the one in <code class="docutils literal notranslate"><span class="pre">counter_page.dart</span></code>.</p>
+<p>If you update the state in one file, the UI listening in the other file will not reflect the change, leading to extremely hard-to-debug issues.</p>
+<p><strong>Correct approach</strong></p>
+<p>Always use <strong>absolute package imports</strong> for any file that defines or uses your application state:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:my_app/ui/app_state.dart&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="accessing-slots-from-utility-functions">
+<h2>Accessing slots from utility functions<a class="headerlink" href="#accessing-slots-from-utility-functions" title="Link to this heading">¶</a></h2>
+<p><strong>Mistake</strong></p>
+<p>Accessing <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> or <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> directly
+from utility or helper functions:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// util.dart</span>
+<span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">addLog</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
+<span class="w">    </span><span class="n">next</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">next</span><span class="p">;</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Why this is a problem</strong></p>
+<p>Utility functions are, by definition, stateless.
+They should not own or mutate application state.</p>
+<p>When utilities access slots directly:</p>
+<ul class="simple">
+<li><p>State mutations become hidden and hard to trace</p></li>
+<li><p>Call sites no longer reveal which state is affected</p></li>
+<li><p>Testing and reasoning about state flow becomes difficult</p></li>
+</ul>
+<p>This breaks one of the core principles of SimpleAppState:
+<strong>all state access must be explicit and visible</strong>.</p>
+<p><strong>Correct approach</strong></p>
+<p>Pass data <em>into</em> utilities, and return new values <em>out</em>.
+State updates should happen at the call site:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// util.dart</span>
+<span class="kd">static</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">addLog</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">old</span><span class="p">,</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
+<span class="w">  </span><span class="n">next</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">next</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// call site</span>
+<span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">addLog</span><span class="p">(</span><span class="n">old</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>Utilities transform values.
+StateSlots own state.</p>
 </section>
 <section id="expecting-context-based-lookups">
 <h2>Expecting context-based lookups<a class="headerlink" href="#expecting-context-based-lookups" title="Link to this heading">¶</a></h2>
@@ -205,8 +266,8 @@ on your interests:</p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Getting Started</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="setup_and_first_run.html">Setup and First Run</a></li>
-<li class="toctree-l2"><a class="reference internal" href="project_structure.html">From Single File to Project Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="single_file_example.html">Single-file example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="understanding_the_basics.html">Understanding the Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project_structure.html">Scaling to a Real Project Structure</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Common Mistakes</a></li>
 </ul>
 </li>
@@ -222,7 +283,7 @@ on your interests:</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Getting Started</a><ul>
-      <li>Previous: <a href="single_file_example.html" title="previous chapter">Single-file example</a></li>
+      <li>Previous: <a href="project_structure.html" title="previous chapter">Scaling to a Real Project Structure</a></li>
       <li>Next: <a href="../core_concepts/index.html" title="next chapter">Core Concepts</a></li>
   </ul></li>
   </ul></li>

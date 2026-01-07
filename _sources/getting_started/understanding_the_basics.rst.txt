@@ -1,0 +1,95 @@
+Understanding the Basics
+========================
+
+Now that you have seen the complete code, let’s break down the three core concepts of **SimpleAppState**.
+
+Even though the previous example was in a single file, it followed a strict separation of concerns. Understanding these patterns is key to building scalable Flutter apps.
+
+----
+
+1. State Definition: The "Source of Truth"
+------------------------------------------
+
+In SimpleAppState, application state lives **outside** the widget tree. This makes the state independent of the UI lifecycle.
+
+.. code-block:: dart
+
+    final appState = SimpleAppState();
+    final countSlot = appState.slot<int>('count', initial: 0);
+
+* **SimpleAppState instance:** A central container for all your data.
+* **StateSlot:** A specific "drawer" in that container. Each slot:
+    * Has a **unique name** (e.g., `'count'`) for debugging and persistence.
+    * Has a **strict type** (e.g., `<int>`), ensuring type safety throughout the app.
+    * Is **globally accessible**, so any widget can find it without passing data through constructors.
+
+2. Reactive UI: How Widgets "Listen"
+------------------------------------
+
+Widgets do not "own" application state; they **subscribe** to it. When a slot's value changes, only the widgets listening to that specific slot will rebuild.
+
+.. code-block:: dart
+
+    StateSlotBuilder(
+      slotList: [countSlot],
+      builder: (context) {
+        final count = countSlot.get(); // Read the current value
+        return Text('Count: $count');
+      },
+    )
+
+* **StateSlotBuilder:** A specialized widget that manages the subscription for you.
+* **Minimal Rebuilds:** If you have 10 slots but only subscribe to `countSlot`, changes in other slots will not trigger a rebuild of this widget. This keeps your app performant.
+
+3. Logic: Updating State Atomically
+-----------------------------------
+
+To change the UI, you change the state. SimpleAppState provides two ways to modify slots: ``set()`` and ``update()``.
+
+.. code-block:: dart
+
+    // Direct update
+    countSlot.set(10);
+
+    // Update based on the previous value
+    countSlot.update((v) => v + 1);
+
+Batching Updates
+~~~~~~~~~~~~~~~~
+
+When you need to update multiple slots at once, use ``appState.batch()``. This is useful when several changes represent a single logical action.
+
+.. code-block:: dart
+
+    appState.batch(() {
+      countSlot.update((v) => v + 1);
+
+      logsSlot.update((old) {
+        final next = List<String>.from(old);
+        next.add('Increment at ${DateTime.now()}');
+        return next;
+      });
+    });
+
+* **Sequential but Atomic:** Changes are applied inside the batch one by one. If you call ``get()`` inside the block, you will receive the updated value immediately.
+* **Efficient UI Notification:** SimpleAppState waits until the entire block is finished before notifying the UI.
+* **No Intermediate States:** Even if you update multiple slots, the UI only rebuilds **once** (More precisely, a single screen update is requested). This prevents the user from seeing inconsistent "half-updated" data and improves performance.
+
+----
+
+Summary of the Pattern
+----------------------
+
+The lifecycle of a SimpleAppState app always follows this loop:
+
+1.  **Define:** Create a ``StateSlot`` in a global location.
+2.  **Display:** Use ``StateSlotBuilder`` to show the value in the UI.
+3.  **Act:** Call ``update()`` or ``set()`` from a button or event.
+4.  **React:** The UI automatically updates to reflect the new state.
+
+Next step
+---------
+
+Now that you understand the "How" and "Why" of the code, let's look at how to organize these pieces into a professional directory structure.
+
+Go to :doc:`project_structure` section.
