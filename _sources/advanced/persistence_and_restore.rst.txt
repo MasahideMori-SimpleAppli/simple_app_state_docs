@@ -4,6 +4,8 @@ Persistence and Restore
 
 This section describes how **SimpleAppState** supports persistence and restore.
 
+----
+
 Overview
 ========
 
@@ -16,6 +18,8 @@ This mechanism relies on:
 
 * ``toDict()`` for serialization
 * ``fromDict(...)`` for restoration
+
+----
 
 Serialization with toDict
 =========================
@@ -39,6 +43,8 @@ their class identity in the serialized form, typically using:
    }
 
 This allows the object to be restored later.
+
+----
 
 Restoring State with fromDict
 =============================
@@ -78,6 +84,8 @@ Example:
 
 When a dictionary containing a matching ``className`` field is found,
 the corresponding restoration function is used.
+
+----
 
 Internal Restoration Process
 ============================

@@ -39,6 +39,7 @@
 <p>Undo / redo is implemented by integrating
 the <strong>file_state_manager</strong> package with the internal state structure of
 <strong>SimpleAppState</strong>.</p>
+<hr class="docutils" />
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
 <p>Undo and redo in <strong>SimpleAppState</strong> are based on snapshot history.</p>
@@ -54,6 +55,7 @@ the <strong>file_state_manager</strong> package with the internal state structur
 <li><p><code class="docutils literal notranslate"><span class="pre">replaceDataFrom()</span></code> for applying restored state</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="state-snapshots">
 <h2>State Snapshots<a class="headerlink" href="#state-snapshots" title="Link to this heading">¶</a></h2>
 <p><strong>SimpleAppState</strong> implements the <code class="docutils literal notranslate"><span class="pre">CloneableFile</span></code> interface.</p>
@@ -67,6 +69,7 @@ at a specific point in time.</p>
 <p>Snapshots are used exclusively for undo / redo and are independent of
 persistence mechanisms such as <code class="docutils literal notranslate"><span class="pre">toDict()</span></code> and <code class="docutils literal notranslate"><span class="pre">fromDict()</span></code>.</p>
 </section>
+<hr class="docutils" />
 <section id="filestatemanager-integration">
 <h2>FileStateManager Integration<a class="headerlink" href="#filestatemanager-integration" title="Link to this heading">¶</a></h2>
 <p>To enable undo / redo support, register a <strong>SimpleAppState</strong> instance
@@ -78,6 +81,7 @@ with <code class="docutils literal notranslate"><span class="pre">FileStateManag
 <p>The manager stores cloned snapshots and tracks the current position
 in the history stack.</p>
 </section>
+<hr class="docutils" />
 <section id="state-listener-and-push-timing">
 <h2>State Listener and Push Timing<a class="headerlink" href="#state-listener-and-push-timing" title="Link to this heading">¶</a></h2>
 <p>Undo / redo history must be updated <strong>only when a state change is finalized</strong>.</p>
@@ -103,6 +107,7 @@ in the history stack.</p>
 <li><p>Each undo step corresponds to a meaningful user action</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="undo-operation">
 <h2>Undo Operation<a class="headerlink" href="#undo-operation" title="Link to this heading">¶</a></h2>
 <p>Calling <code class="docutils literal notranslate"><span class="pre">undo()</span></code> retrieves the previous snapshot from the history stack.</p>
@@ -133,6 +138,7 @@ you must suppress the next push operation.</p>
 </ul>
 </section>
 </section>
+<hr class="docutils" />
 <section id="redo-operation">
 <h2>Redo Operation<a class="headerlink" href="#redo-operation" title="Link to this heading">¶</a></h2>
 <p>Redo retrieves the next snapshot in the history stack.</p>
@@ -144,6 +150,7 @@ you must suppress the next push operation.</p>
 <p>Redo follows the same rules as undo and must also suppress
 automatic history pushes during restoration.</p>
 </section>
+<hr class="docutils" />
 <section id="complete-example">
 <h2>Complete Example<a class="headerlink" href="#complete-example" title="Link to this heading">¶</a></h2>
 <p>The following test demonstrates a complete undo / redo flow:</p>
@@ -174,6 +181,7 @@ automatic history pushes during restoration.</p>
 </pre></div>
 </div>
 </section>
+<hr class="docutils" />
 <section id="design-rationale">
 <h2>Design Rationale<a class="headerlink" href="#design-rationale" title="Link to this heading">¶</a></h2>
 <p>This design provides several important guarantees:</p>
@@ -186,6 +194,7 @@ automatic history pushes during restoration.</p>
 <p>By explicitly controlling push timing,
 <strong>SimpleAppState</strong> ensures predictable and intuitive undo / redo behavior.</p>
 </section>
+<hr class="docutils" />
 <section id="design-separation">
 <h2>Design Separation<a class="headerlink" href="#design-separation" title="Link to this heading">¶</a></h2>
 <p>Undo / redo is intentionally separated from persistence.</p>
@@ -235,6 +244,7 @@ unexpected interactions between state restoration and persistence.</p>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>

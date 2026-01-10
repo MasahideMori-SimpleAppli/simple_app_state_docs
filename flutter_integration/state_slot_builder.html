@@ -40,6 +40,7 @@
 <p>It provides a simple and explicit way to connect
 <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> to Flutter widgets,
 without changing Flutter’s rebuild model.</p>
+<hr class="docutils" />
 <section id="purpose">
 <h2>Purpose<a class="headerlink" href="#purpose" title="Link to this heading">¶</a></h2>
 <p>The purpose of <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> is limited and clear:</p>
@@ -50,6 +51,7 @@ without changing Flutter’s rebuild model.</p>
 <p>It does not store state and does not mutate state.
 State ownership always remains in <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code>.</p>
 </section>
+<hr class="docutils" />
 <section id="implementation">
 <h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">¶</a></h2>
 <p>Here is the complete implementation of <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code>:</p>
@@ -84,6 +86,7 @@ State ownership always remains in <code class="docutils literal notranslate"><sp
 </pre></div>
 </div>
 </section>
+<hr class="docutils" />
 <section id="basic-usage">
 <h2>Basic usage<a class="headerlink" href="#basic-usage" title="Link to this heading">¶</a></h2>
 <p>A typical usage looks like this:</p>
@@ -101,6 +104,7 @@ State ownership always remains in <code class="docutils literal notranslate"><sp
 <p>Inside the <code class="docutils literal notranslate"><span class="pre">builder</span></code>, the current values are obtained
 by calling <code class="docutils literal notranslate"><span class="pre">get()</span></code> on each <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code>.</p>
 </section>
+<hr class="docutils" />
 <section id="relation-to-slotstatefulwidget">
 <h2>Relation to SlotStatefulWidget<a class="headerlink" href="#relation-to-slotstatefulwidget" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> extends <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>.</p>
@@ -118,6 +122,7 @@ The actual dependency declaration is done by overriding <code class="docutils li
 </div>
 <p>This keeps the design explicit and avoids hidden behavior.</p>
 </section>
+<hr class="docutils" />
 <section id="subscriber-ids-and-rebuilds">
 <h2>Subscriber IDs and rebuilds<a class="headerlink" href="#subscriber-ids-and-rebuilds" title="Link to this heading">¶</a></h2>
 <p>Each <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> is internally registered with a unique
@@ -131,6 +136,7 @@ The actual dependency declaration is done by overriding <code class="docutils li
 <p>Subscriber IDs are managed internally.
 You do not need to create or manage them yourself.</p>
 </section>
+<hr class="docutils" />
 <section id="batch-updates">
 <h2>Batch updates<a class="headerlink" href="#batch-updates" title="Link to this heading">¶</a></h2>
 <p>When slot updates are grouped using <code class="docutils literal notranslate"><span class="pre">SimpleAppState.batch</span></code>:</p>
@@ -144,6 +150,7 @@ You do not need to create or manage them yourself.</p>
 <p>This behavior is consistent with all widgets based on
 <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>.</p>
 </section>
+<hr class="docutils" />
 <section id="what-stateslotbuilder-does-not-do">
 <h2>What StateSlotBuilder does not do<a class="headerlink" href="#what-stateslotbuilder-does-not-do" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> intentionally avoids the following:</p>
@@ -159,6 +166,7 @@ You do not need to create or manage them yourself.</p>
 <li><p>rendering and layout optimization</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> is a thin integration layer between:</p>
@@ -210,6 +218,7 @@ You do not need to create or manage them yourself.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>

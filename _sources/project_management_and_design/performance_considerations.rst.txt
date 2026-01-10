@@ -1,0 +1,114 @@
+Performance Considerations
+==========================
+
+This chapter explains how slot boundaries and state builders
+affect performance in Flutter applications using SimpleAppState.
+
+Performance in SimpleAppState is not an accident —
+it is a direct result of explicit design choices.
+
+----
+
+How rebuilds work
+-----------------
+
+``SlotStatefulWidget`` rebuilds when any of its declared slots change.
+
+This behavior is intentional:
+
+* Rebuild triggers are predictable
+* The screen reacts as a single unit
+* The relationship between state and UI is clear
+
+However, in large or complex screens,
+rebuilding the entire widget tree can be more work
+than is actually necessary.
+
+----
+
+Localizing rebuilds with StateSlotBuilder
+-----------------------------------------
+
+``StateSlotBuilder`` allows rebuilds to be limited
+to a specific subtree.
+
+.. code-block:: dart
+
+   Column(
+     children: [
+       StaticHeader(),
+       StateSlotBuilder(
+         slotList: [counterSlot],
+         builder: (context) {
+           final counter = counterSlot.get();
+           return Text(counter.value.toString());
+         },
+       ),
+       StaticFooter(),
+     ],
+   )
+
+When ``counterSlot`` changes:
+
+* Only the text widget is rebuilt
+* The header and footer remain untouched
+
+This reduces unnecessary widget work
+and improves performance on complex screens.
+
+----
+
+Incremental adoption in existing apps
+-------------------------------------
+
+When introducing SimpleAppState into an existing application,
+screens are often already large.
+
+Refactoring the entire screen into
+a single ``SlotStatefulWidget`` may not be practical at first.
+
+``StateSlotBuilder`` allows a gradual approach:
+
+* Wrap only the parts that need to react to state
+* Leave the rest of the UI unchanged
+* Improve structure over time
+
+This makes migration safer and less disruptive.
+
+----
+
+Design first, optimize where needed
+-----------------------------------
+
+The recommended workflow is:
+
+1. Use ``SlotStatefulWidget`` to define clear slot boundaries
+2. Build the screen in a straightforward way
+3. Introduce ``StateSlotBuilder`` only where rebuilds are too expensive
+
+This ensures that performance optimization
+does not undermine design clarity.
+
+----
+
+A conscious trade-off
+----------------------
+
+Using ``StateSlotBuilder`` is always a trade-off:
+
+* **Pros**
+  * Finer-grained rebuilds
+  * Better performance in large trees
+
+* **Cons**
+  * Slot dependencies move closer to UI code
+  * Screen-level state becomes less visible
+
+For this reason, performance tuning in SimpleAppState
+is always an explicit, intentional decision.
+
+Nothing is hidden.
+Nothing happens by accident.
+
+This keeps both performance and maintainability
+under the control of the development team.

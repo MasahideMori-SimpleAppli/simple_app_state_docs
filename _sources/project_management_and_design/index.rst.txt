@@ -1,0 +1,23 @@
+Project Management and Design
+=============================
+
+This section explains how SimpleAppState’s design
+supports **team-based development**.
+
+These chapters focus not on how to write widgets,
+but on how to **structure responsibility, ownership,
+and performance** across a codebase when multiple people
+work on the same application.
+
+They are especially useful for architects, tech leads,
+and anyone responsible for keeping a large project
+maintainable over time.
+
+
+.. toctree::
+   :maxdepth: 1
+
+   slot_boundaries
+   state_builder_strategy
+   performance_considerations
+   worked_example_screen_design

@@ -7,6 +7,8 @@ This section describes how **SimpleAppState** can be tested effectively.
 Because **SimpleAppState** is deterministic and side-effect free by design,
 most tests are simple and predictable.
 
+----
+
 Overview
 ========
 
@@ -17,6 +19,8 @@ A dedicated debug listener allows developers to:
 * Track every state mutation
 * Observe old and new values
 * Inspect behavior without modifying application logic
+
+----
 
 Debug Listener
 ==============
@@ -49,6 +53,8 @@ Each callback provides:
 
 This makes every state transition observable.
 
+----
+
 Using StateSlot as a Test Key
 =============================
 
@@ -63,6 +69,8 @@ Each slot has:
 In Flutter applications, widgets subscribe explicitly to slots.
 As a result, observing slot changes is often sufficient to reason
 about UI behavior.
+
+----
 
 Example
 =======
@@ -82,6 +90,8 @@ Example
 
 The collected log provides a complete trace of state transitions.
 
+----
+
 Deterministic Behavior
 ======================
 
@@ -93,6 +103,8 @@ Deterministic Behavior
 
 This allows tests to assert results immediately after updates,
 without timing control or async handling.
+
+----
 
 Testing Perspective
 ===================

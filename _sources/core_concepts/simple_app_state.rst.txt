@@ -7,6 +7,8 @@ It is intentionally independent from Flutter widgets and the widget tree.
 This page explains what ``SimpleAppState`` is responsible for
 and how it should be used.
 
+----
+
 What SimpleAppState owns
 ------------------------
 
@@ -24,6 +26,7 @@ It does **not** own:
 
 This separation keeps state lifetime explicit and predictable.
 
+----
 
 Creating a SimpleAppState
 -------------------------
@@ -38,6 +41,7 @@ and lives for the entire lifetime of the app.
 It is usually defined as a global or top-level variable,
 often in ``ui/app_state.dart``.
 
+----
 
 Slots define state, not fields
 ------------------------------
@@ -55,6 +59,8 @@ This design ensures:
 - state is explicitly declared
 - slot types are fixed on first access
 - state identity is stable and globally referenceable
+
+----
 
 Caster for typed collections
 -----------------------------
@@ -89,6 +95,7 @@ Notes:
 - Nested collections always need a caster to ensure type safety.
 - After cloning or `fromDict/loadFromDict`, the caster guarantees that runtime type errors are avoided.
 
+----
 
 Value semantics and safety
 --------------------------
@@ -111,6 +118,7 @@ This guarantees:
 
 State can only be changed via ``set`` or ``update``.
 
+----
 
 Batch updates
 -------------
@@ -134,6 +142,7 @@ During a batch:
 Batching is a first-class concept and should be used
 whenever multiple slots are updated together.
 
+----
 
 Cloning and snapshots
 ---------------------
@@ -182,6 +191,7 @@ This separation between *state data* and *runtime wiring*
 keeps undo and restore logic explicit and predictable.
 For more information on these topics, see :doc:`../advanced/index`.
 
+----
 
 What SimpleAppState is not
 --------------------------
@@ -197,6 +207,7 @@ If a widget rebuilds, you should always be able to answer:
 
 *Which slot caused this rebuild?*
 
+----
 
 API
 --------------------------

@@ -39,6 +39,7 @@
 It is intentionally independent from Flutter widgets and the widget tree.</p>
 <p>This page explains what <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> is responsible for
 and how it should be used.</p>
+<hr class="docutils" />
 <section id="what-simpleappstate-owns">
 <h2>What SimpleAppState owns<a class="headerlink" href="#what-simpleappstate-owns" title="Link to this heading">¶</a></h2>
 <p>A <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> instance owns:</p>
@@ -55,6 +56,7 @@ and how it should be used.</p>
 </ul>
 <p>This separation keeps state lifetime explicit and predictable.</p>
 </section>
+<hr class="docutils" />
 <section id="creating-a-simpleappstate">
 <h2>Creating a SimpleAppState<a class="headerlink" href="#creating-a-simpleappstate" title="Link to this heading">¶</a></h2>
 <p>In most applications, <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> is created once
@@ -65,6 +67,7 @@ and lives for the entire lifetime of the app.</p>
 <p>It is usually defined as a global or top-level variable,
 often in <code class="docutils literal notranslate"><span class="pre">ui/app_state.dart</span></code>.</p>
 </section>
+<hr class="docutils" />
 <section id="slots-define-state-not-fields">
 <h2>Slots define state, not fields<a class="headerlink" href="#slots-define-state-not-fields" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> does not expose state as public fields.</p>
@@ -79,6 +82,7 @@ often in <code class="docutils literal notranslate"><span class="pre">ui/app_sta
 <li><p>state identity is stable and globally referenceable</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="caster-for-typed-collections">
 <h2>Caster for typed collections<a class="headerlink" href="#caster-for-typed-collections" title="Link to this heading">¶</a></h2>
 <p>Sometimes you store typed collections like <cite>List&lt;T&gt;</cite> or <cite>Map&lt;String, T&gt;</cite> in a slot.
@@ -107,6 +111,7 @@ you must provide a <cite>caster</cite> function.</p>
 <li><p>After cloning or <cite>fromDict/loadFromDict</cite>, the caster guarantees that runtime type errors are avoided.</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="value-semantics-and-safety">
 <h2>Value semantics and safety<a class="headerlink" href="#value-semantics-and-safety" title="Link to this heading">¶</a></h2>
 <p>All values stored in <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> follow value semantics.</p>
@@ -123,6 +128,7 @@ you must provide a <cite>caster</cite> function.</p>
 </ul>
 <p>State can only be changed via <code class="docutils literal notranslate"><span class="pre">set</span></code> or <code class="docutils literal notranslate"><span class="pre">update</span></code>.</p>
 </section>
+<hr class="docutils" />
 <section id="batch-updates">
 <h2>Batch updates<a class="headerlink" href="#batch-updates" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> supports explicit batch updates:</p>
@@ -142,6 +148,7 @@ you must provide a <cite>caster</cite> function.</p>
 <p>Batching is a first-class concept and should be used
 whenever multiple slots are updated together.</p>
 </section>
+<hr class="docutils" />
 <section id="cloning-and-snapshots">
 <h2>Cloning and snapshots<a class="headerlink" href="#cloning-and-snapshots" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> supports deep cloning of state data:</p>
@@ -181,6 +188,7 @@ while preserving:</p>
 keeps undo and restore logic explicit and predictable.
 For more information on these topics, see <a class="reference internal" href="../advanced/index.html"><span class="doc">Advanced Topics</span></a>.</p>
 </section>
+<hr class="docutils" />
 <section id="what-simpleappstate-is-not">
 <h2>What SimpleAppState is not<a class="headerlink" href="#what-simpleappstate-is-not" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> is not:</p>
@@ -193,6 +201,7 @@ For more information on these topics, see <a class="reference internal" href="..
 If a widget rebuilds, you should always be able to answer:</p>
 <p><em>Which slot caused this rebuild?</em></p>
 </section>
+<hr class="docutils" />
 <section id="api">
 <h2>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://pub.dev/documentation/simple_app_state/latest/simple_app_state/SimpleAppState-class.html">SimpleAppState</a></p>
@@ -237,6 +246,7 @@ If a widget rebuilds, you should always be able to answer:</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>

@@ -1,0 +1,172 @@
+Slot Boundaries and Ownership
+==============================
+
+This chapter explains how **slot boundaries** define
+the ownership, responsibility, and allowed state access
+of a widget in SimpleAppState.
+
+In team-based development, this is not just a technical detail —
+it is a **contract** between designers, implementers, and reviewers.
+
+----
+
+What is a slot boundary?
+-------------------------
+
+A *slot boundary* is the set of ``StateSlot`` objects
+that a widget is allowed to depend on.
+
+In SimpleAppState, this boundary is declared explicitly
+by ``SlotStatefulWidget.slots``.
+
+.. code-block:: dart
+
+   class UserScreen extends SlotStatefulWidget {
+     const UserScreen({super.key});
+
+     @override
+     List<StateSlot> get slots => [
+       userSlot,
+       settingsSlot,
+     ];
+
+     @override
+     State<UserScreen> createState() => _UserScreenState();
+   }
+
+This declaration means:
+
+* This screen is allowed to read ``userSlot`` and ``settingsSlot``
+* Only these slots will trigger rebuilds
+* No other application state should influence this widget
+
+The boundary is **structural**, not accidental.
+
+----
+
+Why explicit boundaries matter
+------------------------------
+
+In many state management systems,
+widgets can freely access any state at any time.
+
+This makes it easy to start coding,
+but difficult to answer later:
+
+* What state does this screen really depend on?
+* Why does it rebuild?
+* Is this widget coupled to something it should not be?
+
+SimpleAppState answers these questions up front
+by forcing the slot boundary to be declared explicitly.
+
+This turns an implicit dependency into a visible design decision.
+
+----
+
+Ownership and responsibility
+----------------------------
+
+Slot boundaries also define **ownership**.
+
+When a widget declares:
+
+.. code-block:: dart
+
+   List<StateSlot> get slots => [ userSlot, settingsSlot ];
+
+it is making a statement:
+
+* “This widget owns the responsibility of reacting to these states”
+* “These states are part of this widget’s contract”
+
+Everything outside this list is, by design, out of scope.
+
+----
+
+Delegating work safely
+-----------------------
+
+This model works especially well when work is split
+between a manager (or architect) and implementers.
+
+A typical delegation might be:
+
+* “Implement ``UserScreen``”
+* “You may use ``userSlot`` and ``settingsSlot``”
+* “Do not depend on any other application state”
+
+Because the boundary is declared in ``slots``,
+the implementer does not have to guess what is allowed.
+
+Inside the state class, they can focus purely on UI:
+
+.. code-block:: dart
+
+   class _UserScreenState extends SlotState<UserScreen> {
+     @override
+     Widget build(BuildContext context) {
+       final user = userSlot.get();
+       final settings = settingsSlot.get();
+
+       return Column(
+         children: [
+           Text(user.name),
+           Switch(
+             value: settings.darkMode,
+             onChanged: (v) {
+               settingsSlot.update(
+                 settings.copyWith(darkMode: v),
+               );
+             },
+           ),
+         ],
+       );
+     }
+   }
+
+Even if the implementer is not familiar with the rest
+of the application, they cannot accidentally
+subscribe to unrelated state.
+
+----
+
+Preventing accidental coupling
+-------------------------------
+
+Some state-management approaches allow widgets to dynamically subscribe to
+state inside build methods (often called “watch”-style APIs).
+
+While convenient, this often leads to:
+
+* Dependencies scattered across the widget tree
+* Unclear rebuild triggers
+* Difficult code reviews
+* Accidental coupling to unrelated state
+
+By contrast, ``SlotStatefulWidget`` requires
+all slot dependencies to be declared in one place.
+
+This makes the widget’s relationship to application state
+easy to see, easy to review, and easy to reason about.
+
+----
+
+A deliberate design constraint
+-------------------------------
+
+Requiring explicit slot boundaries may feel restrictive.
+
+However, this restriction acts as a guardrail.
+
+It encourages:
+
+* Clear ownership of state
+* Predictable rebuild behavior
+* Safer task delegation
+* Long-term maintainability in large teams
+
+In SimpleAppState, some convenience is intentionally traded
+for clarity and stability.
+
+Slot boundaries are one of the most important examples of this.

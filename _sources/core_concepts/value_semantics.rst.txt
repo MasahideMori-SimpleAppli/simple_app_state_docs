@@ -13,6 +13,7 @@ You change state by *replacing values*.
 This page explains what value semantics means in practice
 and why SimpleAppState is designed this way.
 
+----
 
 The most important rule
 -----------------------
@@ -31,6 +32,7 @@ Example:
 This is not a bug.
 It is the core design.
 
+----
 
 Why get() returns a copy
 ------------------------
@@ -60,6 +62,7 @@ Silent changes are dangerous because:
 
 Returning a copy makes all state changes explicit.
 
+----
 
 How state should be updated
 ---------------------------
@@ -92,6 +95,7 @@ In both cases:
 
 This is the only way state can change.
 
+----
 
 Thinking in "before" and "after"
 --------------------------------
@@ -112,6 +116,7 @@ Each update is a clear state transition.
 This model is easy to reason about,
 especially for beginners.
 
+----
 
 Why this matters for widgets
 ----------------------------
@@ -131,6 +136,7 @@ Because SimpleAppState controls all writes:
 
 This is why rebuild behavior is predictable.
 
+----
 
 Value semantics and undo / redo
 -------------------------------
@@ -151,6 +157,7 @@ This makes features like:
 
 much easier to implement correctly.
 
+----
 
 What values can be stored
 -------------------------
@@ -166,6 +173,7 @@ to ensure they are safe to store.
 This prevents subtle bugs caused by
 non-copyable or externally mutable objects.
 
+----
 
 This may feel unfamiliar at first
 ---------------------------------
@@ -183,6 +191,7 @@ However, it has important benefits:
 After some time, many developers find it
 *more comfortable* than mutable state.
 
+----
 
 Summary
 -------

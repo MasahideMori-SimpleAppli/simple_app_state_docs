@@ -1,0 +1,268 @@
+Worked Example: Designing a Screen with Slot Boundaries
+=========================================================
+
+This chapter presents a complete screen example
+that applies the design principles discussed
+in this section of the documentation.
+
+The goal is not to introduce new APIs,
+but to show how **slot boundaries, ownership,
+and rebuild control** come together
+in a real Flutter screen.
+
+----
+
+What this example demonstrates
+-------------------------------
+
+This example uses the same simple counter-and-log
+application that appears earlier in the documentation.
+
+However, instead of focusing on minimal code,
+it focuses on **explicit design**:
+
+* Which state does this screen depend on?
+* Who is allowed to access that state?
+* What parts of the UI rebuild when it changes?
+
+These questions are answered structurally,
+before any UI layout is written.
+
+----
+
+The screen-level contract
+-------------------------
+
+The example screen is implemented as a ``SlotStatefulWidget``.
+
+At the very top of the widget,
+its slot dependencies are declared explicitly.
+
+This declaration defines:
+
+* The full set of application state
+  that the screen is allowed to read
+* The state that can trigger rebuilds
+* The boundary of responsibility for this screen
+
+This makes the screen’s relationship to state
+visible and reviewable in one place.
+
+This means that architects or team leads can simply copy and paste the code below and modify it slightly
+to create the file they hand over to their implementers.
+
+.. code-block:: dart
+
+    /// Slot definition file. e.g. app_state.dart
+    import 'package:flutter/foundation.dart';
+    import 'package:flutter/material.dart';
+    import 'package:simple_app_state/simple_app_state.dart';
+
+    // state and slots
+    final appState = SimpleAppState();
+    final countSlot = appState.slot<int>('count', initial: 0);
+    final logsSlot = appState.slot<List<String>>('logs', initial: [], caster: (raw) => (raw as List).cast<String>());
+
+.. code-block:: dart
+
+    /// Class template file.
+    import 'package:flutter/foundation.dart';
+    import 'package:flutter/material.dart';
+    import 'package:simple_app_state/simple_app_state.dart';
+
+    class CounterPage extends SlotStatefulWidget {
+      @override
+      List<StateSlot> get slots => [countSlot, logsSlot];
+
+      @override
+      State<CounterPage> createState() => _CounterPageState();
+    }
+
+    class _CounterPageState extends SlotState<CounterPage> {
+      @override
+      Widget build(BuildContext context) {
+        final count = countSlot.get();
+        final logs = logsSlot.get();
+        return CreatedNewWidget();
+      }
+    }
+
+Implementation inside the boundary
+----------------------------------
+
+Inside the state class,
+the UI implementation is free to read and update
+any of the declared slots.
+
+The developer does not need to think about
+subscription management or rebuild wiring.
+
+All of that is handled by the slot boundary
+declared at the widget level.
+
+From the implementer’s point of view,
+they are simply writing a normal Flutter ``build()`` method
+with access to a clearly defined set of state.
+
+----
+
+How this differs from a builder-based approach
+----------------------------------------------
+
+Earlier examples in this documentation
+use ``StateSlotBuilder`` to connect UI to state.
+
+That approach is ideal for:
+
+* Small reactive widgets
+* Incremental adoption
+* Minimal examples
+
+However, it does not express the **full state surface**
+of a screen in one place.
+
+In this worked example,
+the slot boundary is declared at the top level,
+and the UI is built within that contract.
+
+This makes:
+
+* Dependencies obvious
+* Reviews easier
+* Future refactoring safer
+
+----
+
+A complete, intentional design
+-------------------------------
+
+This screen is not just a collection of widgets.
+It is a **designed unit** with a clear relationship
+to application state.
+
+That is the core idea behind SimpleAppState’s
+Flutter integration:
+
+State access should be easy,
+but **state ownership should be explicit**.
+
+This example shows how that philosophy
+looks in real code.
+
+----
+
+.. code-block:: dart
+
+    import 'package:flutter/foundation.dart';
+    import 'package:flutter/material.dart';
+    import 'package:simple_app_state/simple_app_state.dart';
+
+    ///////////////////////////////////////////////////////////////////////////////
+    ///
+    /// Application State Definition
+    ///
+    ///////////////////////////////////////////////////////////////////////////////
+
+    final appState = SimpleAppState();
+
+    final countSlot = appState.slot<int>('count', initial: 0);
+
+    final logsSlot = appState.slot<List<String>>(
+      'logs',
+      initial: [],
+      caster: (raw) => (raw as List).cast<String>(),
+    );
+
+    void main() {
+      if (kDebugMode) {
+        appState.setDebugListener((slot, oldV, newV) {
+          debugPrint(
+            "Changed Slot:${slot.name}, Value changed from:$oldV, to:$newV",
+          );
+        });
+      }
+
+      runApp(const MyApp());
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    ///
+    /// Flutter Application
+    ///
+    ///////////////////////////////////////////////////////////////////////////////
+
+    class MyApp extends StatelessWidget {
+      const MyApp({super.key});
+
+      @override
+      Widget build(BuildContext context) {
+        return const MaterialApp(home: CounterPage());
+      }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+    ///
+    /// Screen with explicit slot boundary
+    ///
+    ///////////////////////////////////////////////////////////////////////////////
+
+    class CounterPage extends SlotStatefulWidget {
+      const CounterPage({super.key});
+
+      @override
+      List<StateSlot> get slots => [
+            countSlot,
+            logsSlot,
+          ];
+
+      @override
+      State<CounterPage> createState() => _CounterPageState();
+    }
+
+    class _CounterPageState extends SlotState<CounterPage> {
+      @override
+      Widget build(BuildContext context) {
+        final count = countSlot.get();
+        final logs = logsSlot.get();
+
+        return Scaffold(
+          appBar: AppBar(title: const Text('SimpleAppState Example')),
+          body: Column(
+            children: [
+              const SizedBox(height: 32),
+
+              Text(
+                'Count: $count',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              const SizedBox(height: 24),
+
+              ElevatedButton(
+                onPressed: () {
+                  appState.batch(() {
+                    countSlot.update((v) => v + 1);
+
+                    logsSlot.update((oldCopy) {
+                      oldCopy.add('Increment at ${DateTime.now()}');
+                      return oldCopy;
+                    });
+                  });
+                },
+                child: const Text('Increment (batched)'),
+              ),
+
+              const Divider(height: 32),
+
+              Expanded(
+                child: ListView.builder(
+                  itemCount: logs.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(title: Text(logs[index]));
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    }

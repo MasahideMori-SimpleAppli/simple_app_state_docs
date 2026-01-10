@@ -13,6 +13,7 @@ This page explains:
 - what it guarantees
 - what it deliberately does *not* control
 
+----
 
 The problem batching solves
 ---------------------------
@@ -32,6 +33,7 @@ notifying UI listeners after every change is often unnecessary.
 
 Batch updates exist to group these notifications.
 
+----
 
 What batch() does
 -----------------
@@ -59,6 +61,7 @@ After the batch finishes:
 - collected notifications are flushed
 - UI listeners are notified once per subscriber ID (That is, once for each widget's state that needs to be updated)
 
+----
 
 Batching does not delay logic
 -----------------------------
@@ -84,6 +87,7 @@ The final value is ``2``.
 Batching only controls *when UI listeners are notified*,
 not *how state changes*.
 
+----
 
 UI listener grouping by subscriber ID
 --------------------------------------
@@ -111,6 +115,7 @@ Batching ensures that:
 - SimpleAppState does not *request* duplicate rebuilds
 - notification intent is minimal and explicit
 
+----
 
 Nested batches are safe
 -----------------------
@@ -132,6 +137,7 @@ This allows helper functions to use ``batch``
 without needing to know whether they are already
 inside another batch.
 
+----
 
 State-level listener (undo / redo, persistence)
 -----------------------------------------------
@@ -174,6 +180,7 @@ after both updates are applied.
 Intermediate states inside the batch
 are intentionally not reported.
 
+----
 
 Batching during loading and restore
 -----------------------------------
@@ -195,6 +202,7 @@ In these cases:
 This prevents partial updates
 and unintended intermediate rebuilds.
 
+----
 
 When you should use batch()
 ---------------------------
@@ -215,6 +223,7 @@ Typical cases:
 For single-slot updates,
 batching is usually unnecessary.
 
+----
 
 Summary
 -------

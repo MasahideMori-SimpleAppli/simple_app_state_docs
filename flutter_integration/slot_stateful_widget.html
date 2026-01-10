@@ -45,6 +45,7 @@ to connect Flutter widgets to <code class="docutils literal notranslate"><span c
 </ul>
 <p>This page explains how <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> works
 and how it fits into the rebuild model described earlier.</p>
+<hr class="docutils" />
 <section id="what-slotstatefulwidget-does">
 <h2>What SlotStatefulWidget does<a class="headerlink" href="#what-slotstatefulwidget-does" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> is a small helper on top of Flutter’s
@@ -64,6 +65,7 @@ normal <code class="docutils literal notranslate"><span class="pre">StatefulWidg
 </ul>
 <p>Those responsibilities stay where they belong.</p>
 </section>
+<hr class="docutils" />
 <section id="what-is-a-subscriber-id">
 <h2>What is a subscriber ID?<a class="headerlink" href="#what-is-a-subscriber-id" title="Link to this heading">¶</a></h2>
 <p>A <strong>subscriber ID</strong> is an internal identifier
@@ -83,6 +85,7 @@ one subscriber ID per widget state.</p>
 <p>Details of how notifications are grouped
 are explained in <a class="reference internal" href="rebuild_model.html"><span class="doc">Rebuild Model</span></a>.</p>
 </section>
+<hr class="docutils" />
 <section id="declaring-slot-dependencies">
 <h2>Declaring slot dependencies<a class="headerlink" href="#declaring-slot-dependencies" title="Link to this heading">¶</a></h2>
 <p>A widget declares its state dependencies
@@ -104,6 +107,7 @@ by overriding the <code class="docutils literal notranslate"><span class="pre">s
 If a slot is not listed, the widget will not rebuild
 when that slot changes.</p>
 </section>
+<hr class="docutils" />
 <section id="reading-slot-values-in-build">
 <h2>Reading slot values in build()<a class="headerlink" href="#reading-slot-values-in-build" title="Link to this heading">¶</a></h2>
 <p>Inside <code class="docutils literal notranslate"><span class="pre">build</span></code>, you read slot values normally:</p>
@@ -125,6 +129,7 @@ when that slot changes.</p>
 </ul>
 <p>This keeps dependencies explicit and visible.</p>
 </section>
+<hr class="docutils" />
 <section id="how-rebuilds-are-triggered">
 <h2>How rebuilds are triggered<a class="headerlink" href="#how-rebuilds-are-triggered" title="Link to this heading">¶</a></h2>
 <p>When a listed slot changes:</p>
@@ -138,6 +143,7 @@ when that slot changes.</p>
 <p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> does not bypass
 Flutter’s rebuild system.</p>
 </section>
+<hr class="docutils" />
 <section id="multiple-slots-one-widget">
 <h2>Multiple slots, one widget<a class="headerlink" href="#multiple-slots-one-widget" title="Link to this heading">¶</a></h2>
 <p>A widget can depend on multiple slots:</p>
@@ -158,6 +164,7 @@ Flutter’s rebuild system.</p>
 </ul>
 <p>Actual rebuild behavior is still controlled by Flutter.</p>
 </section>
+<hr class="docutils" />
 <section id="lifecycle-and-cleanup">
 <h2>Lifecycle and cleanup<a class="headerlink" href="#lifecycle-and-cleanup" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> handles listener cleanup automatically.</p>
@@ -174,6 +181,7 @@ Flutter’s rebuild system.</p>
 <li><p>unexpected rebuilds</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="why-this-widget-exists">
 <h2>Why this widget exists<a class="headerlink" href="#why-this-widget-exists" title="Link to this heading">¶</a></h2>
 <p>Without <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>,
@@ -189,6 +197,7 @@ into a small, explicit abstraction.</p>
 <p>It is not required,
 but it is strongly recommended for clarity and safety.</p>
 </section>
+<hr class="docutils" />
 <section id="what-slotstatefulwidget-is-not">
 <h2>What SlotStatefulWidget is not<a class="headerlink" href="#what-slotstatefulwidget-is-not" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> is not:</p>
@@ -202,6 +211,7 @@ but it is strongly recommended for clarity and safety.</p>
 between <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> notifications
 and Flutter’s rebuild mechanism.</p>
 </section>
+<hr class="docutils" />
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>:</p>
@@ -256,6 +266,7 @@ not magic.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>

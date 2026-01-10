@@ -16,6 +16,11 @@ In SimpleAppState, application state lives **outside** the widget tree. This mak
 
     final appState = SimpleAppState();
     final countSlot = appState.slot<int>('count', initial: 0);
+    final logsSlot = appState.slot<List<String>>(
+      'logs',
+      initial: [],
+      caster: (raw) => (raw as List).cast<String>(),
+    );
 
 * **SimpleAppState instance:** A central container for all your data.
 * **StateSlot:** A specific "drawer" in that container. Each slot:
@@ -35,10 +40,13 @@ You might notice the ``caster`` property in the ``logsSlot`` definition:
 SimpleAppState is designed to keep your data safe by performing "deep copies" (creating a fresh duplicate of your data). However, because of how Dart works, when a List or Map is copied, it sometimes "loses" its specific type information (e.g., it becomes a generic ``List<dynamic>`` instead of ``List<String>``).
 
 The ``caster`` is a simple helper function that:
+
 - Ensures the data **maintains the correct type** after being copied.
 - Acts as a **safety guard** to make sure only the correct type of data enters the slot.
 
 For simple types like ``int`` or ``String``, you don't need a caster. But for **Lists and Maps**, always include it to keep your code type-safe and prevent errors.
+
+----
 
 2. Reactive UI: How Widgets "Listen"
 ------------------------------------
@@ -57,6 +65,8 @@ Widgets do not "own" application state; they **subscribe** to it. When a slot's 
 
 * **StateSlotBuilder:** A specialized widget that manages the subscription for you.
 * **Minimal Rebuilds:** If you have 10 slots but only subscribe to `countSlot`, changes in other slots will not trigger a rebuild of this widget. This keeps your app performant.
+
+----
 
 3. Logic: Updating State Atomically
 -----------------------------------
@@ -123,6 +133,8 @@ The lifecycle of a SimpleAppState app always follows this loop:
 2.  **Display:** Use ``StateSlotBuilder`` to show the value in the UI.
 3.  **Act:** Call ``update()`` or ``set()`` from a button or event.
 4.  **React:** The UI automatically updates to reflect the new state.
+
+----
 
 Next step
 ---------

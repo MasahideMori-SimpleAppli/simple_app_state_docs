@@ -12,6 +12,7 @@ By the end of this page, you will have:
 
 No prior knowledge of SimpleAppState is required.
 
+----
 
 Prerequisites
 -------------
@@ -38,6 +39,7 @@ After installation, verify your setup:
 
 Make sure there are no blocking issues before continuing.
 
+----
 
 Create a new Flutter project
 ----------------------------
@@ -58,6 +60,7 @@ Run the default counter app once to confirm everything works:
 You should see Flutter’s standard counter example running.
 This confirms that your environment is set up correctly.
 
+----
 
 Add SimpleAppState
 ------------------
@@ -78,6 +81,7 @@ Then fetch the dependencies:
 
    flutter pub get
 
+----
 
 Replace ``lib/main.dart``
 -------------------------
@@ -224,6 +228,8 @@ Complete example
       }
     }
 
+----
+
 Run the application
 -------------------
 
@@ -239,6 +245,7 @@ You should see the counter value update immediately.
 Congratulations — you are now running
 a Flutter app powered by **SimpleAppState** 🎉
 
+----
 
 What just happened?
 -------------------
@@ -253,6 +260,7 @@ Even in this small example, several important ideas are visible:
 Do not worry if all details are not clear yet.
 The next pages explain these ideas step by step.
 
+----
 
 Next step
 ---------

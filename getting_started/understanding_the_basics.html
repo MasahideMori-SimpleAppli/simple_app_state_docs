@@ -43,6 +43,11 @@
 <p>In SimpleAppState, application state lives <strong>outside</strong> the widget tree. This makes the state independent of the UI lifecycle.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">appState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span>
 <span class="kd">final</span><span class="w"> </span><span class="n">countSlot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">logsSlot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;&gt;</span><span class="p">(</span>
+<span class="w">  </span><span class="s1">&#39;logs&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">initial:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nl">caster:</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">List</span><span class="p">).</span><span class="n">cast</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(),</span>
+<span class="p">);</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -64,12 +69,15 @@
 </pre></div>
 </div>
 <p>SimpleAppState is designed to keep your data safe by performing “deep copies” (creating a fresh duplicate of your data). However, because of how Dart works, when a List or Map is copied, it sometimes “loses” its specific type information (e.g., it becomes a generic <code class="docutils literal notranslate"><span class="pre">List&lt;dynamic&gt;</span></code> instead of <code class="docutils literal notranslate"><span class="pre">List&lt;String&gt;</span></code>).</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">caster</span></code> is a simple helper function that:
-- Ensures the data <strong>maintains the correct type</strong> after being copied.
-- Acts as a <strong>safety guard</strong> to make sure only the correct type of data enters the slot.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">caster</span></code> is a simple helper function that:</p>
+<ul class="simple">
+<li><p>Ensures the data <strong>maintains the correct type</strong> after being copied.</p></li>
+<li><p>Acts as a <strong>safety guard</strong> to make sure only the correct type of data enters the slot.</p></li>
+</ul>
 <p>For simple types like <code class="docutils literal notranslate"><span class="pre">int</span></code> or <code class="docutils literal notranslate"><span class="pre">String</span></code>, you don’t need a caster. But for <strong>Lists and Maps</strong>, always include it to keep your code type-safe and prevent errors.</p>
 </section>
 </section>
+<hr class="docutils" />
 <section id="reactive-ui-how-widgets-listen">
 <h2>2. Reactive UI: How Widgets “Listen”<a class="headerlink" href="#reactive-ui-how-widgets-listen" title="Link to this heading">¶</a></h2>
 <p>Widgets do not “own” application state; they <strong>subscribe</strong> to it. When a slot’s value changes, only the widgets listening to that specific slot will rebuild.</p>
@@ -87,6 +95,7 @@
 <li><p><strong>Minimal Rebuilds:</strong> If you have 10 slots but only subscribe to <cite>countSlot</cite>, changes in other slots will not trigger a rebuild of this widget. This keeps your app performant.</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="logic-updating-state-atomically">
 <h2>3. Logic: Updating State Atomically<a class="headerlink" href="#logic-updating-state-atomically" title="Link to this heading">¶</a></h2>
 <p>To change the UI, you change the state. SimpleAppState provides two ways to modify slots: <code class="docutils literal notranslate"><span class="pre">set()</span></code> and <code class="docutils literal notranslate"><span class="pre">update()</span></code>.</p>
@@ -146,6 +155,7 @@
 <li><p><strong>React:</strong> The UI automatically updates to reflect the new state.</p></li>
 </ol>
 </section>
+<hr class="docutils" />
 <section id="next-step">
 <h2>Next step<a class="headerlink" href="#next-step" title="Link to this heading">¶</a></h2>
 <p>Now that you understand the “How” and “Why” of the code, let’s look at how to organize these pieces into a professional directory structure.</p>
@@ -191,6 +201,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>

@@ -14,7 +14,7 @@
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Appendix" href="../appendix/index.html" />
+    <link rel="next" title="Project Management and Design" href="../project_management_and_design/index.html" />
     <link rel="prev" title="Undo and Redo" href="undo_redo.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -38,6 +38,7 @@
 <p>This section describes how <strong>SimpleAppState</strong> can be tested effectively.</p>
 <p>Because <strong>SimpleAppState</strong> is deterministic and side-effect free by design,
 most tests are simple and predictable.</p>
+<hr class="docutils" />
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
 <p>Testing <strong>SimpleAppState</strong> is based on observing state changes.</p>
@@ -48,6 +49,7 @@ most tests are simple and predictable.</p>
 <li><p>Inspect behavior without modifying application logic</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="debug-listener">
 <h2>Debug Listener<a class="headerlink" href="#debug-listener" title="Link to this heading">¶</a></h2>
 <p><strong>SimpleAppState</strong> provides a debug listener intended for development
@@ -74,6 +76,7 @@ including intermediate updates inside batch operations.</p>
 <p>This makes every state transition observable.</p>
 </section>
 </section>
+<hr class="docutils" />
 <section id="using-stateslot-as-a-test-key">
 <h2>Using StateSlot as a Test Key<a class="headerlink" href="#using-stateslot-as-a-test-key" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> acts as a stable observation key.</p>
@@ -87,6 +90,7 @@ including intermediate updates inside batch operations.</p>
 As a result, observing slot changes is often sufficient to reason
 about UI behavior.</p>
 </section>
+<hr class="docutils" />
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span>
@@ -103,6 +107,7 @@ about UI behavior.</p>
 </div>
 <p>The collected log provides a complete trace of state transitions.</p>
 </section>
+<hr class="docutils" />
 <section id="deterministic-behavior">
 <h2>Deterministic Behavior<a class="headerlink" href="#deterministic-behavior" title="Link to this heading">¶</a></h2>
 <p><strong>SimpleAppState</strong> is fully deterministic:</p>
@@ -114,6 +119,7 @@ about UI behavior.</p>
 <p>This allows tests to assert results immediately after updates,
 without timing control or async handling.</p>
 </section>
+<hr class="docutils" />
 <section id="testing-perspective">
 <h2>Testing Perspective<a class="headerlink" href="#testing-perspective" title="Link to this heading">¶</a></h2>
 <p>Because <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> sits at the boundary between state and UI:</p>
@@ -163,6 +169,7 @@ without timing control or async handling.</p>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Testing</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>
@@ -173,7 +180,7 @@ without timing control or async handling.</p>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Advanced Topics</a><ul>
       <li>Previous: <a href="undo_redo.html" title="previous chapter">Undo and Redo</a></li>
-      <li>Next: <a href="../appendix/index.html" title="next chapter">Appendix</a></li>
+      <li>Next: <a href="../project_management_and_design/index.html" title="next chapter">Project Management and Design</a></li>
   </ul></li>
   </ul></li>
 </ul>

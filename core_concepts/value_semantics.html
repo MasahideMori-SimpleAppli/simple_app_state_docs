@@ -42,6 +42,7 @@
 You change state by <em>replacing values</em>.</p>
 <p>This page explains what value semantics means in practice
 and why SimpleAppState is designed this way.</p>
+<hr class="docutils" />
 <section id="the-most-important-rule">
 <h2>The most important rule<a class="headerlink" href="#the-most-important-rule" title="Link to this heading">¶</a></h2>
 <p>If you remember only one rule, remember this:</p>
@@ -54,6 +55,7 @@ and why SimpleAppState is designed this way.</p>
 <p>This is not a bug.
 It is the core design.</p>
 </section>
+<hr class="docutils" />
 <section id="why-get-returns-a-copy">
 <h2>Why get() returns a copy<a class="headerlink" href="#why-get-returns-a-copy" title="Link to this heading">¶</a></h2>
 <p>When you call <code class="docutils literal notranslate"><span class="pre">get()</span></code>:</p>
@@ -77,6 +79,7 @@ without SimpleAppState noticing.</p>
 </ul>
 <p>Returning a copy makes all state changes explicit.</p>
 </section>
+<hr class="docutils" />
 <section id="how-state-should-be-updated">
 <h2>How state should be updated<a class="headerlink" href="#how-state-should-be-updated" title="Link to this heading">¶</a></h2>
 <p>To change state, you must use <code class="docutils literal notranslate"><span class="pre">set</span></code> or <code class="docutils literal notranslate"><span class="pre">update</span></code>.</p>
@@ -102,6 +105,7 @@ without SimpleAppState noticing.</p>
 </ul>
 <p>This is the only way state can change.</p>
 </section>
+<hr class="docutils" />
 <section id="thinking-in-before-and-after">
 <h2>Thinking in “before” and “after”<a class="headerlink" href="#thinking-in-before-and-after" title="Link to this heading">¶</a></h2>
 <p>Value semantics encourages a simple mental model:</p>
@@ -119,6 +123,7 @@ without SimpleAppState noticing.</p>
 <p>This model is easy to reason about,
 especially for beginners.</p>
 </section>
+<hr class="docutils" />
 <section id="why-this-matters-for-widgets">
 <h2>Why this matters for widgets<a class="headerlink" href="#why-this-matters-for-widgets" title="Link to this heading">¶</a></h2>
 <p>Widgets rebuild when state changes.</p>
@@ -135,6 +140,7 @@ especially for beginners.</p>
 </ul>
 <p>This is why rebuild behavior is predictable.</p>
 </section>
+<hr class="docutils" />
 <section id="value-semantics-and-undo-redo">
 <h2>Value semantics and undo / redo<a class="headerlink" href="#value-semantics-and-undo-redo" title="Link to this heading">¶</a></h2>
 <p>Undo and redo work by storing <strong>snapshots</strong> of state.</p>
@@ -152,6 +158,7 @@ especially for beginners.</p>
 </ul>
 <p>much easier to implement correctly.</p>
 </section>
+<hr class="docutils" />
 <section id="what-values-can-be-stored">
 <h2>What values can be stored<a class="headerlink" href="#what-values-can-be-stored" title="Link to this heading">¶</a></h2>
 <p>Values stored in slots must be:</p>
@@ -164,6 +171,7 @@ to ensure they are safe to store.</p>
 <p>This prevents subtle bugs caused by
 non-copyable or externally mutable objects.</p>
 </section>
+<hr class="docutils" />
 <section id="this-may-feel-unfamiliar-at-first">
 <h2>This may feel unfamiliar at first<a class="headerlink" href="#this-may-feel-unfamiliar-at-first" title="Link to this heading">¶</a></h2>
 <p>If you are used to mutating objects directly,
@@ -178,6 +186,7 @@ this design may feel strict.</p>
 <p>After some time, many developers find it
 <em>more comfortable</em> than mutable state.</p>
 </section>
+<hr class="docutils" />
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
 <p>Value semantics means:</p>
@@ -230,6 +239,7 @@ SimpleAppState becomes much easier to understand.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>

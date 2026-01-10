@@ -1,0 +1,144 @@
+State Builder Strategy
+======================
+
+This chapter explains how ``StateSlotBuilder`` fits into
+the slot-boundary model defined by ``SlotStatefulWidget``.
+
+While slot boundaries define *what a widget is allowed to depend on*,
+builders define *where and how updates are applied* inside that boundary.
+
+----
+
+Two different responsibilities
+-------------------------------
+
+SimpleAppState provides two Flutter integration tools:
+
+* ``SlotStatefulWidget`` — defines **state ownership**
+* ``StateSlotBuilder`` — defines **localized reactivity**
+
+They are designed to work together, not to replace each other.
+
+----
+
+SlotStatefulWidget defines the contract
+----------------------------------------
+
+When a widget extends ``SlotStatefulWidget``,
+it declares its allowed state dependencies:
+
+.. code-block:: dart
+
+   class SettingsScreen extends SlotStatefulWidget {
+     @override
+     List<StateSlot> get slots => [
+       settingsSlot,
+     ];
+   }
+
+This tells everyone:
+
+* Which state this screen owns
+* What is allowed to influence this screen
+* What should trigger rebuilds
+
+This declaration is part of the widget’s design contract.
+
+----
+
+StateSlotBuilder implements local reactions
+-------------------------------------------
+
+Inside a ``SlotStatefulWidget``, it is often useful
+to rebuild only a small part of the UI.
+
+That is what ``StateSlotBuilder`` is for.
+
+.. code-block:: dart
+
+   StateSlotBuilder(
+     slotList: [settingsSlot],
+     builder: (context) {
+       final settings = settingsSlot.get();
+       return Switch(
+         value: settings.darkMode,
+         onChanged: (v) {
+           settingsSlot.update(
+             settings.copyWith(darkMode: v),
+           );
+         },
+       );
+     },
+   )
+
+This builder reacts to changes in ``settingsSlot``,
+but only rebuilds this small subtree.
+
+The surrounding widget structure remains untouched.
+
+----
+
+Builders do not define screen ownership
+---------------------------------------
+
+``StateSlotBuilder`` does **not** define
+the overall state boundary of a screen.
+
+If builders are scattered throughout a widget tree,
+the screen’s true dependencies become difficult to see.
+
+.. code-block:: dart
+
+   Column(
+     children: [
+       StateSlotBuilder(slotList: [userSlot], builder: ...),
+       StateSlotBuilder(slotList: [settingsSlot], builder: ...),
+       StateSlotBuilder(slotList: [themeSlot], builder: ...),
+     ],
+   )
+
+Each builder is simple in isolation,
+but the screen’s overall state surface is now hidden.
+
+For this reason, ``StateSlotBuilder`` is intentionally
+not a replacement for ``SlotStatefulWidget``.
+
+----
+
+A layered design
+----------------
+
+The intended structure is:
+
+* **SlotStatefulWidget**
+  * Defines which slots a screen is allowed to use
+  * Acts as a design-time boundary
+
+* **StateSlotBuilder**
+  * Applies reactivity inside that boundary
+  * Controls which parts of the UI rebuild
+
+This keeps:
+
+* High-level design visible
+* Local behavior efficient
+* Code reviews meaningful
+
+----
+
+A tool, not a shortcut
+-----------------------
+
+``StateSlotBuilder`` exists to solve
+**localized update and performance problems**.
+
+It should not be used to bypass slot boundaries
+or to avoid declaring dependencies at the screen level.
+
+Used correctly, it improves both performance and clarity.
+
+Used incorrectly, it hides dependencies
+and weakens the design contract.
+
+SimpleAppState intentionally separates these roles
+so that both design and implementation remain understandable.

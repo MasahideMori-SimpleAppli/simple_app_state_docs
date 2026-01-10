@@ -13,6 +13,7 @@ It allows a widget to:
 This page explains how ``SlotStatefulWidget`` works
 and how it fits into the rebuild model described earlier.
 
+----
 
 What SlotStatefulWidget does
 ----------------------------
@@ -34,6 +35,8 @@ It does **not**:
 - decide rebuild order
 
 Those responsibilities stay where they belong.
+
+----
 
 What is a subscriber ID?
 ------------------------
@@ -61,6 +64,8 @@ without caring *which slot* triggered the change.
 Details of how notifications are grouped
 are explained in :doc:`rebuild_model`.
 
+----
+
 Declaring slot dependencies
 ---------------------------
 
@@ -87,6 +92,8 @@ Nothing is inferred automatically.
 If a slot is not listed, the widget will not rebuild
 when that slot changes.
 
+----
+
 Reading slot values in build()
 ------------------------------
 
@@ -111,6 +118,8 @@ Important points:
 
 This keeps dependencies explicit and visible.
 
+----
+
 How rebuilds are triggered
 --------------------------
 
@@ -125,6 +134,8 @@ After that, Flutter behaves normally.
 
 ``SlotStatefulWidget`` does not bypass
 Flutter’s rebuild system.
+
+----
 
 Multiple slots, one widget
 --------------------------
@@ -149,6 +160,7 @@ During batch updates:
 
 Actual rebuild behavior is still controlled by Flutter.
 
+----
 
 Lifecycle and cleanup
 ---------------------
@@ -167,6 +179,7 @@ This prevents common issues such as:
 - updates to disposed widgets
 - unexpected rebuilds
 
+----
 
 Why this widget exists
 ----------------------
@@ -185,6 +198,7 @@ into a small, explicit abstraction.
 It is not required,
 but it is strongly recommended for clarity and safety.
 
+----
 
 What SlotStatefulWidget is not
 ------------------------------
@@ -200,6 +214,7 @@ It is simply a bridge
 between ``StateSlot`` notifications
 and Flutter’s rebuild mechanism.
 
+----
 
 Summary
 -------

@@ -41,7 +41,12 @@
 <p class="admonition-title">Important</p>
 <p><strong>Import Consistency:</strong> In Dart, always use <strong>absolute package imports</strong> (e.g., <code class="docutils literal notranslate"><span class="pre">package:your_project/ui/app_state.dart</span></code>).
 Mixing relative and absolute imports can cause Dart to treat the same file as two different instances, which will break your application state.</p>
+<p>A safe way to do this is to use:</p>
+<ul class="simple">
+<li><p>Simple Lint: <a class="reference external" href="https://pub.dev/packages/simple_lint">https://pub.dev/packages/simple_lint</a></p></li>
+</ul>
 </div>
+<hr class="docutils" />
 <section id="recommended-directory-structure">
 <h2>Recommended Directory Structure<a class="headerlink" href="#recommended-directory-structure" title="Link to this heading">¶</a></h2>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>lib/
@@ -53,6 +58,7 @@ Mixing relative and absolute imports can cause Dart to treat the same file as tw
 </pre></div>
 </div>
 </section>
+<hr class="docutils" />
 <section id="step-1-define-application-state-lib-ui-app-state-dart">
 <h2>Step 1: Define Application State (<code class="docutils literal notranslate"><span class="pre">lib/ui/app_state.dart</span></code>)<a class="headerlink" href="#step-1-define-application-state-lib-ui-app-state-dart" title="Link to this heading">¶</a></h2>
 <p>First, move all your state logic into a dedicated file. This file becomes the “Source of Truth” for your entire app.</p>
@@ -74,6 +80,7 @@ Mixing relative and absolute imports can cause Dart to treat the same file as tw
 <p><strong>The Golden Rule:</strong> <code class="docutils literal notranslate"><span class="pre">app_state.dart</span></code> should <strong>never</strong> import any files from the UI layer (like widgets or pages). This ensures a clean data flow.</p>
 </div>
 </section>
+<hr class="docutils" />
 <section id="step-2-create-the-ui-layer-lib-ui-pages-counter-page-dart">
 <h2>Step 2: Create the UI Layer (<code class="docutils literal notranslate"><span class="pre">lib/ui/pages/counter_page.dart</span></code>)<a class="headerlink" href="#step-2-create-the-ui-layer-lib-ui-pages-counter-page-dart" title="Link to this heading">¶</a></h2>
 <p>Next, move your widgets to the <code class="docutils literal notranslate"><span class="pre">pages/</span></code> directory. Use the <strong>package import</strong> to access the state.</p>
@@ -147,6 +154,7 @@ Mixing relative and absolute imports can cause Dart to treat the same file as tw
 </pre></div>
 </div>
 </section>
+<hr class="docutils" />
 <section id="step-3-cleanup-the-entry-point-lib-main-dart">
 <h2>Step 3: Cleanup the Entry Point (<code class="docutils literal notranslate"><span class="pre">lib/main.dart</span></code>)<a class="headerlink" href="#step-3-cleanup-the-entry-point-lib-main-dart" title="Link to this heading">¶</a></h2>
 <p>Finally, <code class="docutils literal notranslate"><span class="pre">main.dart</span></code> becomes very slim. Notice that all imports are absolute.</p>
@@ -185,6 +193,7 @@ Mixing relative and absolute imports can cause Dart to treat the same file as tw
 <li><p><strong>Testability:</strong> You can write unit tests for your logic in <code class="docutils literal notranslate"><span class="pre">app_state.dart</span></code> without needing to build widgets.</p></li>
 </ol>
 </section>
+<hr class="docutils" />
 <section id="next-step">
 <h2>Next step<a class="headerlink" href="#next-step" title="Link to this heading">¶</a></h2>
 <p>Now that your project is well-organized, let’s look at some <strong>common mistakes</strong> to avoid when using SimpleAppState.</p>
@@ -230,6 +239,7 @@ Mixing relative and absolute imports can cause Dart to treat the same file as tw
 <li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>

@@ -43,6 +43,7 @@ application state in SimpleAppState.</p>
 <p>This page explains what a <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> is,
 how it is used,
 and why SimpleAppState uses slots instead of fields.</p>
+<hr class="docutils" />
 <section id="what-is-a-stateslot">
 <h2>What is a StateSlot?<a class="headerlink" href="#what-is-a-stateslot" title="Link to this heading">¶</a></h2>
 <p>A <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> represents <strong>one piece of application state</strong>.</p>
@@ -72,6 +73,7 @@ and why SimpleAppState uses slots instead of fields.</p>
 <p>You never access state directly.
 You always go through the slot.</p>
 </section>
+<hr class="docutils" />
 <section id="why-simpleappstate-uses-slots">
 <h2>Why SimpleAppState uses slots<a class="headerlink" href="#why-simpleappstate-uses-slots" title="Link to this heading">¶</a></h2>
 <p>SimpleAppState does not expose state as fields like:</p>
@@ -95,6 +97,7 @@ SimpleAppState can clearly see:</p>
 </ul>
 <p>Nothing happens implicitly.</p>
 </section>
+<hr class="docutils" />
 <section id="reading-state-get">
 <h2>Reading state: get()<a class="headerlink" href="#reading-state-get" title="Link to this heading">¶</a></h2>
 <p>To read a value from a slot, use <code class="docutils literal notranslate"><span class="pre">get()</span></code>:</p>
@@ -114,6 +117,7 @@ SimpleAppState can clearly see:</p>
 <p>This behavior is intentional.
 It prevents accidental state changes.</p>
 </section>
+<hr class="docutils" />
 <section id="updating-state-set">
 <h2>Updating state: set()<a class="headerlink" href="#updating-state-set" title="Link to this heading">¶</a></h2>
 <p>To replace a value, use <code class="docutils literal notranslate"><span class="pre">set()</span></code>:</p>
@@ -131,6 +135,7 @@ It prevents accidental state changes.</p>
 <p>not:</p>
 <p>&gt; “I modify the existing object.”</p>
 </section>
+<hr class="docutils" />
 <section id="updating-based-on-the-previous-value-update">
 <h2>Updating based on the previous value: update()<a class="headerlink" href="#updating-based-on-the-previous-value-update" title="Link to this heading">¶</a></h2>
 <p>Often, the new value depends on the old one.</p>
@@ -146,6 +151,7 @@ It prevents accidental state changes.</p>
 </ol>
 <p>This makes state changes clear and safe.</p>
 </section>
+<hr class="docutils" />
 <section id="slot-types-are-fixed">
 <h2>Slot types are fixed<a class="headerlink" href="#slot-types-are-fixed" title="Link to this heading">¶</a></h2>
 <p>Each slot has a fixed type.</p>
@@ -161,6 +167,7 @@ It prevents accidental state changes.</p>
 </ul>
 <p>Type errors are caught early.</p>
 </section>
+<hr class="docutils" />
 <section id="slots-belong-to-simpleappstate">
 <h2>Slots belong to SimpleAppState<a class="headerlink" href="#slots-belong-to-simpleappstate" title="Link to this heading">¶</a></h2>
 <p>A <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> does not store data by itself.</p>
@@ -175,6 +182,7 @@ It prevents accidental state changes.</p>
 <p>You usually do not need to think about this,
 but it explains why slots exist as objects.</p>
 </section>
+<hr class="docutils" />
 <section id="slots-and-widgets">
 <h2>Slots and widgets<a class="headerlink" href="#slots-and-widgets" title="Link to this heading">¶</a></h2>
 <p>Widgets do not own slots.</p>
@@ -191,6 +199,7 @@ but it explains why slots exist as objects.</p>
 </ul>
 <p>This makes rebuild behavior explicit and predictable.</p>
 </section>
+<hr class="docutils" />
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
 <p>A <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code>:</p>
@@ -204,6 +213,7 @@ but it explains why slots exist as objects.</p>
 <p><strong>Always read and write state through slots.</strong></p>
 <p>Everything else builds on top of that.</p>
 </section>
+<hr class="docutils" />
 <section id="api">
 <h2>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://pub.dev/documentation/simple_app_state/latest/simple_app_state/StateSlot-class.html">StateSlot</a></p>
@@ -248,6 +258,7 @@ but it explains why slots exist as objects.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>

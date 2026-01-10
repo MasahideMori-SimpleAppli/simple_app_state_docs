@@ -4,6 +4,8 @@ Common Mistakes
 This section lists common mistakes made by new users of SimpleAppState.
 Each mistake is explained together with the correct mental model.
 
+----
+
 Treating state as widget-owned
 ------------------------------
 
@@ -36,6 +38,8 @@ typically as a global or top-level object:
    final count = appState.slot<int>('count', initial: 0);
 
 Widgets should *subscribe* to state, not own it.
+
+----
 
 Mutating values returned from slots
 -------------------------------------
@@ -76,6 +80,8 @@ Crucially, in SimpleAppState, the ``old Value`` passed to the ``update`` closure
 
 SimpleAppState ensures that these mutations remain local to the update process and do not leak into other parts of your application, keeping your code clean and predictable.
 
+----
+
 Forgetting to declare slot dependencies
 ---------------------------------------
 
@@ -106,6 +112,8 @@ Explicitly list all slots the widget depends on:
    @override
    List<StateSlot> get slots => [count];
 
+----
+
 Creating many small state objects
 ---------------------------------
 
@@ -125,6 +133,10 @@ Start with a single ``SimpleAppState`` instance.
 Introduce multiple state objects only when you have
 clear ownership boundaries.
 
+A specific case where multiple SimpleAppStates are needed is when
+you want to separate the app state that is the target of Undo and Redo from the rest.
+
+----
 
 Mixing Import Types
 -------------------
@@ -155,6 +167,7 @@ Always use **absolute package imports** for any file that defines or uses your a
 
    import 'package:my_app/ui/app_state.dart';
 
+----
 
 Accessing slots from utility functions
 ---------------------------------------
@@ -206,6 +219,7 @@ State updates should happen at the call site:
 Utilities transform values.
 StateSlots own state.
 
+----
 
 Expecting context-based lookups
 -------------------------------
@@ -227,6 +241,8 @@ which state changes can affect a given widget.
 Pass or import the required ``StateSlot`` explicitly.
 If a widget rebuilds, you should always be able to point
 to the exact slot that caused it.
+
+----
 
 Updating state during build
 ---------------------------
@@ -256,6 +272,8 @@ Only update state in response to events
 
 For a detailed explanation, see:
 :doc:`../flutter_integration/common_mistakes`
+
+----
 
 Next step
 ---------------------------------

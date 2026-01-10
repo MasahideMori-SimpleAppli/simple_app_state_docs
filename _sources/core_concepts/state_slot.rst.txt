@@ -14,6 +14,7 @@ This page explains what a ``StateSlot`` is,
 how it is used,
 and why SimpleAppState uses slots instead of fields.
 
+----
 
 What is a StateSlot?
 --------------------
@@ -48,6 +49,7 @@ Here:
 You never access state directly.
 You always go through the slot.
 
+----
 
 Why SimpleAppState uses slots
 -----------------------------
@@ -76,6 +78,7 @@ SimpleAppState can clearly see:
 
 Nothing happens implicitly.
 
+----
 
 Reading state: get()
 --------------------
@@ -101,6 +104,7 @@ This means:
 This behavior is intentional.
 It prevents accidental state changes.
 
+----
 
 Updating state: set()
 ---------------------
@@ -125,6 +129,7 @@ not:
 
 > “I modify the existing object.”
 
+----
 
 Updating based on the previous value: update()
 ----------------------------------------------
@@ -145,6 +150,7 @@ For this, use ``update()``:
 
 This makes state changes clear and safe.
 
+----
 
 Slot types are fixed
 --------------------
@@ -166,6 +172,7 @@ This prevents bugs such as:
 
 Type errors are caught early.
 
+----
 
 Slots belong to SimpleAppState
 ------------------------------
@@ -185,6 +192,7 @@ Because of this:
 You usually do not need to think about this,
 but it explains why slots exist as objects.
 
+----
 
 Slots and widgets
 -----------------
@@ -206,6 +214,7 @@ When ``count`` changes:
 
 This makes rebuild behavior explicit and predictable.
 
+----
 
 Summary
 -------
@@ -223,6 +232,7 @@ If you remember only one rule:
 
 Everything else builds on top of that.
 
+----
 
 API
 --------------------------

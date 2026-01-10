@@ -44,6 +44,7 @@ before learning any widget-level APIs.</p>
 it provides precise state notifications,
 while leaving all rebuild decisions to Flutter.</p>
 <p>Understanding this boundary is essential.</p>
+<hr class="docutils" />
 <section id="two-separate-responsibilities">
 <h2>Two separate responsibilities<a class="headerlink" href="#two-separate-responsibilities" title="Link to this heading">¶</a></h2>
 <p>SimpleAppState and Flutter have <strong>different responsibilities</strong>.</p>
@@ -63,6 +64,7 @@ while leaving all rebuild decisions to Flutter.</p>
 Flutter <strong>does not</strong> know about state slots.</p>
 <p>They communicate through a very small boundary.</p>
 </section>
+<hr class="docutils" />
 <section id="what-happens-when-state-changes">
 <h2>What happens when state changes<a class="headerlink" href="#what-happens-when-state-changes" title="Link to this heading">¶</a></h2>
 <p>When you update a slot:</p>
@@ -79,6 +81,7 @@ Flutter <strong>does not</strong> know about state slots.</p>
 <p>At that point, SimpleAppState’s job is done.</p>
 <p>From there on, Flutter’s normal rebuild process applies.</p>
 </section>
+<hr class="docutils" />
 <section id="simpleappstate-does-not-rebuild-widgets">
 <h2>SimpleAppState does not rebuild widgets<a class="headerlink" href="#simpleappstate-does-not-rebuild-widgets" title="Link to this heading">¶</a></h2>
 <p>SimpleAppState never rebuilds widgets directly.</p>
@@ -93,6 +96,7 @@ Flutter <strong>does not</strong> know about state slots.</p>
 and they usually call <code class="docutils literal notranslate"><span class="pre">setState</span></code>.</p>
 <p>Everything after that is pure Flutter behavior.</p>
 </section>
+<hr class="docutils" />
 <section id="why-rebuild-behavior-can-differ">
 <h2>Why rebuild behavior can differ<a class="headerlink" href="#why-rebuild-behavior-can-differ" title="Link to this heading">¶</a></h2>
 <p>Because Flutter controls rebuilding:</p>
@@ -114,6 +118,7 @@ they may both rebuild.</p>
 </ul>
 <p>SimpleAppState intentionally does not interfere.</p>
 </section>
+<hr class="docutils" />
 <section id="what-batching-guarantees-and-what-it-does-not">
 <h2>What batching guarantees (and what it does not)<a class="headerlink" href="#what-batching-guarantees-and-what-it-does-not" title="Link to this heading">¶</a></h2>
 <p>Batch updates group <strong>notifications</strong>, not rebuilds.</p>
@@ -139,6 +144,7 @@ they may both rebuild.</p>
 <p>Batching reduces <em>requested rebuilds</em>,
 not Flutter’s rebuild freedom.</p>
 </section>
+<hr class="docutils" />
 <section id="subscriber-ids-and-rebuild-intent">
 <h2>Subscriber IDs and rebuild intent<a class="headerlink" href="#subscriber-ids-and-rebuild-intent" title="Link to this heading">¶</a></h2>
 <p>Each subscribing widget is assigned a <strong>subscriber ID</strong>.</p>
@@ -154,6 +160,7 @@ but it does not override Flutter’s behavior.</p>
 <li><p>not a rebuild command</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="why-this-model-is-intentional">
 <h2>Why this model is intentional<a class="headerlink" href="#why-this-model-is-intentional" title="Link to this heading">¶</a></h2>
 <p>SimpleAppState is designed to work with Flutter,
@@ -177,6 +184,7 @@ you can always trace it back to:</p>
 <li><p>which widget called <code class="docutils literal notranslate"><span class="pre">setState</span></code></p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="common-misunderstandings">
 <h2>Common misunderstandings<a class="headerlink" href="#common-misunderstandings" title="Link to this heading">¶</a></h2>
 <p><strong>“SimpleAppState guarantees one rebuild per change”</strong></p>
@@ -192,6 +200,7 @@ but Flutter still decides how to rebuild.</p>
 <p>It works <em>with</em> Flutter,
 not <em>instead of</em> Flutter.</p>
 </section>
+<hr class="docutils" />
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
 <p>The rebuild model is simple:</p>
@@ -244,6 +253,7 @@ become easy to reason about.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>

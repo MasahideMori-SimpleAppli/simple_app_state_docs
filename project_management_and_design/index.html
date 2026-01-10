@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Core Concepts &#8212; simple_app_state 2026 documentation</title>
+    <title>Project Management and Design &#8212; simple_app_state 2026 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
@@ -14,8 +14,8 @@
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="SimpleAppState" href="simple_app_state.html" />
-    <link rel="prev" title="Common Mistakes" href="../getting_started/common_mistakes.html" />
+    <link rel="next" title="Slot Boundaries and Ownership" href="slot_boundaries.html" />
+    <link rel="prev" title="Testing" href="../advanced/testing.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -33,15 +33,23 @@
 
           <div class="body" role="main">
             
-  <section id="core-concepts">
-<h1>Core Concepts<a class="headerlink" href="#core-concepts" title="Link to this heading">¶</a></h1>
-<p>This section explains the fundamental design of SimpleAppState.</p>
+  <section id="project-management-and-design">
+<h1>Project Management and Design<a class="headerlink" href="#project-management-and-design" title="Link to this heading">¶</a></h1>
+<p>This section explains how SimpleAppState’s design
+supports <strong>team-based development</strong>.</p>
+<p>These chapters focus not on how to write widgets,
+but on how to <strong>structure responsibility, ownership,
+and performance</strong> across a codebase when multiple people
+work on the same application.</p>
+<p>They are especially useful for architects, tech leads,
+and anyone responsible for keeping a large project
+maintainable over time.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="simple_app_state.html">SimpleAppState</a></li>
-<li class="toctree-l1"><a class="reference internal" href="state_slot.html">StateSlot</a></li>
-<li class="toctree-l1"><a class="reference internal" href="value_semantics.html">Value Semantics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="batch_updates.html">Batch Updates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slot_boundaries.html">Slot Boundaries and Ownership</a></li>
+<li class="toctree-l1"><a class="reference internal" href="state_builder_strategy.html">State Builder Strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance_considerations.html">Performance Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worked_example_screen_design.html">Worked Example: Designing a Screen with Slot Boundaries</a></li>
 </ul>
 </div>
 </section>
@@ -75,16 +83,16 @@
 <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Core Concepts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="simple_app_state.html">SimpleAppState</a></li>
-<li class="toctree-l2"><a class="reference internal" href="state_slot.html">StateSlot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="value_semantics.html">Value Semantics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="batch_updates.html">Batch Updates</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Project Management and Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="slot_boundaries.html">Slot Boundaries and Ownership</a></li>
+<li class="toctree-l2"><a class="reference internal" href="state_builder_strategy.html">State Builder Strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="performance_considerations.html">Performance Considerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="worked_example_screen_design.html">Worked Example: Designing a Screen with Slot Boundaries</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>
@@ -93,8 +101,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../getting_started/common_mistakes.html" title="previous chapter">Common Mistakes</a></li>
-      <li>Next: <a href="simple_app_state.html" title="next chapter">SimpleAppState</a></li>
+      <li>Previous: <a href="../advanced/testing.html" title="previous chapter">Testing</a></li>
+      <li>Next: <a href="slot_boundaries.html" title="next chapter">Slot Boundaries and Ownership</a></li>
   </ul></li>
 </ul>
 </div>
@@ -118,7 +126,7 @@
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
-      <a href="../_sources/core_concepts/index.rst.txt"
+      <a href="../_sources/project_management_and_design/index.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

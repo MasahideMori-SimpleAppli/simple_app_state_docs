@@ -21,5 +21,6 @@ If you want to understand the design philosophy, read *Core Concepts*.
    core_concepts/index
    flutter_integration/index
    advanced/index
+   project_management_and_design/index
    appendix/index
    notice

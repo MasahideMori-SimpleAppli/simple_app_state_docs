@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>State Builder Strategy &#8212; simple_app_state 2026 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=fc6fd62b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Performance Considerations" href="performance_considerations.html" />
+    <link rel="prev" title="Slot Boundaries and Ownership" href="slot_boundaries.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="state-builder-strategy">
+<h1>State Builder Strategy<a class="headerlink" href="#state-builder-strategy" title="Link to this heading">¶</a></h1>
+<p>This chapter explains how <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> fits into
+the slot-boundary model defined by <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>.</p>
+<p>While slot boundaries define <em>what a widget is allowed to depend on</em>,
+builders define <em>where and how updates are applied</em> inside that boundary.</p>
+<hr class="docutils" />
+<section id="two-different-responsibilities">
+<h2>Two different responsibilities<a class="headerlink" href="#two-different-responsibilities" title="Link to this heading">¶</a></h2>
+<p>SimpleAppState provides two Flutter integration tools:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> — defines <strong>state ownership</strong></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> — defines <strong>localized reactivity</strong></p></li>
+</ul>
+<p>They are designed to work together, not to replace each other.</p>
+</section>
+<hr class="docutils" />
+<section id="slotstatefulwidget-defines-the-contract">
+<h2>SlotStatefulWidget defines the contract<a class="headerlink" href="#slotstatefulwidget-defines-the-contract" title="Link to this heading">¶</a></h2>
+<p>When a widget extends <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>,
+it declares its allowed state dependencies:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">SettingsScreen</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotStatefulWidget</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="n">settingsSlot</span><span class="p">,</span>
+<span class="w">  </span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This tells everyone:</p>
+<ul class="simple">
+<li><p>Which state this screen owns</p></li>
+<li><p>What is allowed to influence this screen</p></li>
+<li><p>What should trigger rebuilds</p></li>
+</ul>
+<p>This declaration is part of the widget’s design contract.</p>
+</section>
+<hr class="docutils" />
+<section id="stateslotbuilder-implements-local-reactions">
+<h2>StateSlotBuilder implements local reactions<a class="headerlink" href="#stateslotbuilder-implements-local-reactions" title="Link to this heading">¶</a></h2>
+<p>Inside a <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>, it is often useful
+to rebuild only a small part of the UI.</p>
+<p>That is what <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> is for.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">StateSlotBuilder</span><span class="p">(</span>
+<span class="w">  </span><span class="nl">slotList:</span><span class="w"> </span><span class="p">[</span><span class="n">settingsSlot</span><span class="p">],</span>
+<span class="w">  </span><span class="nl">builder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">settings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">settingsSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Switch</span><span class="p">(</span>
+<span class="w">      </span><span class="nl">value:</span><span class="w"> </span><span class="n">settings</span><span class="p">.</span><span class="n">darkMode</span><span class="p">,</span>
+<span class="w">      </span><span class="nl">onChanged:</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">settingsSlot</span><span class="p">.</span><span class="n">update</span><span class="p">(</span>
+<span class="w">          </span><span class="n">settings</span><span class="p">.</span><span class="n">copyWith</span><span class="p">(</span><span class="nl">darkMode:</span><span class="w"> </span><span class="n">v</span><span class="p">),</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This builder reacts to changes in <code class="docutils literal notranslate"><span class="pre">settingsSlot</span></code>,
+but only rebuilds this small subtree.</p>
+<p>The surrounding widget structure remains untouched.</p>
+</section>
+<hr class="docutils" />
+<section id="builders-do-not-define-screen-ownership">
+<h2>Builders do not define screen ownership<a class="headerlink" href="#builders-do-not-define-screen-ownership" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> does <strong>not</strong> define
+the overall state boundary of a screen.</p>
+<p>If builders are scattered throughout a widget tree,
+the screen’s true dependencies become difficult to see.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Column</span><span class="p">(</span>
+<span class="w">  </span><span class="nl">children:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="n">StateSlotBuilder</span><span class="p">(</span><span class="nl">slotList:</span><span class="w"> </span><span class="p">[</span><span class="n">userSlot</span><span class="p">],</span><span class="w"> </span><span class="nl">builder:</span><span class="w"> </span><span class="p">...),</span>
+<span class="w">    </span><span class="n">StateSlotBuilder</span><span class="p">(</span><span class="nl">slotList:</span><span class="w"> </span><span class="p">[</span><span class="n">settingsSlot</span><span class="p">],</span><span class="w"> </span><span class="nl">builder:</span><span class="w"> </span><span class="p">...),</span>
+<span class="w">    </span><span class="n">StateSlotBuilder</span><span class="p">(</span><span class="nl">slotList:</span><span class="w"> </span><span class="p">[</span><span class="n">themeSlot</span><span class="p">],</span><span class="w"> </span><span class="nl">builder:</span><span class="w"> </span><span class="p">...),</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Each builder is simple in isolation,
+but the screen’s overall state surface is now hidden.</p>
+<p>For this reason, <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> is intentionally
+not a replacement for <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>.</p>
+</section>
+<hr class="docutils" />
+<section id="a-layered-design">
+<h2>A layered design<a class="headerlink" href="#a-layered-design" title="Link to this heading">¶</a></h2>
+<p>The intended structure is:</p>
+<ul class="simple">
+<li><p><strong>SlotStatefulWidget</strong>
+* Defines which slots a screen is allowed to use
+* Acts as a design-time boundary</p></li>
+<li><p><strong>StateSlotBuilder</strong>
+* Applies reactivity inside that boundary
+* Controls which parts of the UI rebuild</p></li>
+</ul>
+<p>This keeps:</p>
+<ul class="simple">
+<li><p>High-level design visible</p></li>
+<li><p>Local behavior efficient</p></li>
+<li><p>Code reviews meaningful</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="a-tool-not-a-shortcut">
+<h2>A tool, not a shortcut<a class="headerlink" href="#a-tool-not-a-shortcut" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> exists to solve
+<strong>localized update and performance problems</strong>.</p>
+<p>It should not be used to bypass slot boundaries
+or to avoid declaring dependencies at the screen level.</p>
+<p>Used correctly, it improves both performance and clarity.</p>
+<p>Used incorrectly, it hides dependencies
+and weakens the design contract.</p>
+<p>SimpleAppState intentionally separates these roles
+so that both design and implementation remain understandable.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">simple_app_state</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Project Management and Design</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="slot_boundaries.html">Slot Boundaries and Ownership</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">State Builder Strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="performance_considerations.html">Performance Considerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="worked_example_screen_design.html">Worked Example: Designing a Screen with Slot Boundaries</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Project Management and Design</a><ul>
+      <li>Previous: <a href="slot_boundaries.html" title="previous chapter">Slot Boundaries and Ownership</a></li>
+      <li>Next: <a href="performance_considerations.html" title="next chapter">Performance Considerations</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Masahide Mori.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/project_management_and_design/state_builder_strategy.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

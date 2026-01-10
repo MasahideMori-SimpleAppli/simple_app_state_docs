@@ -45,6 +45,7 @@ and keeps state transitions clear and intentional.</p>
 <li><p>what it guarantees</p></li>
 <li><p>what it deliberately does <em>not</em> control</p></li>
 </ul>
+<hr class="docutils" />
 <section id="the-problem-batching-solves">
 <h2>The problem batching solves<a class="headerlink" href="#the-problem-batching-solves" title="Link to this heading">¶</a></h2>
 <p>Consider this code:</p>
@@ -58,6 +59,7 @@ and keeps state transitions clear and intentional.</p>
 notifying UI listeners after every change is often unnecessary.</p>
 <p>Batch updates exist to group these notifications.</p>
 </section>
+<hr class="docutils" />
 <section id="what-batch-does">
 <h2>What batch() does<a class="headerlink" href="#what-batch-does" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">batch</span></code> delays <strong>UI listener notifications</strong>, not state updates.</p>
@@ -81,6 +83,7 @@ notifying UI listeners after every change is often unnecessary.</p>
 <li><p>UI listeners are notified once per subscriber ID (That is, once for each widget’s state that needs to be updated)</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="batching-does-not-delay-logic">
 <h2>Batching does not delay logic<a class="headerlink" href="#batching-does-not-delay-logic" title="Link to this heading">¶</a></h2>
 <p>Batching does <strong>not</strong> change execution order.</p>
@@ -100,6 +103,7 @@ notifying UI listeners after every change is often unnecessary.</p>
 <p>Batching only controls <em>when UI listeners are notified</em>,
 not <em>how state changes</em>.</p>
 </section>
+<hr class="docutils" />
 <section id="ui-listener-grouping-by-subscriber-id">
 <h2>UI listener grouping by subscriber ID<a class="headerlink" href="#ui-listener-grouping-by-subscriber-id" title="Link to this heading">¶</a></h2>
 <p>UI listeners are grouped by <strong>subscriber ID</strong>.</p>
@@ -123,6 +127,7 @@ that behavior is managed by Flutter itself.</p>
 <li><p>notification intent is minimal and explicit</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="nested-batches-are-safe">
 <h2>Nested batches are safe<a class="headerlink" href="#nested-batches-are-safe" title="Link to this heading">¶</a></h2>
 <p>Batches can be nested:</p>
@@ -139,6 +144,7 @@ that behavior is managed by Flutter itself.</p>
 without needing to know whether they are already
 inside another batch.</p>
 </section>
+<hr class="docutils" />
 <section id="state-level-listener-undo-redo-persistence">
 <h2>State-level listener (undo / redo, persistence)<a class="headerlink" href="#state-level-listener-undo-redo-persistence" title="Link to this heading">¶</a></h2>
 <p>In addition to UI listeners,
@@ -173,6 +179,7 @@ after both updates are applied.</p>
 <p>Intermediate states inside the batch
 are intentionally not reported.</p>
 </section>
+<hr class="docutils" />
 <section id="batching-during-loading-and-restore">
 <h2>Batching during loading and restore<a class="headerlink" href="#batching-during-loading-and-restore" title="Link to this heading">¶</a></h2>
 <p>Batch updates are also used internally.</p>
@@ -191,6 +198,7 @@ are intentionally not reported.</p>
 <p>This prevents partial updates
 and unintended intermediate rebuilds.</p>
 </section>
+<hr class="docutils" />
 <section id="when-you-should-use-batch">
 <h2>When you should use batch()<a class="headerlink" href="#when-you-should-use-batch" title="Link to this heading">¶</a></h2>
 <p>Use <code class="docutils literal notranslate"><span class="pre">batch</span></code> when:</p>
@@ -209,6 +217,7 @@ and unintended intermediate rebuilds.</p>
 <p>For single-slot updates,
 batching is usually unnecessary.</p>
 </section>
+<hr class="docutils" />
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
 <p>Batch updates:</p>
@@ -262,6 +271,7 @@ wrap them in <code class="docutils literal notranslate"><span class="pre">batch<
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>

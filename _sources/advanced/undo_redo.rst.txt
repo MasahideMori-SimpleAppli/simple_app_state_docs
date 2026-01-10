@@ -8,6 +8,8 @@ Undo / redo is implemented by integrating
 the **file_state_manager** package with the internal state structure of
 **SimpleAppState**.
 
+----
+
 Overview
 ========
 
@@ -22,6 +24,8 @@ This mechanism relies on:
 * ``CloneableFile.clone()`` for snapshot creation
 * ``FileStateManager`` for history management
 * ``replaceDataFrom()`` for applying restored state
+
+----
 
 State Snapshots
 ===============
@@ -39,6 +43,8 @@ at a specific point in time.
 Snapshots are used exclusively for undo / redo and are independent of
 persistence mechanisms such as ``toDict()`` and ``fromDict()``.
 
+----
+
 FileStateManager Integration
 ============================
 
@@ -52,6 +58,8 @@ with ``FileStateManager``.
 
 The manager stores cloned snapshots and tracks the current position
 in the history stack.
+
+----
 
 State Listener and Push Timing
 ==============================
@@ -82,6 +90,8 @@ This design ensures that:
 * Intermediate mutations are not recorded
 * Batch updates produce a single history entry
 * Each undo step corresponds to a meaningful user action
+
+----
 
 Undo Operation
 ==============
@@ -121,6 +131,8 @@ Key characteristics of ``replaceDataFrom()``:
 * Only internal data is replaced
 * No new history entry is created when ``skipNextPush()`` is used
 
+----
+
 Redo Operation
 ==============
 
@@ -134,6 +146,8 @@ Redo retrieves the next snapshot in the history stack.
 
 Redo follows the same rules as undo and must also suppress
 automatic history pushes during restoration.
+
+----
 
 Complete Example
 ================
@@ -167,6 +181,8 @@ The following test demonstrates a complete undo / redo flow:
      expect(intSlot.get(), 3);
    });
 
+----
+
 Design Rationale
 ================
 
@@ -179,6 +195,8 @@ This design provides several important guarantees:
 
 By explicitly controlling push timing,
 **SimpleAppState** ensures predictable and intuitive undo / redo behavior.
+
+----
 
 Design Separation
 =================

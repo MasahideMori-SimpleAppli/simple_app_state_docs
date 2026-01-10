@@ -40,6 +40,7 @@
 <p>All examples below may <em>compile</em>,
 but they violate the design philosophy and may lead to
 unpredictable rebuilds or hard-to-maintain code.</p>
+<hr class="docutils" />
 <section id="storing-state-in-widgets">
 <h2>Storing state in widgets<a class="headerlink" href="#storing-state-in-widgets" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake:</strong></p>
@@ -69,6 +70,7 @@ unpredictable rebuilds or hard-to-maintain code.</p>
 <p>Application state should live in <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code>.
 Widgets should only <em>read</em> state and rebuild when it changes.</p>
 </section>
+<hr class="docutils" />
 <section id="mutating-values-returned-by-get">
 <h2>Mutating values returned by get()<a class="headerlink" href="#mutating-values-returned-by-get" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake:</strong></p>
@@ -93,6 +95,7 @@ Widgets should only <em>read</em> state and rebuild when it changes.</p>
 </pre></div>
 </div>
 </section>
+<hr class="docutils" />
 <section id="calling-set-during-build">
 <h2>Calling set() during build<a class="headerlink" href="#calling-set-during-build" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake:</strong></p>
@@ -134,6 +137,7 @@ also produces a change</p></li>
 </ul>
 <p>These cases are <strong>not</strong> guarded and will trigger rebuilds.</p>
 </section>
+<hr class="docutils" />
 <section id="correct-approach">
 <h2>Correct approach<a class="headerlink" href="#correct-approach" title="Link to this heading">¶</a></h2>
 <p>State updates should be performed in response to:</p>
@@ -144,6 +148,7 @@ also produces a change</p></li>
 </ul>
 <p>Never perform value-changing updates inside <code class="docutils literal notranslate"><span class="pre">build()</span></code>.</p>
 </section>
+<hr class="docutils" />
 <section id="key-takeaway">
 <h2>Key takeaway<a class="headerlink" href="#key-takeaway" title="Link to this heading">¶</a></h2>
 <ul class="simple">
@@ -152,6 +157,7 @@ also produces a change</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">build()</span></code> must remain a pure function of current state</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="reading-state-without-declaring-dependencies">
 <h2>Reading state without declaring dependencies<a class="headerlink" href="#reading-state-without-declaring-dependencies" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake:</strong></p>
@@ -172,6 +178,7 @@ also produces a change</p></li>
 <p>Use <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> or <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>
 to declare dependencies explicitly.</p>
 </section>
+<hr class="docutils" />
 <section id="using-widget-identity-as-state-identity">
 <h2>Using widget identity as state identity<a class="headerlink" href="#using-widget-identity-as-state-identity" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake:</strong></p>
@@ -189,6 +196,7 @@ to declare dependencies explicitly.</p>
 <p>State slots must have <strong>stable, global identities</strong>.
 Declare all slots in a fixed location (for example <code class="docutils literal notranslate"><span class="pre">app_state.dart</span></code>).</p>
 </section>
+<hr class="docutils" />
 <section id="expecting-simpleappstate-to-control-rebuilds">
 <h2>Expecting SimpleAppState to control rebuilds<a class="headerlink" href="#expecting-simpleappstate-to-control-rebuilds" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake:</strong></p>
@@ -207,6 +215,7 @@ Declare all slots in a fixed location (for example <code class="docutils literal
 <li><p>Flutter decides rebuild timing and rendering</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="overusing-batch">
 <h2>Overusing batch()<a class="headerlink" href="#overusing-batch" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake:</strong></p>
@@ -229,6 +238,7 @@ Declare all slots in a fixed location (for example <code class="docutils literal
 <li><p>you want a single rebuild after all changes</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
 <p>Most mistakes come from mixing responsibilities.</p>
@@ -282,6 +292,7 @@ predictable behavior and maintainable code.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>

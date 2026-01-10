@@ -36,6 +36,7 @@
   <section id="persistence-and-restore">
 <h1>Persistence and Restore<a class="headerlink" href="#persistence-and-restore" title="Link to this heading">¶</a></h1>
 <p>This section describes how <strong>SimpleAppState</strong> supports persistence and restore.</p>
+<hr class="docutils" />
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
 <p>Persistence in <strong>SimpleAppState</strong> is based on dictionary serialization.</p>
@@ -49,6 +50,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">fromDict(...)</span></code> for restoration</p></li>
 </ul>
 </section>
+<hr class="docutils" />
 <section id="serialization-with-todict">
 <h2>Serialization with toDict<a class="headerlink" href="#serialization-with-todict" title="Link to this heading">¶</a></h2>
 <p><strong>SimpleAppState</strong> implements <code class="docutils literal notranslate"><span class="pre">toDict()</span></code>, which converts the internal state
@@ -68,6 +70,7 @@ their class identity in the serialized form, typically using:</p>
 </div>
 <p>This allows the object to be restored later.</p>
 </section>
+<hr class="docutils" />
 <section id="restoring-state-with-fromdict">
 <h2>Restoring State with fromDict<a class="headerlink" href="#restoring-state-with-fromdict" title="Link to this heading">¶</a></h2>
 <p>Restoration is performed using the factory constructor
@@ -100,6 +103,7 @@ how to reconstruct each serialized object.</p>
 the corresponding restoration function is used.</p>
 </section>
 </section>
+<hr class="docutils" />
 <section id="internal-restoration-process">
 <h2>Internal Restoration Process<a class="headerlink" href="#internal-restoration-process" title="Link to this heading">¶</a></h2>
 <p>Internally, <code class="docutils literal notranslate"><span class="pre">SimpleAppState.fromDict</span></code> performs the following steps:</p>
@@ -155,6 +159,7 @@ dependencies on concrete object types.</p>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>

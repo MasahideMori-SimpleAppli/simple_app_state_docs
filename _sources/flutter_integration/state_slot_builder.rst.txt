@@ -9,6 +9,7 @@ It provides a simple and explicit way to connect
 ``SimpleAppState`` to Flutter widgets,
 without changing Flutter’s rebuild model.
 
+----
 
 Purpose
 =======
@@ -21,6 +22,7 @@ The purpose of ``StateSlotBuilder`` is limited and clear:
 It does not store state and does not mutate state.
 State ownership always remains in ``SimpleAppState``.
 
+----
 
 Implementation
 ==============
@@ -58,6 +60,7 @@ Here is the complete implementation of ``StateSlotBuilder``:
       }
     }
 
+----
 
 Basic usage
 ===========
@@ -79,6 +82,7 @@ A typical usage looks like this:
 Inside the ``builder``, the current values are obtained
 by calling ``get()`` on each ``StateSlot``.
 
+----
 
 Relation to SlotStatefulWidget
 ==============================
@@ -101,6 +105,7 @@ The actual dependency declaration is done by overriding ``slots``:
 
 This keeps the design explicit and avoids hidden behavior.
 
+----
 
 Subscriber IDs and rebuilds
 ===========================
@@ -118,6 +123,7 @@ the widget rebuilds at most once per update cycle.
 Subscriber IDs are managed internally.
 You do not need to create or manage them yourself.
 
+----
 
 Batch updates
 =============
@@ -136,6 +142,7 @@ When slot updates are grouped using ``SimpleAppState.batch``:
 This behavior is consistent with all widgets based on
 ``SlotStatefulWidget``.
 
+----
 
 What StateSlotBuilder does not do
 =================================
@@ -152,6 +159,7 @@ Flutter remains responsible for:
 * widget tree updates
 * rendering and layout optimization
 
+----
 
 Summary
 =======

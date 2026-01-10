@@ -37,6 +37,7 @@
 <h1>Common Mistakes<a class="headerlink" href="#common-mistakes" title="Link to this heading">¶</a></h1>
 <p>This section lists common mistakes made by new users of SimpleAppState.
 Each mistake is explained together with the correct mental model.</p>
+<hr class="docutils" />
 <section id="treating-state-as-widget-owned">
 <h2>Treating state as widget-owned<a class="headerlink" href="#treating-state-as-widget-owned" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
@@ -60,6 +61,7 @@ typically as a global or top-level object:</p>
 </div>
 <p>Widgets should <em>subscribe</em> to state, not own it.</p>
 </section>
+<hr class="docutils" />
 <section id="mutating-values-returned-from-slots">
 <h2>Mutating values returned from slots<a class="headerlink" href="#mutating-values-returned-from-slots" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
@@ -89,6 +91,7 @@ typically as a global or top-level object:</p>
 </div>
 <p>SimpleAppState ensures that these mutations remain local to the update process and do not leak into other parts of your application, keeping your code clean and predictable.</p>
 </section>
+<hr class="docutils" />
 <section id="forgetting-to-declare-slot-dependencies">
 <h2>Forgetting to declare slot dependencies<a class="headerlink" href="#forgetting-to-declare-slot-dependencies" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
@@ -111,6 +114,7 @@ when that slot changes.</p>
 </pre></div>
 </div>
 </section>
+<hr class="docutils" />
 <section id="creating-many-small-state-objects">
 <h2>Creating many small state objects<a class="headerlink" href="#creating-many-small-state-objects" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
@@ -123,7 +127,10 @@ to perform coordinated updates and persistence.</p>
 <p>Start with a single <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> instance.
 Introduce multiple state objects only when you have
 clear ownership boundaries.</p>
+<p>A specific case where multiple SimpleAppStates are needed is when
+you want to separate the app state that is the target of Undo and Redo from the rest.</p>
 </section>
+<hr class="docutils" />
 <section id="mixing-import-types">
 <h2>Mixing Import Types<a class="headerlink" href="#mixing-import-types" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
@@ -144,6 +151,7 @@ clear ownership boundaries.</p>
 </pre></div>
 </div>
 </section>
+<hr class="docutils" />
 <section id="accessing-slots-from-utility-functions">
 <h2>Accessing slots from utility functions<a class="headerlink" href="#accessing-slots-from-utility-functions" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
@@ -185,6 +193,7 @@ State updates should happen at the call site:</p>
 <p>Utilities transform values.
 StateSlots own state.</p>
 </section>
+<hr class="docutils" />
 <section id="expecting-context-based-lookups">
 <h2>Expecting context-based lookups<a class="headerlink" href="#expecting-context-based-lookups" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
@@ -199,6 +208,7 @@ which state changes can affect a given widget.</p>
 If a widget rebuilds, you should always be able to point
 to the exact slot that caused it.</p>
 </section>
+<hr class="docutils" />
 <section id="updating-state-during-build">
 <h2>Updating state during build<a class="headerlink" href="#updating-state-during-build" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
@@ -220,6 +230,7 @@ can cause repeated rebuilds or unstable behavior.</p>
 <p>For a detailed explanation, see:
 <a class="reference internal" href="../flutter_integration/common_mistakes.html"><span class="doc">Common Mistakes</span></a></p>
 </section>
+<hr class="docutils" />
 <section id="next-step">
 <h2>Next step<a class="headerlink" href="#next-step" title="Link to this heading">¶</a></h2>
 <p>Congratulations! You’ve mastered the basics of <strong>SimpleAppState</strong>.</p>
@@ -272,6 +283,7 @@ on your interests:</p>
 <li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
 </ul>

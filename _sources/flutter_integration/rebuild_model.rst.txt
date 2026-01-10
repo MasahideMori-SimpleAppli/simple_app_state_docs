@@ -15,6 +15,8 @@ while leaving all rebuild decisions to Flutter.
 
 Understanding this boundary is essential.
 
+----
+
 Two separate responsibilities
 ------------------------------
 
@@ -37,6 +39,8 @@ Flutter **does not** know about state slots.
 
 They communicate through a very small boundary.
 
+----
+
 What happens when state changes
 -------------------------------
 
@@ -57,6 +61,8 @@ At that point, SimpleAppState’s job is done.
 
 From there on, Flutter’s normal rebuild process applies.
 
+----
+
 SimpleAppState does not rebuild widgets
 ---------------------------------------
 
@@ -75,6 +81,7 @@ and they usually call ``setState``.
 
 Everything after that is pure Flutter behavior.
 
+----
 
 Why rebuild behavior can differ
 -------------------------------
@@ -100,6 +107,7 @@ Flutter decides:
 
 SimpleAppState intentionally does not interfere.
 
+----
 
 What batching guarantees (and what it does not)
 -----------------------------------------------
@@ -131,6 +139,7 @@ Those details are controlled by Flutter.
 Batching reduces *requested rebuilds*,
 not Flutter’s rebuild freedom.
 
+----
 
 Subscriber IDs and rebuild intent
 ---------------------------------
@@ -151,6 +160,8 @@ Think of subscriber IDs as:
 
 - a signal to Flutter widgets
 - not a rebuild command
+
+----
 
 Why this model is intentional
 -----------------------------
@@ -175,6 +186,7 @@ you can always trace it back to:
 - which listener was notified
 - which widget called ``setState``
 
+----
 
 Common misunderstandings
 ------------------------
@@ -202,6 +214,7 @@ No.
 It works *with* Flutter,
 not *instead of* Flutter.
 
+----
 
 Summary
 -------
