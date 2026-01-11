@@ -46,7 +46,7 @@ and why SimpleAppState is designed this way.</p>
 <section id="the-most-important-rule">
 <h2>The most important rule<a class="headerlink" href="#the-most-important-rule" title="Link to this heading">¶</a></h2>
 <p>If you remember only one rule, remember this:</p>
-<p><strong>Changing an object returned from ``get()`` never changes state.</strong></p>
+<p><strong>Changing an object returned from get() never changes state.</strong></p>
 <p>Example:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logs</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
 <span class="n">list</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ state is NOT updated</span>
@@ -58,7 +58,7 @@ It is the core design.</p>
 <hr class="docutils" />
 <section id="why-get-returns-a-copy">
 <h2>Why get() returns a copy<a class="headerlink" href="#why-get-returns-a-copy" title="Link to this heading">¶</a></h2>
-<p>When you call <code class="docutils literal notranslate"><span class="pre">get()</span></code>:</p>
+<p>When you call <strong>get()</strong>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">slot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
 </pre></div>
 </div>
@@ -82,14 +82,14 @@ without SimpleAppState noticing.</p>
 <hr class="docutils" />
 <section id="how-state-should-be-updated">
 <h2>How state should be updated<a class="headerlink" href="#how-state-should-be-updated" title="Link to this heading">¶</a></h2>
-<p>To change state, you must use <code class="docutils literal notranslate"><span class="pre">set</span></code> or <code class="docutils literal notranslate"><span class="pre">update</span></code>.</p>
-<p>Example with <code class="docutils literal notranslate"><span class="pre">set</span></code>:</p>
+<p>To change state, you must use <strong>set</strong> or <strong>update</strong>.</p>
+<p>Example with <strong>set</strong>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">settings</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span>
 <span class="w">  </span><span class="n">AppSettings</span><span class="p">(</span><span class="nl">theme:</span><span class="w"> </span><span class="s1">&#39;dark&#39;</span><span class="p">),</span>
 <span class="p">);</span>
 </pre></div>
 </div>
-<p>Example with <code class="docutils literal notranslate"><span class="pre">update</span></code>:</p>
+<p>Example with <strong>update</strong>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
 <span class="w">  </span><span class="n">next</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span>
@@ -166,7 +166,7 @@ especially for beginners.</p>
 <li><p>safely copyable, or</p></li>
 <li><p>serializable</p></li>
 </ul>
-<p>SimpleAppState validates values on <code class="docutils literal notranslate"><span class="pre">set</span></code> and <code class="docutils literal notranslate"><span class="pre">update</span></code>
+<p>SimpleAppState validates values on <strong>set</strong> and <strong>update</strong>
 to ensure they are safe to store.</p>
 <p>This prevents subtle bugs caused by
 non-copyable or externally mutable objects.</p>
@@ -192,8 +192,8 @@ this design may feel strict.</p>
 <p>Value semantics means:</p>
 <ul class="simple">
 <li><p>state is replaced, not mutated</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">get()</span></code> always returns a copy</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">set</span></code> and <code class="docutils literal notranslate"><span class="pre">update</span></code> are the only write paths</p></li>
+<li><p><strong>get()</strong> always returns a copy</p></li>
+<li><p><strong>set</strong> and <strong>update</strong> are the only write paths</p></li>
 <li><p>state changes are explicit and traceable</p></li>
 </ul>
 <p>Once you accept this rule,
@@ -237,6 +237,7 @@ SimpleAppState becomes much easier to understand.</p>
 <li class="toctree-l2"><a class="reference internal" href="batch_updates.html">Batch Updates</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../state_models/index.html">State Models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>

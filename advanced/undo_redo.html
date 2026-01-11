@@ -37,7 +37,7 @@
 <h1>Undo and Redo<a class="headerlink" href="#undo-and-redo" title="Link to this heading">¶</a></h1>
 <p>This section explains how <strong>SimpleAppState</strong> supports undo and redo operations.</p>
 <p>Undo / redo is implemented by integrating
-the <strong>file_state_manager</strong> package with the internal state structure of
+the <a class="reference external" href="https://pub.dev/packages/file_state_manager">file_state_manager</a> package with the internal state structure of
 <strong>SimpleAppState</strong>.</p>
 <hr class="docutils" />
 <section id="overview">
@@ -50,30 +50,30 @@ the <strong>file_state_manager</strong> package with the internal state structur
 </ul>
 <p>This mechanism relies on:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">CloneableFile.clone()</span></code> for snapshot creation</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">FileStateManager</span></code> for history management</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">replaceDataFrom()</span></code> for applying restored state</p></li>
+<li><p><strong>CloneableFile.clone()</strong> for snapshot creation</p></li>
+<li><p><strong>FileStateManager</strong> for history management</p></li>
+<li><p><strong>replaceDataFrom()</strong> for applying restored state</p></li>
 </ul>
 </section>
 <hr class="docutils" />
 <section id="state-snapshots">
 <h2>State Snapshots<a class="headerlink" href="#state-snapshots" title="Link to this heading">¶</a></h2>
-<p><strong>SimpleAppState</strong> implements the <code class="docutils literal notranslate"><span class="pre">CloneableFile</span></code> interface.</p>
+<p><strong>SimpleAppState</strong> implements the <strong>CloneableFile</strong> interface.</p>
 <p>This allows the entire application state to be:</p>
 <ul class="simple">
-<li><p>Deep-copied using <code class="docutils literal notranslate"><span class="pre">clone()</span></code></p></li>
-<li><p>Managed as an immutable snapshot by <code class="docutils literal notranslate"><span class="pre">FileStateManager</span></code></p></li>
+<li><p>Deep-copied using <strong>clone()</strong></p></li>
+<li><p>Managed as an immutable snapshot by <strong>FileStateManager</strong></p></li>
 </ul>
 <p>Each snapshot represents a complete and self-contained application state
 at a specific point in time.</p>
 <p>Snapshots are used exclusively for undo / redo and are independent of
-persistence mechanisms such as <code class="docutils literal notranslate"><span class="pre">toDict()</span></code> and <code class="docutils literal notranslate"><span class="pre">fromDict()</span></code>.</p>
+persistence mechanisms such as <strong>toDict()</strong> and <strong>fromDict()</strong>.</p>
 </section>
 <hr class="docutils" />
 <section id="filestatemanager-integration">
 <h2>FileStateManager Integration<a class="headerlink" href="#filestatemanager-integration" title="Link to this heading">¶</a></h2>
 <p>To enable undo / redo support, register a <strong>SimpleAppState</strong> instance
-with <code class="docutils literal notranslate"><span class="pre">FileStateManager</span></code>.</p>
+with <strong>FileStateManager</strong>.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span>
 <span class="kd">final</span><span class="w"> </span><span class="n">fsm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FileStateManager</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="nl">stackSize:</span><span class="w"> </span><span class="m">20</span><span class="p">);</span>
 </pre></div>
@@ -110,7 +110,7 @@ in the history stack.</p>
 <hr class="docutils" />
 <section id="undo-operation">
 <h2>Undo Operation<a class="headerlink" href="#undo-operation" title="Link to this heading">¶</a></h2>
-<p>Calling <code class="docutils literal notranslate"><span class="pre">undo()</span></code> retrieves the previous snapshot from the history stack.</p>
+<p>Calling <strong>undo()</strong> retrieves the previous snapshot from the history stack.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">previous</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fsm</span><span class="p">.</span><span class="n">undo</span><span class="p">();</span>
 </pre></div>
 </div>
@@ -118,23 +118,23 @@ in the history stack.</p>
 The returned snapshot must then be applied to the current state.</p>
 <section id="applying-a-snapshot-safely">
 <h3>Applying a Snapshot Safely<a class="headerlink" href="#applying-a-snapshot-safely" title="Link to this heading">¶</a></h3>
-<p>When restoring a snapshot using <code class="docutils literal notranslate"><span class="pre">replaceDataFrom()</span></code>,
+<p>When restoring a snapshot using <strong>replaceDataFrom()</strong>,
 the internal state of <strong>SimpleAppState</strong> is replaced.</p>
 <p>This operation <strong>finalizes a state change</strong>, which would normally trigger
 the state listener.</p>
 <p>To prevent the restored snapshot from being recorded as a new history entry,
 you must suppress the next push operation.</p>
-<p><code class="docutils literal notranslate"><span class="pre">FileStateManager</span></code> provides <code class="docutils literal notranslate"><span class="pre">skipNextPush()</span></code> for this purpose.</p>
+<p><strong>FileStateManager</strong> provides <strong>skipNextPush()</strong> for this purpose.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">previous</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fsm</span><span class="p">.</span><span class="n">undo</span><span class="p">();</span>
 <span class="n">fsm</span><span class="p">.</span><span class="n">skipNextPush</span><span class="p">();</span>
 <span class="n">state</span><span class="p">.</span><span class="n">replaceDataFrom</span><span class="p">(</span><span class="n">previous</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Key characteristics of <code class="docutils literal notranslate"><span class="pre">replaceDataFrom()</span></code>:</p>
+<p>Key characteristics of <strong>replaceDataFrom()</strong>:</p>
 <ul class="simple">
-<li><p>The current <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> instance remains active</p></li>
+<li><p>The current <strong>SimpleAppState</strong> instance remains active</p></li>
 <li><p>Only internal data is replaced</p></li>
-<li><p>No new history entry is created when <code class="docutils literal notranslate"><span class="pre">skipNextPush()</span></code> is used</p></li>
+<li><p>No new history entry is created when <strong>skipNextPush()</strong> is used</p></li>
 </ul>
 </section>
 </section>
@@ -199,8 +199,8 @@ automatic history pushes during restoration.</p>
 <h2>Design Separation<a class="headerlink" href="#design-separation" title="Link to this heading">¶</a></h2>
 <p>Undo / redo is intentionally separated from persistence.</p>
 <ul class="simple">
-<li><p>Persistence uses <code class="docutils literal notranslate"><span class="pre">toDict()</span></code> and <code class="docutils literal notranslate"><span class="pre">fromDict()</span></code></p></li>
-<li><p>Undo / redo uses <code class="docutils literal notranslate"><span class="pre">clone()</span></code> and snapshot replacement</p></li>
+<li><p>Persistence uses <strong>toDict()</strong> and <strong>fromDict()</strong></p></li>
+<li><p>Undo / redo uses <strong>clone()</strong> and snapshot replacement</p></li>
 </ul>
 <p>Keeping these mechanisms independent maintains clarity and avoids
 unexpected interactions between state restoration and persistence.</p>
@@ -237,6 +237,7 @@ unexpected interactions between state restoration and persistence.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../state_models/index.html">State Models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Advanced Topics</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="persistence_and_restore.html">Persistence and Restore</a></li>

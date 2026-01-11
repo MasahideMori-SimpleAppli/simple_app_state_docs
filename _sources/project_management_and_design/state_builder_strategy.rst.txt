@@ -1,8 +1,8 @@
 State Builder Strategy
 ======================
 
-This chapter explains how ``StateSlotBuilder`` fits into
-the slot-boundary model defined by ``SlotStatefulWidget``.
+This chapter explains how **StateSlotBuilder** fits into
+the slot-boundary model defined by **SlotStatefulWidget**.
 
 While slot boundaries define *what a widget is allowed to depend on*,
 builders define *where and how updates are applied* inside that boundary.
@@ -14,8 +14,8 @@ Two different responsibilities
 
 SimpleAppState provides two Flutter integration tools:
 
-* ``SlotStatefulWidget`` — defines **state ownership**
-* ``StateSlotBuilder`` — defines **localized reactivity**
+* **SlotStatefulWidget** — defines **state ownership**
+* **StateSlotBuilder** — defines **localized reactivity**
 
 They are designed to work together, not to replace each other.
 
@@ -24,7 +24,7 @@ They are designed to work together, not to replace each other.
 SlotStatefulWidget defines the contract
 ----------------------------------------
 
-When a widget extends ``SlotStatefulWidget``,
+When a widget extends **SlotStatefulWidget**,
 it declares its allowed state dependencies:
 
 .. code-block:: dart
@@ -49,10 +49,10 @@ This declaration is part of the widget’s design contract.
 StateSlotBuilder implements local reactions
 -------------------------------------------
 
-Inside a ``SlotStatefulWidget``, it is often useful
+Inside a **SlotStatefulWidget**, it is often useful
 to rebuild only a small part of the UI.
 
-That is what ``StateSlotBuilder`` is for.
+That is what **StateSlotBuilder** is for.
 
 .. code-block:: dart
 
@@ -71,7 +71,7 @@ That is what ``StateSlotBuilder`` is for.
      },
    )
 
-This builder reacts to changes in ``settingsSlot``,
+This builder reacts to changes in **settingsSlot**,
 but only rebuilds this small subtree.
 
 The surrounding widget structure remains untouched.
@@ -81,7 +81,7 @@ The surrounding widget structure remains untouched.
 Builders do not define screen ownership
 ---------------------------------------
 
-``StateSlotBuilder`` does **not** define
+**StateSlotBuilder** does **not** define
 the overall state boundary of a screen.
 
 If builders are scattered throughout a widget tree,
@@ -100,8 +100,8 @@ the screen’s true dependencies become difficult to see.
 Each builder is simple in isolation,
 but the screen’s overall state surface is now hidden.
 
-For this reason, ``StateSlotBuilder`` is intentionally
-not a replacement for ``SlotStatefulWidget``.
+For this reason, **StateSlotBuilder** is intentionally
+not a replacement for **SlotStatefulWidget**.
 
 ----
 
@@ -129,7 +129,7 @@ This keeps:
 A tool, not a shortcut
 -----------------------
 
-``StateSlotBuilder`` exists to solve
+**StateSlotBuilder** exists to solve
 **localized update and performance problems**.
 
 It should not be used to bypass slot boundaries

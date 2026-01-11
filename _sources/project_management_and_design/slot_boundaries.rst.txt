@@ -13,11 +13,11 @@ it is a **contract** between designers, implementers, and reviewers.
 What is a slot boundary?
 -------------------------
 
-A *slot boundary* is the set of ``StateSlot`` objects
+A *slot boundary* is the set of **StateSlot** objects
 that a widget is allowed to depend on.
 
 In SimpleAppState, this boundary is declared explicitly
-by ``SlotStatefulWidget.slots``.
+by **SlotStatefulWidget.slots**.
 
 .. code-block:: dart
 
@@ -36,7 +36,7 @@ by ``SlotStatefulWidget.slots``.
 
 This declaration means:
 
-* This screen is allowed to read ``userSlot`` and ``settingsSlot``
+* This screen is allowed to read **userSlot** and **settingsSlot**
 * Only these slots will trigger rebuilds
 * No other application state should influence this widget
 
@@ -92,11 +92,11 @@ between a manager (or architect) and implementers.
 
 A typical delegation might be:
 
-* “Implement ``UserScreen``”
-* “You may use ``userSlot`` and ``settingsSlot``”
+* “Implement **UserScreen**”
+* “You may use **userSlot** and **settingsSlot**”
 * “Do not depend on any other application state”
 
-Because the boundary is declared in ``slots``,
+Because the boundary is declared in **slots**,
 the implementer does not have to guess what is allowed.
 
 Inside the state class, they can focus purely on UI:
@@ -144,7 +144,7 @@ While convenient, this often leads to:
 * Difficult code reviews
 * Accidental coupling to unrelated state
 
-By contrast, ``SlotStatefulWidget`` requires
+By contrast, **SlotStatefulWidget** requires
 all slot dependencies to be declared in one place.
 
 This makes the widget’s relationship to application state

@@ -35,18 +35,18 @@
             
   <section id="stateslot">
 <h1>StateSlot<a class="headerlink" href="#stateslot" title="Link to this heading">¶</a></h1>
-<p>A <code class="docutils literal notranslate"><span class="pre">StateSlot&lt;T&gt;</span></code> is the way you <em>read and update</em>
+<p>A <strong>StateSlot&lt;T&gt;</strong> is the way you <em>read and update</em>
 application state in SimpleAppState.</p>
 <p>If you already understand this sentence:</p>
 <p><em>“I get a value from a slot, and I update it through the slot.”</em></p>
 <p>then you already understand the most important part.</p>
-<p>This page explains what a <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> is,
+<p>This page explains what a <strong>StateSlot</strong> is,
 how it is used,
 and why SimpleAppState uses slots instead of fields.</p>
 <hr class="docutils" />
 <section id="what-is-a-stateslot">
 <h2>What is a StateSlot?<a class="headerlink" href="#what-is-a-stateslot" title="Link to this heading">¶</a></h2>
-<p>A <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> represents <strong>one piece of application state</strong>.</p>
+<p>A <strong>StateSlot</strong> represents <strong>one piece of application state</strong>.</p>
 <p>For example:</p>
 <ul class="simple">
 <li><p>a counter value</p></li>
@@ -66,9 +66,9 @@ and why SimpleAppState uses slots instead of fields.</p>
 </div>
 <p>Here:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">count</span></code> is the slot</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code> is the value type</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'count'</span></code> is the slot name</p></li>
+<li><p><strong>count</strong> is the slot</p></li>
+<li><p><strong>int</strong> is the value type</p></li>
+<li><p><strong>‘count’</strong> is the slot name</p></li>
 </ul>
 <p>You never access state directly.
 You always go through the slot.</p>
@@ -100,7 +100,7 @@ SimpleAppState can clearly see:</p>
 <hr class="docutils" />
 <section id="reading-state-get">
 <h2>Reading state: get()<a class="headerlink" href="#reading-state-get" title="Link to this heading">¶</a></h2>
-<p>To read a value from a slot, use <code class="docutils literal notranslate"><span class="pre">get()</span></code>:</p>
+<p>To read a value from a slot, use <strong>get()</strong>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
 </pre></div>
 </div>
@@ -120,7 +120,7 @@ It prevents accidental state changes.</p>
 <hr class="docutils" />
 <section id="updating-state-set">
 <h2>Updating state: set()<a class="headerlink" href="#updating-state-set" title="Link to this heading">¶</a></h2>
-<p>To replace a value, use <code class="docutils literal notranslate"><span class="pre">set()</span></code>:</p>
+<p>To replace a value, use <strong>set()</strong>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -139,11 +139,11 @@ It prevents accidental state changes.</p>
 <section id="updating-based-on-the-previous-value-update">
 <h2>Updating based on the previous value: update()<a class="headerlink" href="#updating-based-on-the-previous-value-update" title="Link to this heading">¶</a></h2>
 <p>Often, the new value depends on the old one.</p>
-<p>For this, use <code class="docutils literal notranslate"><span class="pre">update()</span></code>:</p>
+<p>For this, use <strong>update()</strong>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">old</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">update</span></code> works like this:</p>
+<p><strong>update</strong> works like this:</p>
 <ol class="arabic simple">
 <li><p>get the current value</p></li>
 <li><p>create a new value from it</p></li>
@@ -159,7 +159,7 @@ It prevents accidental state changes.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Then that slot will always store <code class="docutils literal notranslate"><span class="pre">int</span></code> values.</p>
+<p>Then that slot will always store <strong>int</strong> values.</p>
 <p>This prevents bugs such as:</p>
 <ul class="simple">
 <li><p>accidentally storing a wrong type</p></li>
@@ -170,8 +170,8 @@ It prevents accidental state changes.</p>
 <hr class="docutils" />
 <section id="slots-belong-to-simpleappstate">
 <h2>Slots belong to SimpleAppState<a class="headerlink" href="#slots-belong-to-simpleappstate" title="Link to this heading">¶</a></h2>
-<p>A <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> does not store data by itself.</p>
-<p>All data lives inside <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code>.</p>
+<p>A <strong>StateSlot</strong> does not store data by itself.</p>
+<p>All data lives inside <strong>SimpleAppState</strong>.</p>
 <p>The slot is only a <em>key</em> that points to that data.</p>
 <p>Because of this:</p>
 <ul class="simple">
@@ -191,7 +191,7 @@ but it explains why slots exist as objects.</p>
 <span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">count</span><span class="p">];</span>
 </pre></div>
 </div>
-<p>When <code class="docutils literal notranslate"><span class="pre">count</span></code> changes:</p>
+<p>When <strong>count</strong> changes:</p>
 <ul class="simple">
 <li><p>SimpleAppState detects the change</p></li>
 <li><p>subscribed widgets rebuild</p></li>
@@ -202,7 +202,7 @@ but it explains why slots exist as objects.</p>
 <hr class="docutils" />
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
-<p>A <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code>:</p>
+<p>A <strong>StateSlot</strong>:</p>
 <ul class="simple">
 <li><p>represents one piece of application state</p></li>
 <li><p>is the only way to read and update that state</p></li>
@@ -256,6 +256,7 @@ but it explains why slots exist as objects.</p>
 <li class="toctree-l2"><a class="reference internal" href="batch_updates.html">Batch Updates</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../state_models/index.html">State Models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>

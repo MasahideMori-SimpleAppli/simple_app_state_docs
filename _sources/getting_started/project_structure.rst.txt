@@ -6,7 +6,7 @@ While placing everything in a single file is great for learning, real-world appl
 In this section, we will refactor the single-file example into a standard directory structure.
 
 .. important::
-   **Import Consistency:** In Dart, always use **absolute package imports** (e.g., ``package:your_project/ui/app_state.dart``). 
+   **Import Consistency:** In Dart, always use **absolute package imports** (e.g., **package:your_project/ui/app_state.dart**).
    Mixing relative and absolute imports can cause Dart to treat the same file as two different instances, which will break your application state.
 
    A safe way to do this is to use:
@@ -29,7 +29,7 @@ Recommended Directory Structure
 
 ----
 
-Step 1: Define Application State (``lib/ui/app_state.dart``)
+Step 1: Define Application State (**lib/ui/app_state.dart**)
 ------------------------------------------------------------
 
 First, move all your state logic into a dedicated file. This file becomes the "Source of Truth" for your entire app.
@@ -49,14 +49,14 @@ First, move all your state logic into a dedicated file. This file becomes the "S
     );
 
 .. tip::
-   **The Golden Rule:** ``app_state.dart`` should **never** import any files from the UI layer (like widgets or pages). This ensures a clean data flow.
+   **The Golden Rule:** **app_state.dart** should **never** import any files from the UI layer (like widgets or pages). This ensures a clean data flow.
 
 ----
 
-Step 2: Create the UI Layer (``lib/ui/pages/counter_page.dart``)
+Step 2: Create the UI Layer (**lib/ui/pages/counter_page.dart**)
 ------------------------------------------------------------------
 
-Next, move your widgets to the ``pages/`` directory. Use the **package import** to access the state.
+Next, move your widgets to the **pages/** directory. Use the **package import** to access the state.
 
 .. code-block:: dart
 
@@ -130,10 +130,10 @@ Next, move your widgets to the ``pages/`` directory. Use the **package import** 
 
 ----
 
-Step 3: Cleanup the Entry Point (``lib/main.dart``)
+Step 3: Cleanup the Entry Point (**lib/main.dart**)
 ---------------------------------------------------
 
-Finally, ``main.dart`` becomes very slim. Notice that all imports are absolute.
+Finally, **main.dart** becomes very slim. Notice that all imports are absolute.
 
 .. code-block:: dart
 
@@ -165,10 +165,10 @@ Finally, ``main.dart`` becomes very slim. Notice that all imports are absolute.
 Why This Structure?
 -------------------
 
-1. **Prevent Instance Duplication:** By using absolute package imports everywhere, you ensure that ``appState`` remains a single, consistent instance throughout the app.
-2. **Discoverability:** New team members always know where to look for data: ``ui/app_state.dart``.
+1. **Prevent Instance Duplication:** By using absolute package imports everywhere, you ensure that **appState** remains a single, consistent instance throughout the app.
+2. **Discoverability:** New team members always know where to look for data: **ui/app_state.dart**.
 3. **Predictable Dependencies:** The dependency always flows from **UI → State**.
-4. **Testability:** You can write unit tests for your logic in ``app_state.dart`` without needing to build widgets.
+4. **Testability:** You can write unit tests for your logic in **app_state.dart** without needing to build widgets.
 
 ----
 

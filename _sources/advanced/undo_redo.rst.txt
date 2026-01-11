@@ -5,7 +5,7 @@ Undo and Redo
 This section explains how **SimpleAppState** supports undo and redo operations.
 
 Undo / redo is implemented by integrating
-the **file_state_manager** package with the internal state structure of
+the `file_state_manager <https://pub.dev/packages/file_state_manager>`_ package with the internal state structure of
 **SimpleAppState**.
 
 ----
@@ -21,27 +21,27 @@ Undo and redo in **SimpleAppState** are based on snapshot history.
 
 This mechanism relies on:
 
-* ``CloneableFile.clone()`` for snapshot creation
-* ``FileStateManager`` for history management
-* ``replaceDataFrom()`` for applying restored state
+* **CloneableFile.clone()** for snapshot creation
+* **FileStateManager** for history management
+* **replaceDataFrom()** for applying restored state
 
 ----
 
 State Snapshots
 ===============
 
-**SimpleAppState** implements the ``CloneableFile`` interface.
+**SimpleAppState** implements the **CloneableFile** interface.
 
 This allows the entire application state to be:
 
-* Deep-copied using ``clone()``
-* Managed as an immutable snapshot by ``FileStateManager``
+* Deep-copied using **clone()**
+* Managed as an immutable snapshot by **FileStateManager**
 
 Each snapshot represents a complete and self-contained application state
 at a specific point in time.
 
 Snapshots are used exclusively for undo / redo and are independent of
-persistence mechanisms such as ``toDict()`` and ``fromDict()``.
+persistence mechanisms such as **toDict()** and **fromDict()**.
 
 ----
 
@@ -49,7 +49,7 @@ FileStateManager Integration
 ============================
 
 To enable undo / redo support, register a **SimpleAppState** instance
-with ``FileStateManager``.
+with **FileStateManager**.
 
 .. code-block:: dart
 
@@ -96,7 +96,7 @@ This design ensures that:
 Undo Operation
 ==============
 
-Calling ``undo()`` retrieves the previous snapshot from the history stack.
+Calling **undo()** retrieves the previous snapshot from the history stack.
 
 .. code-block:: dart
 
@@ -108,7 +108,7 @@ The returned snapshot must then be applied to the current state.
 Applying a Snapshot Safely
 --------------------------
 
-When restoring a snapshot using ``replaceDataFrom()``,
+When restoring a snapshot using **replaceDataFrom()**,
 the internal state of **SimpleAppState** is replaced.
 
 This operation **finalizes a state change**, which would normally trigger
@@ -117,7 +117,7 @@ the state listener.
 To prevent the restored snapshot from being recorded as a new history entry,
 you must suppress the next push operation.
 
-``FileStateManager`` provides ``skipNextPush()`` for this purpose.
+**FileStateManager** provides **skipNextPush()** for this purpose.
 
 .. code-block:: dart
 
@@ -125,11 +125,11 @@ you must suppress the next push operation.
    fsm.skipNextPush();
    state.replaceDataFrom(previous);
 
-Key characteristics of ``replaceDataFrom()``:
+Key characteristics of **replaceDataFrom()**:
 
-* The current ``SimpleAppState`` instance remains active
+* The current **SimpleAppState** instance remains active
 * Only internal data is replaced
-* No new history entry is created when ``skipNextPush()`` is used
+* No new history entry is created when **skipNextPush()** is used
 
 ----
 
@@ -203,8 +203,8 @@ Design Separation
 
 Undo / redo is intentionally separated from persistence.
 
-* Persistence uses ``toDict()`` and ``fromDict()``
-* Undo / redo uses ``clone()`` and snapshot replacement
+* Persistence uses **toDict()** and **fromDict()**
+* Undo / redo uses **clone()** and snapshot replacement
 
 Keeping these mechanisms independent maintains clarity and avoids
 unexpected interactions between state restoration and persistence.

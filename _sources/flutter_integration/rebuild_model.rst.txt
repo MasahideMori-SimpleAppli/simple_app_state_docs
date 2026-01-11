@@ -55,7 +55,7 @@ the following happens:
 1. SimpleAppState replaces the stored value
 2. SimpleAppState finds listeners for that slot
 3. listener callbacks are invoked
-4. those callbacks typically call ``setState``
+4. those callbacks typically call **setState**
 
 At that point, SimpleAppState’s job is done.
 
@@ -77,7 +77,7 @@ It does **not**:
 It only calls callbacks.
 
 Those callbacks live in Flutter widgets,
-and they usually call ``setState``.
+and they usually call **setState**.
 
 Everything after that is pure Flutter behavior.
 
@@ -114,7 +114,7 @@ What batching guarantees (and what it does not)
 
 Batch updates group **notifications**, not rebuilds.
 
-When using ``batch``:
+When using **batch**:
 
 .. code-block:: dart
 
@@ -184,7 +184,7 @@ you can always trace it back to:
 
 - which slot changed
 - which listener was notified
-- which widget called ``setState``
+- which widget called **setState**
 
 ----
 

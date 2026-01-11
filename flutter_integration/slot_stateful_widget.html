@@ -35,26 +35,26 @@
             
   <section id="slotstatefulwidget">
 <h1>SlotStatefulWidget<a class="headerlink" href="#slotstatefulwidget" title="Link to this heading">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> is the primary way
-to connect Flutter widgets to <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> values.</p>
+<p><strong>SlotStatefulWidget</strong> is the primary way
+to connect Flutter widgets to <strong>StateSlot</strong> values.</p>
 <p>It allows a widget to:</p>
 <ul class="simple">
 <li><p>declare which slots it depends on</p></li>
 <li><p>rebuild when those slots change</p></li>
 <li><p>stay independent from state ownership</p></li>
 </ul>
-<p>This page explains how <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> works
+<p>This page explains how <strong>SlotStatefulWidget</strong> works
 and how it fits into the rebuild model described earlier.</p>
 <hr class="docutils" />
 <section id="what-slotstatefulwidget-does">
 <h2>What SlotStatefulWidget does<a class="headerlink" href="#what-slotstatefulwidget-does" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> is a small helper on top of Flutter’s
-normal <code class="docutils literal notranslate"><span class="pre">StatefulWidget</span></code>.</p>
+<p><strong>SlotStatefulWidget</strong> is a small helper on top of Flutter’s
+normal <strong>StatefulWidget</strong>.</p>
 <p>Its job is simple:</p>
 <ul class="simple">
 <li><p>register listeners for specified slots</p></li>
 <li><p>register those listeners with a <strong>subscriber ID</strong></p></li>
-<li><p>call <code class="docutils literal notranslate"><span class="pre">setState</span></code> when notified</p></li>
+<li><p>call <strong>setState</strong> when notified</p></li>
 <li><p>clean up listeners when the widget is disposed</p></li>
 </ul>
 <p>It does <strong>not</strong>:</p>
@@ -89,7 +89,7 @@ are explained in <a class="reference internal" href="rebuild_model.html"><span c
 <section id="declaring-slot-dependencies">
 <h2>Declaring slot dependencies<a class="headerlink" href="#declaring-slot-dependencies" title="Link to this heading">¶</a></h2>
 <p>A widget declares its state dependencies
-by overriding the <code class="docutils literal notranslate"><span class="pre">slots</span></code> getter:</p>
+by overriding the <strong>slots</strong> getter:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">CounterView</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotStatefulWidget</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CounterView</span><span class="p">({</span><span class="k">super</span><span class="p">.</span><span class="n">key</span><span class="p">});</span>
 
@@ -110,7 +110,7 @@ when that slot changes.</p>
 <hr class="docutils" />
 <section id="reading-slot-values-in-build">
 <h2>Reading slot values in build()<a class="headerlink" href="#reading-slot-values-in-build" title="Link to this heading">¶</a></h2>
-<p>Inside <code class="docutils literal notranslate"><span class="pre">build</span></code>, you read slot values normally:</p>
+<p>Inside <strong>build</strong>, you read slot values normally:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">_CounterViewState</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotState</span><span class="o">&lt;</span><span class="n">CounterView</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nd">@override</span>
 <span class="w">  </span><span class="n">Widget</span><span class="w"> </span><span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -123,9 +123,9 @@ when that slot changes.</p>
 </div>
 <p>Important points:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">get()</span></code> always returns a copy</p></li>
+<li><p><strong>get()</strong> always returns a copy</p></li>
 <li><p>reading does not subscribe implicitly</p></li>
-<li><p>subscription is controlled only by <code class="docutils literal notranslate"><span class="pre">slots</span></code></p></li>
+<li><p>subscription is controlled only by <strong>slots</strong></p></li>
 </ul>
 <p>This keeps dependencies explicit and visible.</p>
 </section>
@@ -135,12 +135,12 @@ when that slot changes.</p>
 <p>When a listed slot changes:</p>
 <ol class="arabic simple">
 <li><p>SimpleAppState notifies listeners</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SlotState</span></code> receives the notification</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">setState</span></code> is called</p></li>
+<li><p><strong>SlotState</strong> receives the notification</p></li>
+<li><p><strong>setState</strong> is called</p></li>
 <li><p>Flutter schedules a rebuild</p></li>
 </ol>
 <p>After that, Flutter behaves normally.</p>
-<p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> does not bypass
+<p><strong>SlotStatefulWidget</strong> does not bypass
 Flutter’s rebuild system.</p>
 </section>
 <hr class="docutils" />
@@ -154,20 +154,20 @@ Flutter’s rebuild system.</p>
 <p>If any of these slots change:</p>
 <ul class="simple">
 <li><p>the widget is notified</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">setState</span></code> is called</p></li>
+<li><p><strong>setState</strong> is called</p></li>
 <li><p>the widget rebuilds</p></li>
 </ul>
 <p>During batch updates:</p>
 <ul class="simple">
 <li><p>notifications are merged by subscriber ID</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">setState</span></code> is requested only once per batch</p></li>
+<li><p><strong>setState</strong> is requested only once per batch</p></li>
 </ul>
 <p>Actual rebuild behavior is still controlled by Flutter.</p>
 </section>
 <hr class="docutils" />
 <section id="lifecycle-and-cleanup">
 <h2>Lifecycle and cleanup<a class="headerlink" href="#lifecycle-and-cleanup" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> handles listener cleanup automatically.</p>
+<p><strong>SlotStatefulWidget</strong> handles listener cleanup automatically.</p>
 <p>When the widget is disposed:</p>
 <ul class="simple">
 <li><p>all registered listeners are removed</p></li>
@@ -184,15 +184,15 @@ Flutter’s rebuild system.</p>
 <hr class="docutils" />
 <section id="why-this-widget-exists">
 <h2>Why this widget exists<a class="headerlink" href="#why-this-widget-exists" title="Link to this heading">¶</a></h2>
-<p>Without <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>,
+<p>Without <strong>SlotStatefulWidget</strong>,
 you would need to manually:</p>
 <ul class="simple">
 <li><p>register listeners</p></li>
 <li><p>manage subscriber IDs</p></li>
-<li><p>call <code class="docutils literal notranslate"><span class="pre">setState</span></code> correctly</p></li>
+<li><p>call <strong>setState</strong> correctly</p></li>
 <li><p>remove listeners on dispose</p></li>
 </ul>
-<p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> packages this logic
+<p><strong>SlotStatefulWidget</strong> packages this logic
 into a small, explicit abstraction.</p>
 <p>It is not required,
 but it is strongly recommended for clarity and safety.</p>
@@ -200,7 +200,7 @@ but it is strongly recommended for clarity and safety.</p>
 <hr class="docutils" />
 <section id="what-slotstatefulwidget-is-not">
 <h2>What SlotStatefulWidget is not<a class="headerlink" href="#what-slotstatefulwidget-is-not" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> is not:</p>
+<p><strong>SlotStatefulWidget</strong> is not:</p>
 <ul class="simple">
 <li><p>a state container</p></li>
 <li><p>a replacement for Flutter state</p></li>
@@ -208,13 +208,13 @@ but it is strongly recommended for clarity and safety.</p>
 <li><p>a performance optimization trick</p></li>
 </ul>
 <p>It is simply a bridge
-between <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> notifications
+between <strong>StateSlot</strong> notifications
 and Flutter’s rebuild mechanism.</p>
 </section>
 <hr class="docutils" />
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>:</p>
+<p><strong>SlotStatefulWidget</strong>:</p>
 <ul class="simple">
 <li><p>connects widgets to state slots</p></li>
 <li><p>makes dependencies explicit</p></li>
@@ -222,7 +222,7 @@ and Flutter’s rebuild mechanism.</p>
 <li><p>keeps state ownership outside the widget tree</p></li>
 </ul>
 <p>If you understand how Flutter rebuilds widgets,
-<code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> will feel familiar.</p>
+<strong>SlotStatefulWidget</strong> will feel familiar.</p>
 <p>It adds structure,
 not magic.</p>
 </section>
@@ -258,6 +258,7 @@ not magic.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../state_models/index.html">State Models</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Flutter Integration</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="rebuild_model.html">Rebuild Model</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">SlotStatefulWidget</a></li>

@@ -35,8 +35,8 @@
             
   <section id="state-builder-strategy">
 <h1>State Builder Strategy<a class="headerlink" href="#state-builder-strategy" title="Link to this heading">¶</a></h1>
-<p>This chapter explains how <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> fits into
-the slot-boundary model defined by <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>.</p>
+<p>This chapter explains how <strong>StateSlotBuilder</strong> fits into
+the slot-boundary model defined by <strong>SlotStatefulWidget</strong>.</p>
 <p>While slot boundaries define <em>what a widget is allowed to depend on</em>,
 builders define <em>where and how updates are applied</em> inside that boundary.</p>
 <hr class="docutils" />
@@ -44,15 +44,15 @@ builders define <em>where and how updates are applied</em> inside that boundary.
 <h2>Two different responsibilities<a class="headerlink" href="#two-different-responsibilities" title="Link to this heading">¶</a></h2>
 <p>SimpleAppState provides two Flutter integration tools:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> — defines <strong>state ownership</strong></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> — defines <strong>localized reactivity</strong></p></li>
+<li><p><strong>SlotStatefulWidget</strong> — defines <strong>state ownership</strong></p></li>
+<li><p><strong>StateSlotBuilder</strong> — defines <strong>localized reactivity</strong></p></li>
 </ul>
 <p>They are designed to work together, not to replace each other.</p>
 </section>
 <hr class="docutils" />
 <section id="slotstatefulwidget-defines-the-contract">
 <h2>SlotStatefulWidget defines the contract<a class="headerlink" href="#slotstatefulwidget-defines-the-contract" title="Link to this heading">¶</a></h2>
-<p>When a widget extends <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>,
+<p>When a widget extends <strong>SlotStatefulWidget</strong>,
 it declares its allowed state dependencies:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">SettingsScreen</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotStatefulWidget</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nd">@override</span>
@@ -73,9 +73,9 @@ it declares its allowed state dependencies:</p>
 <hr class="docutils" />
 <section id="stateslotbuilder-implements-local-reactions">
 <h2>StateSlotBuilder implements local reactions<a class="headerlink" href="#stateslotbuilder-implements-local-reactions" title="Link to this heading">¶</a></h2>
-<p>Inside a <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>, it is often useful
+<p>Inside a <strong>SlotStatefulWidget</strong>, it is often useful
 to rebuild only a small part of the UI.</p>
-<p>That is what <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> is for.</p>
+<p>That is what <strong>StateSlotBuilder</strong> is for.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">StateSlotBuilder</span><span class="p">(</span>
 <span class="w">  </span><span class="nl">slotList:</span><span class="w"> </span><span class="p">[</span><span class="n">settingsSlot</span><span class="p">],</span>
 <span class="w">  </span><span class="nl">builder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -92,14 +92,14 @@ to rebuild only a small part of the UI.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>This builder reacts to changes in <code class="docutils literal notranslate"><span class="pre">settingsSlot</span></code>,
+<p>This builder reacts to changes in <strong>settingsSlot</strong>,
 but only rebuilds this small subtree.</p>
 <p>The surrounding widget structure remains untouched.</p>
 </section>
 <hr class="docutils" />
 <section id="builders-do-not-define-screen-ownership">
 <h2>Builders do not define screen ownership<a class="headerlink" href="#builders-do-not-define-screen-ownership" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> does <strong>not</strong> define
+<p><strong>StateSlotBuilder</strong> does <strong>not</strong> define
 the overall state boundary of a screen.</p>
 <p>If builders are scattered throughout a widget tree,
 the screen’s true dependencies become difficult to see.</p>
@@ -114,8 +114,8 @@ the screen’s true dependencies become difficult to see.</p>
 </div>
 <p>Each builder is simple in isolation,
 but the screen’s overall state surface is now hidden.</p>
-<p>For this reason, <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> is intentionally
-not a replacement for <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>.</p>
+<p>For this reason, <strong>StateSlotBuilder</strong> is intentionally
+not a replacement for <strong>SlotStatefulWidget</strong>.</p>
 </section>
 <hr class="docutils" />
 <section id="a-layered-design">
@@ -139,7 +139,7 @@ not a replacement for <code class="docutils literal notranslate"><span class="pr
 <hr class="docutils" />
 <section id="a-tool-not-a-shortcut">
 <h2>A tool, not a shortcut<a class="headerlink" href="#a-tool-not-a-shortcut" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> exists to solve
+<p><strong>StateSlotBuilder</strong> exists to solve
 <strong>localized update and performance problems</strong>.</p>
 <p>It should not be used to bypass slot boundaries
 or to avoid declaring dependencies at the screen level.</p>
@@ -181,6 +181,7 @@ so that both design and implementation remain understandable.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../state_models/index.html">State Models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Project Management and Design</a><ul class="current">

@@ -36,7 +36,7 @@
   <section id="common-mistakes">
 <h1>Common Mistakes<a class="headerlink" href="#common-mistakes" title="Link to this heading">¶</a></h1>
 <p>This section describes common mistakes when using
-<code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> with Flutter.</p>
+<strong>SimpleAppState</strong> with Flutter.</p>
 <p>All examples below may <em>compile</em>,
 but they violate the design philosophy and may lead to
 unpredictable rebuilds or hard-to-maintain code.</p>
@@ -44,7 +44,7 @@ unpredictable rebuilds or hard-to-maintain code.</p>
 <section id="storing-state-in-widgets">
 <h2>Storing state in widgets<a class="headerlink" href="#storing-state-in-widgets" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake:</strong></p>
-<p>Storing application state inside a <code class="docutils literal notranslate"><span class="pre">StatefulWidget</span></code>.</p>
+<p>Storing application state inside a <strong>StatefulWidget</strong>.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">CounterWidget</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">StatefulWidget</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nd">@override</span>
 <span class="w">  </span><span class="n">State</span><span class="o">&lt;</span><span class="n">CounterWidget</span><span class="o">&gt;</span><span class="w"> </span><span class="n">createState</span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_CounterWidgetState</span><span class="p">();</span>
@@ -67,26 +67,26 @@ unpredictable rebuilds or hard-to-maintain code.</p>
 <li><p>it cannot be shared or persisted easily</p></li>
 </ul>
 <p><strong>Correct approach</strong></p>
-<p>Application state should live in <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code>.
+<p>Application state should live in <strong>SimpleAppState</strong>.
 Widgets should only <em>read</em> state and rebuild when it changes.</p>
 </section>
 <hr class="docutils" />
 <section id="mutating-values-returned-by-get">
 <h2>Mutating values returned by get()<a class="headerlink" href="#mutating-values-returned-by-get" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake:</strong></p>
-<p>Modifying an object returned by <code class="docutils literal notranslate"><span class="pre">StateSlot.get()</span></code>.</p>
+<p>Modifying an object returned by <strong>StateSlot.get()</strong>.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">itemsSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
 <span class="n">list</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new item&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ no state update</span>
 </pre></div>
 </div>
 <p><strong>Why this is a problem</strong></p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">get()</span></code> always returns a deep copy</p></li>
+<li><p><strong>get()</strong> always returns a deep copy</p></li>
 <li><p>mutating it does not affect the actual state</p></li>
 <li><p>no listeners are notified</p></li>
 </ul>
 <p><strong>Correct approach</strong></p>
-<p>Always update state via <code class="docutils literal notranslate"><span class="pre">set</span></code> or <code class="docutils literal notranslate"><span class="pre">update</span></code>:</p>
+<p>Always update state via <strong>set</strong> or <strong>update</strong>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">itemsSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
 <span class="w">  </span><span class="n">next</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new item&#39;</span><span class="p">);</span>
@@ -99,7 +99,7 @@ Widgets should only <em>read</em> state and rebuild when it changes.</p>
 <section id="calling-set-during-build">
 <h2>Calling set() during build<a class="headerlink" href="#calling-set-during-build" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake:</strong></p>
-<p>Updating state during <code class="docutils literal notranslate"><span class="pre">build()</span></code> in a way that changes the value.</p>
+<p>Updating state during <strong>build()</strong> in a way that changes the value.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="nd">@override</span>
 <span class="n">Widget</span><span class="w"> </span><span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">countSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌</span>
@@ -119,49 +119,43 @@ Widgets should only <em>read</em> state and rebuild when it changes.</p>
 </div>
 <p><strong>Why this is a problem</strong></p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">build()</span></code> may be called many times by Flutter</p></li>
+<li><p><strong>build()</strong> may be called many times by Flutter</p></li>
 <li><p>updates that actually change values trigger notifications</p></li>
 <li><p>this can cause repeated rebuilds and unstable behavior</p></li>
 </ul>
-<p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> does guard against <em>no-op updates</em>:</p>
+<p><strong>SimpleAppState</strong> does guard against <em>no-op updates</em>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">oldValue</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>This means that calling <code class="docutils literal notranslate"><span class="pre">set()</span></code> with the same value
+<p>This means that calling <strong>set()</strong> with the same value
 does not trigger notifications.</p>
 <p>However:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">update()</span></code> almost always produces a new value</p></li>
-<li><p>mutating a value obtained from <code class="docutils literal notranslate"><span class="pre">get()</span></code> and setting it back
+<li><p><strong>update()</strong> almost always produces a new value</p></li>
+<li><p>mutating a value obtained from <strong>get()</strong> and setting it back
 also produces a change</p></li>
 </ul>
 <p>These cases are <strong>not</strong> guarded and will trigger rebuilds.</p>
-</section>
-<hr class="docutils" />
-<section id="correct-approach">
-<h2>Correct approach<a class="headerlink" href="#correct-approach" title="Link to this heading">¶</a></h2>
+<p><strong>Correct approach</strong></p>
 <p>State updates should be performed in response to:</p>
 <ul class="simple">
 <li><p>user interactions (button presses)</p></li>
-<li><p>lifecycle callbacks (<code class="docutils literal notranslate"><span class="pre">initState</span></code>, <code class="docutils literal notranslate"><span class="pre">didChangeDependencies</span></code>)</p></li>
+<li><p>lifecycle callbacks (<strong>initState</strong>, <strong>didChangeDependencies</strong>)</p></li>
 <li><p>external events (timers, streams, async results)</p></li>
 </ul>
-<p>Never perform value-changing updates inside <code class="docutils literal notranslate"><span class="pre">build()</span></code>.</p>
-</section>
-<hr class="docutils" />
-<section id="key-takeaway">
-<h2>Key takeaway<a class="headerlink" href="#key-takeaway" title="Link to this heading">¶</a></h2>
+<p>Never perform value-changing updates inside <strong>build()</strong>.</p>
+<p><strong>Key takeaway</strong></p>
 <ul class="simple">
-<li><p>Calling <code class="docutils literal notranslate"><span class="pre">set()</span></code> with the same value is harmless but useless</p></li>
-<li><p>Any update that changes state during <code class="docutils literal notranslate"><span class="pre">build()</span></code> is unsafe</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">build()</span></code> must remain a pure function of current state</p></li>
+<li><p>Calling <strong>set()</strong> with the same value is harmless but useless</p></li>
+<li><p>Any update that changes state during <strong>build()</strong> is unsafe</p></li>
+<li><p><strong>build()</strong> must remain a pure function of current state</p></li>
 </ul>
 </section>
 <hr class="docutils" />
 <section id="reading-state-without-declaring-dependencies">
 <h2>Reading state without declaring dependencies<a class="headerlink" href="#reading-state-without-declaring-dependencies" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake:</strong></p>
-<p>Reading a slot value without using <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>.</p>
+<p>Reading a slot value without using <strong>SlotStatefulWidget</strong>.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Widget</span><span class="w"> </span><span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">countSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span><span class="w"> </span><span class="c1">// ❌</span>
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">$</span><span class="n">count</span><span class="s1">&#39;</span><span class="p">);</span>
@@ -175,7 +169,7 @@ also produces a change</p></li>
 <li><p>UI becomes stale</p></li>
 </ul>
 <p><strong>Correct approach</strong></p>
-<p>Use <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> or <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>
+<p>Use <strong>StateSlotBuilder</strong> or <strong>SlotStatefulWidget</strong>
 to declare dependencies explicitly.</p>
 </section>
 <hr class="docutils" />
@@ -194,13 +188,13 @@ to declare dependencies explicitly.</p>
 </ul>
 <p><strong>Correct approach</strong></p>
 <p>State slots must have <strong>stable, global identities</strong>.
-Declare all slots in a fixed location (for example <code class="docutils literal notranslate"><span class="pre">app_state.dart</span></code>).</p>
+Declare all slots in a fixed location (for example <strong>app_state.dart</strong>).</p>
 </section>
 <hr class="docutils" />
 <section id="expecting-simpleappstate-to-control-rebuilds">
 <h2>Expecting SimpleAppState to control rebuilds<a class="headerlink" href="#expecting-simpleappstate-to-control-rebuilds" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake:</strong></p>
-<p>Assuming <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> decides when widgets rebuild.</p>
+<p>Assuming <strong>SimpleAppState</strong> decides when widgets rebuild.</p>
 <p><strong>Why this is a problem</strong></p>
 <ul class="simple">
 <li><p>Flutter owns the widget tree</p></li>
@@ -210,8 +204,8 @@ Declare all slots in a fixed location (for example <code class="docutils literal
 <p><strong>Correct approach</strong></p>
 <p>Think in layers:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> owns data</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> defines identity</p></li>
+<li><p><strong>SimpleAppState</strong> owns data</p></li>
+<li><p><strong>StateSlot</strong> defines identity</p></li>
 <li><p>Flutter decides rebuild timing and rendering</p></li>
 </ul>
 </section>
@@ -219,7 +213,7 @@ Declare all slots in a fixed location (for example <code class="docutils literal
 <section id="overusing-batch">
 <h2>Overusing batch()<a class="headerlink" href="#overusing-batch" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake:</strong></p>
-<p>Wrapping every update in <code class="docutils literal notranslate"><span class="pre">batch()</span></code>.</p>
+<p>Wrapping every update in <strong>batch()</strong>.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">state</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">countSlot</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
 <span class="p">});</span>
@@ -232,7 +226,7 @@ Declare all slots in a fixed location (for example <code class="docutils literal
 <li><p>batch is intended for grouped changes</p></li>
 </ul>
 <p><strong>Correct approach</strong></p>
-<p>Use <code class="docutils literal notranslate"><span class="pre">batch()</span></code> only when:</p>
+<p>Use <strong>batch()</strong> only when:</p>
 <ul class="simple">
 <li><p>multiple slots are updated together</p></li>
 <li><p>you want a single rebuild after all changes</p></li>
@@ -244,8 +238,8 @@ Declare all slots in a fixed location (for example <code class="docutils literal
 <p>Most mistakes come from mixing responsibilities.</p>
 <p>Remember these simple rules:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> owns application state</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> defines what the state <em>is</em></p></li>
+<li><p><strong>SimpleAppState</strong> owns application state</p></li>
+<li><p><strong>StateSlot</strong> defines what the state <em>is</em></p></li>
 <li><p>widgets declare dependencies and rebuild</p></li>
 <li><p>Flutter controls the widget tree</p></li>
 </ul>
@@ -284,6 +278,7 @@ predictable behavior and maintainable code.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../state_models/index.html">State Models</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Flutter Integration</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="rebuild_model.html">Rebuild Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="slot_stateful_widget.html">SlotStatefulWidget</a></li>

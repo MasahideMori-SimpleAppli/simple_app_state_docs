@@ -41,7 +41,7 @@ Each mistake is explained together with the correct mental model.</p>
 <section id="treating-state-as-widget-owned">
 <h2>Treating state as widget-owned<a class="headerlink" href="#treating-state-as-widget-owned" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
-<p>Defining <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> or slots inside widgets:</p>
+<p>Defining <strong>SimpleAppState</strong> or slots inside widgets:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">MyWidget</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">StatelessWidget</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">appState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span><span class="w"> </span><span class="c1">// ❌</span>
 <span class="p">}</span>
@@ -65,16 +65,16 @@ typically as a global or top-level object:</p>
 <section id="mutating-values-returned-from-slots">
 <h2>Mutating values returned from slots<a class="headerlink" href="#mutating-values-returned-from-slots" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
-<p>Assuming that modifying a value returned from <code class="docutils literal notranslate"><span class="pre">get()</span></code> will update application state:</p>
+<p>Assuming that modifying a value returned from <strong>get()</strong> will update application state:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logs</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
 <span class="n">list</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;new entry&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ❌ has no effect on the original state</span>
 </pre></div>
 </div>
 <p><strong>Why this is a problem</strong></p>
-<p>Values returned from <code class="docutils literal notranslate"><span class="pre">StateSlot.get()</span></code> are always <strong>deep-copied</strong>. This is a safety feature to prevent accidental side effects. Direct mutation of a value obtained via <code class="docutils literal notranslate"><span class="pre">get()</span></code> never affects the internal state of the slot, and therefore won’t trigger UI rebuilds.</p>
+<p>Values returned from <strong>StateSlot.get()</strong> are always <strong>deep-copied</strong>. This is a safety feature to prevent accidental side effects. Direct mutation of a value obtained via <strong>get()</strong> never affects the internal state of the slot, and therefore won’t trigger UI rebuilds.</p>
 <p><strong>Correct approach</strong></p>
-<p>Always use <code class="docutils literal notranslate"><span class="pre">set()</span></code> or <code class="docutils literal notranslate"><span class="pre">update()</span></code>.</p>
-<p>Crucially, in SimpleAppState, the <code class="docutils literal notranslate"><span class="pre">old</span> <span class="pre">Value</span></code> passed to the <code class="docutils literal notranslate"><span class="pre">update</span></code> closure is <strong>already a deep-copy</strong>. This means you can safely mutate it directly and return it. You don’t need to manually create a new List or Map instance.</p>
+<p>Always use <strong>set()</strong> or <strong>update()</strong>.</p>
+<p>Crucially, in SimpleAppState, the <strong>old Value</strong> passed to the <strong>update</strong> closure is <strong>already a deep-copy</strong>. This means you can safely mutate it directly and return it. You don’t need to manually create a new List or Map instance.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// Correct and safe:</span>
 <span class="c1">// The &#39;oldCopy&#39; list is already a copy, so you can mutate it directly.</span>
 <span class="n">logs</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">oldCopy</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -96,7 +96,7 @@ typically as a global or top-level object:</p>
 <h2>Forgetting to declare slot dependencies<a class="headerlink" href="#forgetting-to-declare-slot-dependencies" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
 <p>Accessing slot values in a widget without declaring them
-in <code class="docutils literal notranslate"><span class="pre">slots</span></code>:</p>
+in <strong>slots</strong>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">CounterView</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotStatefulWidget</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nd">@override</span>
 <span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[];</span><span class="w"> </span><span class="c1">// ❌</span>
@@ -118,13 +118,13 @@ when that slot changes.</p>
 <section id="creating-many-small-state-objects">
 <h2>Creating many small state objects<a class="headerlink" href="#creating-many-small-state-objects" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
-<p>Creating multiple <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> instances
+<p>Creating multiple <strong>SimpleAppState</strong> instances
 for logically related application state.</p>
 <p><strong>Why this is a problem</strong></p>
 <p>Splitting state ownership too early makes it difficult
 to perform coordinated updates and persistence.</p>
 <p><strong>Correct approach</strong></p>
-<p>Start with a single <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> instance.
+<p>Start with a single <strong>SimpleAppState</strong> instance.
 Introduce multiple state objects only when you have
 clear ownership boundaries.</p>
 <p>A specific case where multiple SimpleAppStates are needed is when
@@ -143,7 +143,7 @@ you want to separate the app state that is the target of Undo and Redo from the 
 </pre></div>
 </div>
 <p><strong>Why this is a problem</strong></p>
-<p>Dart treats absolute and relative imports as different libraries. This means the <code class="docutils literal notranslate"><span class="pre">appState</span></code> object in <code class="docutils literal notranslate"><span class="pre">main.dart</span></code> will be a <strong>different instance</strong> from the one in <code class="docutils literal notranslate"><span class="pre">counter_page.dart</span></code>.</p>
+<p>Dart treats absolute and relative imports as different libraries. This means the <strong>appState</strong> object in <strong>main.dart</strong> will be a <strong>different instance</strong> from the one in <strong>counter_page.dart</strong>.</p>
 <p>If you update the state in one file, the UI listening in the other file will not reflect the change, leading to extremely hard-to-debug issues.</p>
 <p><strong>Correct approach</strong></p>
 <p>Always use <strong>absolute package imports</strong> for any file that defines or uses your application state:</p>
@@ -155,7 +155,7 @@ you want to separate the app state that is the target of Undo and Redo from the 
 <section id="accessing-slots-from-utility-functions">
 <h2>Accessing slots from utility functions<a class="headerlink" href="#accessing-slots-from-utility-functions" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>
-<p>Accessing <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> or <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> directly
+<p>Accessing <strong>StateSlot</strong> or <strong>SimpleAppState</strong> directly
 from utility or helper functions:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// util.dart</span>
 <span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">addLog</span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -204,7 +204,7 @@ All state dependencies must be explicit and visible in code.</p>
 <p>This keeps rebuild behavior predictable and makes it clear
 which state changes can affect a given widget.</p>
 <p><strong>Correct approach</strong></p>
-<p>Pass or import the required <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> explicitly.
+<p>Pass or import the required <strong>StateSlot</strong> explicitly.
 If a widget rebuilds, you should always be able to point
 to the exact slot that caused it.</p>
 </section>
@@ -281,6 +281,7 @@ on your interests:</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../state_models/index.html">State Models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>

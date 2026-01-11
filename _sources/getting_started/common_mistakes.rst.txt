@@ -11,7 +11,7 @@ Treating state as widget-owned
 
 **Mistake**
 
-Defining ``SimpleAppState`` or slots inside widgets:
+Defining **SimpleAppState** or slots inside widgets:
 
 .. code-block:: dart
 
@@ -46,7 +46,7 @@ Mutating values returned from slots
 
 **Mistake**
 
-Assuming that modifying a value returned from ``get()`` will update application state:
+Assuming that modifying a value returned from **get()** will update application state:
 
 .. code-block:: dart
 
@@ -55,13 +55,13 @@ Assuming that modifying a value returned from ``get()`` will update application 
 
 **Why this is a problem**
 
-Values returned from ``StateSlot.get()`` are always **deep-copied**. This is a safety feature to prevent accidental side effects. Direct mutation of a value obtained via ``get()`` never affects the internal state of the slot, and therefore won't trigger UI rebuilds.
+Values returned from **StateSlot.get()** are always **deep-copied**. This is a safety feature to prevent accidental side effects. Direct mutation of a value obtained via **get()** never affects the internal state of the slot, and therefore won't trigger UI rebuilds.
 
 **Correct approach**
 
-Always use ``set()`` or ``update()``.
+Always use **set()** or **update()**.
 
-Crucially, in SimpleAppState, the ``old Value`` passed to the ``update`` closure is **already a deep-copy**. This means you can safely mutate it directly and return it. You don't need to manually create a new List or Map instance.
+Crucially, in SimpleAppState, the **old Value** passed to the **update** closure is **already a deep-copy**. This means you can safely mutate it directly and return it. You don't need to manually create a new List or Map instance.
 
 .. code-block:: dart
 
@@ -88,7 +88,7 @@ Forgetting to declare slot dependencies
 **Mistake**
 
 Accessing slot values in a widget without declaring them
-in ``slots``:
+in **slots**:
 
 .. code-block:: dart
 
@@ -119,7 +119,7 @@ Creating many small state objects
 
 **Mistake**
 
-Creating multiple ``SimpleAppState`` instances
+Creating multiple **SimpleAppState** instances
 for logically related application state.
 
 **Why this is a problem**
@@ -129,7 +129,7 @@ to perform coordinated updates and persistence.
 
 **Correct approach**
 
-Start with a single ``SimpleAppState`` instance.
+Start with a single **SimpleAppState** instance.
 Introduce multiple state objects only when you have
 clear ownership boundaries.
 
@@ -155,7 +155,7 @@ Mixing relative imports and absolute package imports for the same file:
 
 **Why this is a problem**
 
-Dart treats absolute and relative imports as different libraries. This means the ``appState`` object in ``main.dart`` will be a **different instance** from the one in ``counter_page.dart``.
+Dart treats absolute and relative imports as different libraries. This means the **appState** object in **main.dart** will be a **different instance** from the one in **counter_page.dart**.
 
 If you update the state in one file, the UI listening in the other file will not reflect the change, leading to extremely hard-to-debug issues.
 
@@ -173,7 +173,7 @@ Accessing slots from utility functions
 ---------------------------------------
 **Mistake**
 
-Accessing ``StateSlot`` or ``SimpleAppState`` directly
+Accessing **StateSlot** or **SimpleAppState** directly
 from utility or helper functions:
 
 .. code-block:: dart
@@ -238,7 +238,7 @@ which state changes can affect a given widget.
 
 **Correct approach**
 
-Pass or import the required ``StateSlot`` explicitly.
+Pass or import the required **StateSlot** explicitly.
 If a widget rebuilds, you should always be able to point
 to the exact slot that caused it.
 

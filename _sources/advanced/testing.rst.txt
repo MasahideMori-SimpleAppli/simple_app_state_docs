@@ -47,7 +47,7 @@ DebugListener Signature
 
 Each callback provides:
 
-* The ``StateSlot`` that changed
+* The **StateSlot** that changed
 * The previous value
 * The new value
 
@@ -58,7 +58,7 @@ This makes every state transition observable.
 Using StateSlot as a Test Key
 =============================
 
-``StateSlot`` acts as a stable observation key.
+**StateSlot** acts as a stable observation key.
 
 Each slot has:
 
@@ -109,7 +109,7 @@ without timing control or async handling.
 Testing Perspective
 ===================
 
-Because ``StateSlot`` sits at the boundary between state and UI:
+Because **StateSlot** sits at the boundary between state and UI:
 
 * Tests can focus on slot changes instead of widget trees
 * UI refactoring does not invalidate state-level tests

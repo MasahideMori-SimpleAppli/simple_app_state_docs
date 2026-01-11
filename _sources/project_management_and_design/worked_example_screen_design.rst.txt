@@ -33,7 +33,7 @@ before any UI layout is written.
 The screen-level contract
 -------------------------
 
-The example screen is implemented as a ``SlotStatefulWidget``.
+The example screen is implemented as a **SlotStatefulWidget**.
 
 At the very top of the widget,
 its slot dependencies are declared explicitly.
@@ -101,7 +101,7 @@ All of that is handled by the slot boundary
 declared at the widget level.
 
 From the implementer’s point of view,
-they are simply writing a normal Flutter ``build()`` method
+they are simply writing a normal Flutter **build()** method
 with access to a clearly defined set of state.
 
 ----
@@ -110,7 +110,7 @@ How this differs from a builder-based approach
 ----------------------------------------------
 
 Earlier examples in this documentation
-use ``StateSlotBuilder`` to connect UI to state.
+use **StateSlotBuilder** to connect UI to state.
 
 That approach is ideal for:
 

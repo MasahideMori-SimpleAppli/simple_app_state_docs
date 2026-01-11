@@ -46,22 +46,22 @@
 </ul>
 <p>This mechanism relies on:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">toDict()</span></code> for serialization</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">fromDict(...)</span></code> for restoration</p></li>
+<li><p><strong>toDict()</strong> for serialization</p></li>
+<li><p><strong>fromDict(…)</strong> for restoration</p></li>
 </ul>
 </section>
 <hr class="docutils" />
 <section id="serialization-with-todict">
 <h2>Serialization with toDict<a class="headerlink" href="#serialization-with-todict" title="Link to this heading">¶</a></h2>
-<p><strong>SimpleAppState</strong> implements <code class="docutils literal notranslate"><span class="pre">toDict()</span></code>, which converts the internal state
+<p><strong>SimpleAppState</strong> implements <strong>toDict()</strong>, which converts the internal state
 into a dictionary.</p>
 <p>The returned dictionary follows strict rules:</p>
 <ul class="simple">
-<li><p>Only primitive types, <code class="docutils literal notranslate"><span class="pre">null</span></code>, lists, and dictionaries are allowed</p></li>
+<li><p>Only primitive types, <strong>null</strong>, lists, and dictionaries are allowed</p></li>
 <li><p>Nested dictionaries must also follow the same constraints</p></li>
 <li><p>Runtime objects are not included</p></li>
 </ul>
-<p>Objects stored inside the state that extend <code class="docutils literal notranslate"><span class="pre">CloneableFile</span></code> must embed
+<p>Objects stored inside the state that extend <strong>CloneableFile</strong> must embed
 their class identity in the serialized form, typically using:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;className&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MyObject&quot;</span><span class="p">,</span>
@@ -74,8 +74,8 @@ their class identity in the serialized form, typically using:</p>
 <section id="restoring-state-with-fromdict">
 <h2>Restoring State with fromDict<a class="headerlink" href="#restoring-state-with-fromdict" title="Link to this heading">¶</a></h2>
 <p>Restoration is performed using the factory constructor
-<code class="docutils literal notranslate"><span class="pre">SimpleAppState.fromDict</span></code>.</p>
-<p>Unlike <code class="docutils literal notranslate"><span class="pre">toDict()</span></code>, restoration requires <strong>external knowledge</strong> about
+<strong>SimpleAppState.fromDict</strong>.</p>
+<p>Unlike <strong>toDict()</strong>, restoration requires <strong>external knowledge</strong> about
 how to reconstruct each serialized object.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app_state</span> <span class="o">=</span> <span class="n">SimpleAppState</span><span class="o">.</span><span class="n">fromDict</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
@@ -83,13 +83,13 @@ how to reconstruct each serialized object.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">fromDictMap</span></code> parameter defines how objects are restored.</p>
+<p>The <strong>fromDictMap</strong> parameter defines how objects are restored.</p>
 <section id="fromdictmap">
 <h3>fromDictMap<a class="headerlink" href="#fromdictmap" title="Link to this heading">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">fromDictMap</span></code> is a mapping from object names to restoration functions.</p>
+<p><strong>fromDictMap</strong> is a mapping from object names to restoration functions.</p>
 <ul class="simple">
 <li><p>The key is the object name</p></li>
-<li><p>It must match the value written as <code class="docutils literal notranslate"><span class="pre">&quot;className&quot;</span></code> during serialization</p></li>
+<li><p>It must match the value written as <strong>“className”</strong> during serialization</p></li>
 <li><p>The value is a function that restores the object from a dictionary</p></li>
 </ul>
 <p>Example:</p>
@@ -99,26 +99,111 @@ how to reconstruct each serialized object.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>When a dictionary containing a matching <code class="docutils literal notranslate"><span class="pre">className</span></code> field is found,
+<p>When a dictionary containing a matching <strong>className</strong> field is found,
 the corresponding restoration function is used.</p>
 </section>
-</section>
-<hr class="docutils" />
 <section id="internal-restoration-process">
-<h2>Internal Restoration Process<a class="headerlink" href="#internal-restoration-process" title="Link to this heading">¶</a></h2>
-<p>Internally, <code class="docutils literal notranslate"><span class="pre">SimpleAppState.fromDict</span></code> performs the following steps:</p>
+<h3>Internal Restoration Process<a class="headerlink" href="#internal-restoration-process" title="Link to this heading">¶</a></h3>
+<p>Internally, <strong>SimpleAppState.fromDict</strong> performs the following steps:</p>
 <ol class="arabic simple">
 <li><p>Extract serialized state data from the dictionary</p></li>
 <li><p>Traverse the data structure recursively</p></li>
-<li><p>When a dictionary with a <code class="docutils literal notranslate"><span class="pre">className</span></code> field is encountered:
-* Look up the corresponding function in <code class="docutils literal notranslate"><span class="pre">fromDictMap</span></code>
+<li><p>When a dictionary with a <strong>className</strong> field is encountered:
+* Look up the corresponding function in <strong>fromDictMap</strong>
 * Restore the object using that function</p></li>
 <li><p>Reconstruct the application state using the restored objects</p></li>
 </ol>
 <p>This logic is implemented using a utility function and is fully deterministic.
-By requiring restoration logic to be provided explicitly via <code class="docutils literal notranslate"><span class="pre">fromDictMap</span></code>,
+By requiring restoration logic to be provided explicitly via <strong>fromDictMap</strong>,
 <strong>SimpleAppState</strong> keeps persistence flexible and avoids hard-coded
 dependencies on concrete object types.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="loading-into-an-existing-appstate">
+<h2>Loading Into an Existing AppState<a class="headerlink" href="#loading-into-an-existing-appstate" title="Link to this heading">¶</a></h2>
+<p><strong>SimpleAppState</strong> also supports restoring state <strong>after an instance has already been created</strong>.</p>
+<p>This is done using <strong>loadFromDict(…)</strong>.</p>
+<p>While <strong>SimpleAppState.fromDict</strong> creates a new instance from serialized data,
+<strong>loadFromDict</strong> injects serialized state into an <strong>existing</strong> instance.</p>
+<p>This is especially useful for:</p>
+<ul class="simple">
+<li><p>Delayed loading (e.g. from cloud storage)</p></li>
+<li><p>Replacing the current state after app startup</p></li>
+<li><p>Loading user data into a preconfigured state structure</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app_state</span><span class="o">.</span><span class="n">loadFromDict</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">fromDictMap</span><span class="p">,</span>
+    <span class="n">notifyListeners</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<section id="how-loadfromdict-works">
+<h3>How loadFromDict Works<a class="headerlink" href="#how-loadfromdict-works" title="Link to this heading">¶</a></h3>
+<p><strong>loadFromDict</strong> applies serialized state data to the current <strong>SimpleAppState</strong> instance.</p>
+<p>It follows these rules:</p>
+<ul class="simple">
+<li><p>All state slots must already exist</p></li>
+<li><p>Slot types are <strong>not inferred</strong></p></li>
+<li><p>Existing values are replaced</p></li>
+<li><p>Loaded values must match the declared slot type</p></li>
+</ul>
+<p>This ensures that loading is <strong>fully type-safe</strong> and cannot introduce
+unexpected state shape changes.</p>
+<p>If a key in the serialized data does not correspond to a declared slot,
+an error is thrown.</p>
+</section>
+<section id="object-restoration">
+<h3>Object Restoration<a class="headerlink" href="#object-restoration" title="Link to this heading">¶</a></h3>
+<p>Like <strong>SimpleAppState.fromDict</strong>, <strong>loadFromDict</strong> uses <strong>fromDictMap</strong> to
+restore objects.</p>
+<p>For each value:</p>
+<ul class="simple">
+<li><p>Primitive values are copied directly</p></li>
+<li><p>Lists and dictionaries are traversed recursively</p></li>
+<li><p>Dictionaries containing <strong>“className”</strong> are restored using <strong>fromDictMap</strong></p></li>
+</ul>
+<p>This uses the same internal restoration logic as <strong>fromDict</strong>.</p>
+</section>
+<section id="listener-notification-behavior">
+<h3>Listener Notification Behavior<a class="headerlink" href="#listener-notification-behavior" title="Link to this heading">¶</a></h3>
+<p>By default, <strong>loadFromDict</strong> batches all updates and notifies listeners <strong>once</strong>
+after loading completes.</p>
+<p>This prevents intermediate or inconsistent UI states during restoration.</p>
+<p>You can disable notifications by passing <strong>notifyListeners=False</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app_state</span><span class="o">.</span><span class="n">loadFromDict</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">fromDictMap</span><span class="p">,</span>
+    <span class="n">notifyListeners</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>When notifications are disabled:</p>
+<ul class="simple">
+<li><p>Values are written using the equivalent of <strong>setInitial</strong></p></li>
+<li><p>No listeners are triggered</p></li>
+<li><p>The UI will not rebuild until you manually trigger updates</p></li>
+</ul>
+<p>This is useful when additional initialization must occur
+before the UI reacts to the restored state.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="when-to-use-fromdict-vs-loadfromdict">
+<h2>When to Use fromDict vs loadFromDict<a class="headerlink" href="#when-to-use-fromdict-vs-loadfromdict" title="Link to this heading">¶</a></h2>
+<p>Use <strong>SimpleAppState.fromDict</strong> when:</p>
+<ul class="simple">
+<li><p>You are creating a new application state</p></li>
+<li><p>You are loading at startup</p></li>
+</ul>
+<p>Use <strong>loadFromDict</strong> when:</p>
+<ul class="simple">
+<li><p>The app state already exists</p></li>
+<li><p>Slots are already declared</p></li>
+<li><p>You need to inject or replace data at runtime</p></li>
+<li><p>State is loaded asynchronously (e.g. from cloud storage)</p></li>
+</ul>
 </section>
 </section>
 
@@ -152,6 +237,7 @@ dependencies on concrete object types.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../state_models/index.html">State Models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Advanced Topics</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Persistence and Restore</a></li>

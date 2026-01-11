@@ -20,7 +20,7 @@ The most important rule
 
 If you remember only one rule, remember this:
 
-**Changing an object returned from ``get()`` never changes state.**
+**Changing an object returned from get() never changes state.**
 
 Example:
 
@@ -37,7 +37,7 @@ It is the core design.
 Why get() returns a copy
 ------------------------
 
-When you call ``get()``:
+When you call **get()**:
 
 .. code-block:: dart
 
@@ -67,9 +67,9 @@ Returning a copy makes all state changes explicit.
 How state should be updated
 ---------------------------
 
-To change state, you must use ``set`` or ``update``.
+To change state, you must use **set** or **update**.
 
-Example with ``set``:
+Example with **set**:
 
 .. code-block:: dart
 
@@ -77,7 +77,7 @@ Example with ``set``:
      AppSettings(theme: 'dark'),
    );
 
-Example with ``update``:
+Example with **update**:
 
 .. code-block:: dart
 
@@ -167,7 +167,7 @@ Values stored in slots must be:
 - safely copyable, or
 - serializable
 
-SimpleAppState validates values on ``set`` and ``update``
+SimpleAppState validates values on **set** and **update**
 to ensure they are safe to store.
 
 This prevents subtle bugs caused by
@@ -199,8 +199,8 @@ Summary
 Value semantics means:
 
 - state is replaced, not mutated
-- ``get()`` always returns a copy
-- ``set`` and ``update`` are the only write paths
+- **get()** always returns a copy
+- **set** and **update** are the only write paths
 - state changes are explicit and traceable
 
 Once you accept this rule,

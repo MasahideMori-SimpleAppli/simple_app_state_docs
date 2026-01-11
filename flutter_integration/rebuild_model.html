@@ -76,7 +76,7 @@ Flutter <strong>does not</strong> know about state slots.</p>
 <li><p>SimpleAppState replaces the stored value</p></li>
 <li><p>SimpleAppState finds listeners for that slot</p></li>
 <li><p>listener callbacks are invoked</p></li>
-<li><p>those callbacks typically call <code class="docutils literal notranslate"><span class="pre">setState</span></code></p></li>
+<li><p>those callbacks typically call <strong>setState</strong></p></li>
 </ol>
 <p>At that point, SimpleAppState’s job is done.</p>
 <p>From there on, Flutter’s normal rebuild process applies.</p>
@@ -93,7 +93,7 @@ Flutter <strong>does not</strong> know about state slots.</p>
 </ul>
 <p>It only calls callbacks.</p>
 <p>Those callbacks live in Flutter widgets,
-and they usually call <code class="docutils literal notranslate"><span class="pre">setState</span></code>.</p>
+and they usually call <strong>setState</strong>.</p>
 <p>Everything after that is pure Flutter behavior.</p>
 </section>
 <hr class="docutils" />
@@ -122,7 +122,7 @@ they may both rebuild.</p>
 <section id="what-batching-guarantees-and-what-it-does-not">
 <h2>What batching guarantees (and what it does not)<a class="headerlink" href="#what-batching-guarantees-and-what-it-does-not" title="Link to this heading">¶</a></h2>
 <p>Batch updates group <strong>notifications</strong>, not rebuilds.</p>
-<p>When using <code class="docutils literal notranslate"><span class="pre">batch</span></code>:</p>
+<p>When using <strong>batch</strong>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
 <span class="w">  </span><span class="n">total</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
@@ -181,7 +181,7 @@ you can always trace it back to:</p>
 <ul class="simple">
 <li><p>which slot changed</p></li>
 <li><p>which listener was notified</p></li>
-<li><p>which widget called <code class="docutils literal notranslate"><span class="pre">setState</span></code></p></li>
+<li><p>which widget called <strong>setState</strong></p></li>
 </ul>
 </section>
 <hr class="docutils" />
@@ -245,6 +245,7 @@ become easy to reason about.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../state_models/index.html">State Models</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Flutter Integration</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Rebuild Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="slot_stateful_widget.html">SlotStatefulWidget</a></li>

@@ -42,7 +42,7 @@ it is a direct result of explicit design choices.</p>
 <hr class="docutils" />
 <section id="how-rebuilds-work">
 <h2>How rebuilds work<a class="headerlink" href="#how-rebuilds-work" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> rebuilds when any of its declared slots change.</p>
+<p><strong>SlotStatefulWidget</strong> rebuilds when any of its declared slots change.</p>
 <p>This behavior is intentional:</p>
 <ul class="simple">
 <li><p>Rebuild triggers are predictable</p></li>
@@ -56,7 +56,7 @@ than is actually necessary.</p>
 <hr class="docutils" />
 <section id="localizing-rebuilds-with-stateslotbuilder">
 <h2>Localizing rebuilds with StateSlotBuilder<a class="headerlink" href="#localizing-rebuilds-with-stateslotbuilder" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> allows rebuilds to be limited
+<p><strong>StateSlotBuilder</strong> allows rebuilds to be limited
 to a specific subtree.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">Column</span><span class="p">(</span>
 <span class="w">  </span><span class="nl">children:</span><span class="w"> </span><span class="p">[</span>
@@ -73,7 +73,7 @@ to a specific subtree.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>When <code class="docutils literal notranslate"><span class="pre">counterSlot</span></code> changes:</p>
+<p>When <strong>counterSlot</strong> changes:</p>
 <ul class="simple">
 <li><p>Only the text widget is rebuilt</p></li>
 <li><p>The header and footer remain untouched</p></li>
@@ -87,8 +87,8 @@ and improves performance on complex screens.</p>
 <p>When introducing SimpleAppState into an existing application,
 screens are often already large.</p>
 <p>Refactoring the entire screen into
-a single <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> may not be practical at first.</p>
-<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> allows a gradual approach:</p>
+a single <strong>SlotStatefulWidget</strong> may not be practical at first.</p>
+<p><strong>StateSlotBuilder</strong> allows a gradual approach:</p>
 <ul class="simple">
 <li><p>Wrap only the parts that need to react to state</p></li>
 <li><p>Leave the rest of the UI unchanged</p></li>
@@ -101,9 +101,9 @@ a single <code class="docutils literal notranslate"><span class="pre">SlotStatef
 <h2>Design first, optimize where needed<a class="headerlink" href="#design-first-optimize-where-needed" title="Link to this heading">¶</a></h2>
 <p>The recommended workflow is:</p>
 <ol class="arabic simple">
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> to define clear slot boundaries</p></li>
+<li><p>Use <strong>SlotStatefulWidget</strong> to define clear slot boundaries</p></li>
 <li><p>Build the screen in a straightforward way</p></li>
-<li><p>Introduce <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> only where rebuilds are too expensive</p></li>
+<li><p>Introduce <strong>StateSlotBuilder</strong> only where rebuilds are too expensive</p></li>
 </ol>
 <p>This ensures that performance optimization
 does not undermine design clarity.</p>
@@ -111,7 +111,7 @@ does not undermine design clarity.</p>
 <hr class="docutils" />
 <section id="a-conscious-trade-off">
 <h2>A conscious trade-off<a class="headerlink" href="#a-conscious-trade-off" title="Link to this heading">¶</a></h2>
-<p>Using <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> is always a trade-off:</p>
+<p>Using <strong>StateSlotBuilder</strong> is always a trade-off:</p>
 <ul class="simple">
 <li><p><strong>Pros</strong>
 * Finer-grained rebuilds
@@ -159,6 +159,7 @@ under the control of the development team.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../state_models/index.html">State Models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Project Management and Design</a><ul class="current">

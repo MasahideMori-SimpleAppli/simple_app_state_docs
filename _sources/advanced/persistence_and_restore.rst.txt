@@ -16,24 +16,24 @@ Persistence in **SimpleAppState** is based on dictionary serialization.
 
 This mechanism relies on:
 
-* ``toDict()`` for serialization
-* ``fromDict(...)`` for restoration
+* **toDict()** for serialization
+* **fromDict(...)** for restoration
 
 ----
 
 Serialization with toDict
 =========================
 
-**SimpleAppState** implements ``toDict()``, which converts the internal state
+**SimpleAppState** implements **toDict()**, which converts the internal state
 into a dictionary.
 
 The returned dictionary follows strict rules:
 
-* Only primitive types, ``null``, lists, and dictionaries are allowed
+* Only primitive types, **null**, lists, and dictionaries are allowed
 * Nested dictionaries must also follow the same constraints
 * Runtime objects are not included
 
-Objects stored inside the state that extend ``CloneableFile`` must embed
+Objects stored inside the state that extend **CloneableFile** must embed
 their class identity in the serialized form, typically using:
 
 .. code-block:: json
@@ -50,9 +50,9 @@ Restoring State with fromDict
 =============================
 
 Restoration is performed using the factory constructor
-``SimpleAppState.fromDict``.
+**SimpleAppState.fromDict**.
 
-Unlike ``toDict()``, restoration requires **external knowledge** about
+Unlike **toDict()**, restoration requires **external knowledge** about
 how to reconstruct each serialized object.
 
 .. code-block:: python
@@ -62,15 +62,15 @@ how to reconstruct each serialized object.
        fromDictMap,
    )
 
-The ``fromDictMap`` parameter defines how objects are restored.
+The **fromDictMap** parameter defines how objects are restored.
 
 fromDictMap
 -----------
 
-``fromDictMap`` is a mapping from object names to restoration functions.
+**fromDictMap** is a mapping from object names to restoration functions.
 
 * The key is the object name
-* It must match the value written as ``"className"`` during serialization
+* It must match the value written as **"className"** during serialization
 * The value is a function that restores the object from a dictionary
 
 Example:
@@ -82,24 +82,125 @@ Example:
        "AnotherObject": AnotherObject.fromDict,
    }
 
-When a dictionary containing a matching ``className`` field is found,
+When a dictionary containing a matching **className** field is found,
 the corresponding restoration function is used.
 
-----
-
 Internal Restoration Process
-============================
+-----------------------------
 
-Internally, ``SimpleAppState.fromDict`` performs the following steps:
+Internally, **SimpleAppState.fromDict** performs the following steps:
 
 1. Extract serialized state data from the dictionary
 2. Traverse the data structure recursively
-3. When a dictionary with a ``className`` field is encountered:
-   * Look up the corresponding function in ``fromDictMap``
+3. When a dictionary with a **className** field is encountered:
+   * Look up the corresponding function in **fromDictMap**
    * Restore the object using that function
 4. Reconstruct the application state using the restored objects
 
 This logic is implemented using a utility function and is fully deterministic.
-By requiring restoration logic to be provided explicitly via ``fromDictMap``,
+By requiring restoration logic to be provided explicitly via **fromDictMap**,
 **SimpleAppState** keeps persistence flexible and avoids hard-coded
 dependencies on concrete object types.
+
+----
+
+Loading Into an Existing AppState
+==================================
+
+**SimpleAppState** also supports restoring state **after an instance has already been created**.
+
+This is done using **loadFromDict(...)**.
+
+While **SimpleAppState.fromDict** creates a new instance from serialized data,
+**loadFromDict** injects serialized state into an **existing** instance.
+
+This is especially useful for:
+
+* Delayed loading (e.g. from cloud storage)
+* Replacing the current state after app startup
+* Loading user data into a preconfigured state structure
+
+.. code-block:: python
+
+   app_state.loadFromDict(
+       data,
+       fromDictMap,
+       notifyListeners=True,
+   )
+
+
+How loadFromDict Works
+-----------------------
+
+**loadFromDict** applies serialized state data to the current **SimpleAppState** instance.
+
+It follows these rules:
+
+* All state slots must already exist
+* Slot types are **not inferred**
+* Existing values are replaced
+* Loaded values must match the declared slot type
+
+This ensures that loading is **fully type-safe** and cannot introduce
+unexpected state shape changes.
+
+If a key in the serialized data does not correspond to a declared slot,
+an error is thrown.
+
+Object Restoration
+-------------------
+
+Like **SimpleAppState.fromDict**, **loadFromDict** uses **fromDictMap** to
+restore objects.
+
+For each value:
+
+* Primitive values are copied directly
+* Lists and dictionaries are traversed recursively
+* Dictionaries containing **"className"** are restored using **fromDictMap**
+
+This uses the same internal restoration logic as **fromDict**.
+
+Listener Notification Behavior
+-------------------------------
+
+By default, **loadFromDict** batches all updates and notifies listeners **once**
+after loading completes.
+
+This prevents intermediate or inconsistent UI states during restoration.
+
+You can disable notifications by passing **notifyListeners=False**:
+
+.. code-block:: python
+
+   app_state.loadFromDict(
+       data,
+       fromDictMap,
+       notifyListeners=False,
+   )
+
+When notifications are disabled:
+
+* Values are written using the equivalent of **setInitial**
+* No listeners are triggered
+* The UI will not rebuild until you manually trigger updates
+
+This is useful when additional initialization must occur
+before the UI reacts to the restored state.
+
+----
+
+When to Use fromDict vs loadFromDict
+=====================================
+
+Use **SimpleAppState.fromDict** when:
+
+* You are creating a new application state
+* You are loading at startup
+
+Use **loadFromDict** when:
+
+* The app state already exists
+* Slots are already declared
+* You need to inject or replace data at runtime
+* State is loaded asynchronously (e.g. from cloud storage)

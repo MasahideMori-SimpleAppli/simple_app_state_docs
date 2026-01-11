@@ -1,10 +1,10 @@
 SimpleAppState
 ==============
 
-``SimpleAppState`` is the central owner of all application state.
+**SimpleAppState** is the central owner of all application state.
 It is intentionally independent from Flutter widgets and the widget tree.
 
-This page explains what ``SimpleAppState`` is responsible for
+This page explains what **SimpleAppState** is responsible for
 and how it should be used.
 
 ----
@@ -12,7 +12,7 @@ and how it should be used.
 What SimpleAppState owns
 ------------------------
 
-A ``SimpleAppState`` instance owns:
+A **SimpleAppState** instance owns:
 
 - all application state values
 - slot definitions and their types
@@ -31,7 +31,7 @@ This separation keeps state lifetime explicit and predictable.
 Creating a SimpleAppState
 -------------------------
 
-In most applications, ``SimpleAppState`` is created once
+In most applications, **SimpleAppState** is created once
 and lives for the entire lifetime of the app.
 
 .. code-block:: dart
@@ -39,16 +39,16 @@ and lives for the entire lifetime of the app.
    final appState = SimpleAppState();
 
 It is usually defined as a global or top-level variable,
-often in ``ui/app_state.dart``.
+often in **ui/app_state.dart**.
 
 ----
 
 Slots define state, not fields
 ------------------------------
 
-``SimpleAppState`` does not expose state as public fields.
+**SimpleAppState** does not expose state as public fields.
 
-Instead, all state is accessed through ``StateSlot<T>`` objects:
+Instead, all state is accessed through **StateSlot<T>** objects:
 
 .. code-block:: dart
 
@@ -100,7 +100,7 @@ Notes:
 Value semantics and safety
 --------------------------
 
-All values stored in ``SimpleAppState`` follow value semantics.
+All values stored in **SimpleAppState** follow value semantics.
 
 When you read a value:
 
@@ -116,14 +116,14 @@ This guarantees:
 - state transitions are explicit
 - undo / redo and persistence are reliable
 
-State can only be changed via ``set`` or ``update``.
+State can only be changed via **set** or **update**.
 
 ----
 
 Batch updates
 -------------
 
-``SimpleAppState`` supports explicit batch updates:
+**SimpleAppState** supports explicit batch updates:
 
 .. code-block:: dart
 
@@ -147,13 +147,13 @@ whenever multiple slots are updated together.
 Cloning and snapshots
 ---------------------
 
-``SimpleAppState`` supports deep cloning of state data:
+**SimpleAppState** supports deep cloning of state data:
 
 .. code-block:: dart
 
    final snapshot = appState.clone();
 
-A cloned ``SimpleAppState`` is a **pure data snapshot**.
+A cloned **SimpleAppState** is a **pure data snapshot**.
 
 Clones:
 
@@ -167,7 +167,7 @@ A clone represents a detached, serializable snapshot
 that can be safely stored, compared, or restored later.
 
 To restore a snapshot into a running application,
-use ``replaceDataFrom``:
+use **replaceDataFrom**:
 
 .. code-block:: dart
 
@@ -196,7 +196,7 @@ For more information on these topics, see :doc:`../advanced/index`.
 What SimpleAppState is not
 --------------------------
 
-``SimpleAppState`` is not:
+**SimpleAppState** is not:
 
 - a dependency injection container
 - a widget tree manager

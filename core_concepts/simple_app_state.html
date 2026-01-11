@@ -35,14 +35,14 @@
             
   <section id="simpleappstate">
 <h1>SimpleAppState<a class="headerlink" href="#simpleappstate" title="Link to this heading">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> is the central owner of all application state.
+<p><strong>SimpleAppState</strong> is the central owner of all application state.
 It is intentionally independent from Flutter widgets and the widget tree.</p>
-<p>This page explains what <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> is responsible for
+<p>This page explains what <strong>SimpleAppState</strong> is responsible for
 and how it should be used.</p>
 <hr class="docutils" />
 <section id="what-simpleappstate-owns">
 <h2>What SimpleAppState owns<a class="headerlink" href="#what-simpleappstate-owns" title="Link to this heading">¶</a></h2>
-<p>A <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> instance owns:</p>
+<p>A <strong>SimpleAppState</strong> instance owns:</p>
 <ul class="simple">
 <li><p>all application state values</p></li>
 <li><p>slot definitions and their types</p></li>
@@ -59,19 +59,19 @@ and how it should be used.</p>
 <hr class="docutils" />
 <section id="creating-a-simpleappstate">
 <h2>Creating a SimpleAppState<a class="headerlink" href="#creating-a-simpleappstate" title="Link to this heading">¶</a></h2>
-<p>In most applications, <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> is created once
+<p>In most applications, <strong>SimpleAppState</strong> is created once
 and lives for the entire lifetime of the app.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">appState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>It is usually defined as a global or top-level variable,
-often in <code class="docutils literal notranslate"><span class="pre">ui/app_state.dart</span></code>.</p>
+often in <strong>ui/app_state.dart</strong>.</p>
 </section>
 <hr class="docutils" />
 <section id="slots-define-state-not-fields">
 <h2>Slots define state, not fields<a class="headerlink" href="#slots-define-state-not-fields" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> does not expose state as public fields.</p>
-<p>Instead, all state is accessed through <code class="docutils literal notranslate"><span class="pre">StateSlot&lt;T&gt;</span></code> objects:</p>
+<p><strong>SimpleAppState</strong> does not expose state as public fields.</p>
+<p>Instead, all state is accessed through <strong>StateSlot&lt;T&gt;</strong> objects:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -114,7 +114,7 @@ you must provide a <cite>caster</cite> function.</p>
 <hr class="docutils" />
 <section id="value-semantics-and-safety">
 <h2>Value semantics and safety<a class="headerlink" href="#value-semantics-and-safety" title="Link to this heading">¶</a></h2>
-<p>All values stored in <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> follow value semantics.</p>
+<p>All values stored in <strong>SimpleAppState</strong> follow value semantics.</p>
 <p>When you read a value:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
 </pre></div>
@@ -126,12 +126,12 @@ you must provide a <cite>caster</cite> function.</p>
 <li><p>state transitions are explicit</p></li>
 <li><p>undo / redo and persistence are reliable</p></li>
 </ul>
-<p>State can only be changed via <code class="docutils literal notranslate"><span class="pre">set</span></code> or <code class="docutils literal notranslate"><span class="pre">update</span></code>.</p>
+<p>State can only be changed via <strong>set</strong> or <strong>update</strong>.</p>
 </section>
 <hr class="docutils" />
 <section id="batch-updates">
 <h2>Batch updates<a class="headerlink" href="#batch-updates" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> supports explicit batch updates:</p>
+<p><strong>SimpleAppState</strong> supports explicit batch updates:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">// update other slots</span>
@@ -151,11 +151,11 @@ whenever multiple slots are updated together.</p>
 <hr class="docutils" />
 <section id="cloning-and-snapshots">
 <h2>Cloning and snapshots<a class="headerlink" href="#cloning-and-snapshots" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> supports deep cloning of state data:</p>
+<p><strong>SimpleAppState</strong> supports deep cloning of state data:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">snapshot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">clone</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>A cloned <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> is a <strong>pure data snapshot</strong>.</p>
+<p>A cloned <strong>SimpleAppState</strong> is a <strong>pure data snapshot</strong>.</p>
 <p>Clones:</p>
 <ul class="simple">
 <li><p>copy all state values deeply</p></li>
@@ -166,7 +166,7 @@ whenever multiple slots are updated together.</p>
 <p>A clone represents a detached, serializable snapshot
 that can be safely stored, compared, or restored later.</p>
 <p>To restore a snapshot into a running application,
-use <code class="docutils literal notranslate"><span class="pre">replaceDataFrom</span></code>:</p>
+use <strong>replaceDataFrom</strong>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">replaceDataFrom</span><span class="p">(</span><span class="n">snapshot</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -191,7 +191,7 @@ For more information on these topics, see <a class="reference internal" href="..
 <hr class="docutils" />
 <section id="what-simpleappstate-is-not">
 <h2>What SimpleAppState is not<a class="headerlink" href="#what-simpleappstate-is-not" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> is not:</p>
+<p><strong>SimpleAppState</strong> is not:</p>
 <ul class="simple">
 <li><p>a dependency injection container</p></li>
 <li><p>a widget tree manager</p></li>
@@ -244,6 +244,7 @@ If a widget rebuilds, you should always be able to answer:</p>
 <li class="toctree-l2"><a class="reference internal" href="batch_updates.html">Batch Updates</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../state_models/index.html">State Models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>

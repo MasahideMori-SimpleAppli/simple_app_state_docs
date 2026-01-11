@@ -38,7 +38,7 @@ Batch updates exist to group these notifications.
 What batch() does
 -----------------
 
-``batch`` delays **UI listener notifications**, not state updates.
+**batch** delays **UI listener notifications**, not state updates.
 
 Example:
 
@@ -50,7 +50,7 @@ Example:
      status.set('ready');
    });
 
-Inside ``batch``:
+Inside **batch**:
 
 - state values are updated immediately
 - updates run in normal order
@@ -70,7 +70,7 @@ Batching does **not** change execution order.
 
 Inside a batch:
 
-- ``set`` and ``update`` execute immediately
+- **set** and **update** execute immediately
 - later operations see earlier changes
 
 Example:
@@ -82,7 +82,7 @@ Example:
      count.update((v) => v + 1);
    });
 
-The final value is ``2``.
+The final value is **2**.
 
 Batching only controls *when UI listeners are notified*,
 not *how state changes*.
@@ -133,7 +133,7 @@ Batches can be nested:
 
 Only the **outermost batch** flushes notifications.
 
-This allows helper functions to use ``batch``
+This allows helper functions to use **batch**
 without needing to know whether they are already
 inside another batch.
 
@@ -207,7 +207,7 @@ and unintended intermediate rebuilds.
 When you should use batch()
 ---------------------------
 
-Use ``batch`` when:
+Use **batch** when:
 
 - multiple slot updates represent one action
 - you want UI listeners to observe only the final state
@@ -238,4 +238,4 @@ Batch updates:
 Batching is explicit and predictable.
 
 When several changes belong together,
-wrap them in ``batch``.
+wrap them in **batch**.

@@ -14,7 +14,7 @@
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Flutter Integration" href="../flutter_integration/index.html" />
+    <link rel="next" title="State Models" href="../state_models/index.html" />
     <link rel="prev" title="Value Semantics" href="value_semantics.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -62,7 +62,7 @@ notifying UI listeners after every change is often unnecessary.</p>
 <hr class="docutils" />
 <section id="what-batch-does">
 <h2>What batch() does<a class="headerlink" href="#what-batch-does" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">batch</span></code> delays <strong>UI listener notifications</strong>, not state updates.</p>
+<p><strong>batch</strong> delays <strong>UI listener notifications</strong>, not state updates.</p>
 <p>Example:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
@@ -71,7 +71,7 @@ notifying UI listeners after every change is often unnecessary.</p>
 <span class="p">});</span>
 </pre></div>
 </div>
-<p>Inside <code class="docutils literal notranslate"><span class="pre">batch</span></code>:</p>
+<p>Inside <strong>batch</strong>:</p>
 <ul class="simple">
 <li><p>state values are updated immediately</p></li>
 <li><p>updates run in normal order</p></li>
@@ -89,7 +89,7 @@ notifying UI listeners after every change is often unnecessary.</p>
 <p>Batching does <strong>not</strong> change execution order.</p>
 <p>Inside a batch:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">set</span></code> and <code class="docutils literal notranslate"><span class="pre">update</span></code> execute immediately</p></li>
+<li><p><strong>set</strong> and <strong>update</strong> execute immediately</p></li>
 <li><p>later operations see earlier changes</p></li>
 </ul>
 <p>Example:</p>
@@ -99,7 +99,7 @@ notifying UI listeners after every change is often unnecessary.</p>
 <span class="p">});</span>
 </pre></div>
 </div>
-<p>The final value is <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
+<p>The final value is <strong>2</strong>.</p>
 <p>Batching only controls <em>when UI listeners are notified</em>,
 not <em>how state changes</em>.</p>
 </section>
@@ -140,7 +140,7 @@ that behavior is managed by Flutter itself.</p>
 </pre></div>
 </div>
 <p>Only the <strong>outermost batch</strong> flushes notifications.</p>
-<p>This allows helper functions to use <code class="docutils literal notranslate"><span class="pre">batch</span></code>
+<p>This allows helper functions to use <strong>batch</strong>
 without needing to know whether they are already
 inside another batch.</p>
 </section>
@@ -201,7 +201,7 @@ and unintended intermediate rebuilds.</p>
 <hr class="docutils" />
 <section id="when-you-should-use-batch">
 <h2>When you should use batch()<a class="headerlink" href="#when-you-should-use-batch" title="Link to this heading">¶</a></h2>
-<p>Use <code class="docutils literal notranslate"><span class="pre">batch</span></code> when:</p>
+<p>Use <strong>batch</strong> when:</p>
 <ul class="simple">
 <li><p>multiple slot updates represent one action</p></li>
 <li><p>you want UI listeners to observe only the final state</p></li>
@@ -229,7 +229,7 @@ batching is usually unnecessary.</p>
 </ul>
 <p>Batching is explicit and predictable.</p>
 <p>When several changes belong together,
-wrap them in <code class="docutils literal notranslate"><span class="pre">batch</span></code>.</p>
+wrap them in <strong>batch</strong>.</p>
 </section>
 </section>
 
@@ -269,6 +269,7 @@ wrap them in <code class="docutils literal notranslate"><span class="pre">batch<
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Batch Updates</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../state_models/index.html">State Models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
@@ -282,7 +283,7 @@ wrap them in <code class="docutils literal notranslate"><span class="pre">batch<
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Core Concepts</a><ul>
       <li>Previous: <a href="value_semantics.html" title="previous chapter">Value Semantics</a></li>
-      <li>Next: <a href="../flutter_integration/index.html" title="next chapter">Flutter Integration</a></li>
+      <li>Next: <a href="../state_models/index.html" title="next chapter">State Models</a></li>
   </ul></li>
   </ul></li>
 </ul>

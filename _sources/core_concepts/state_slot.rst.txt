@@ -1,7 +1,7 @@
 StateSlot
 =========
 
-A ``StateSlot<T>`` is the way you *read and update*
+A **StateSlot<T>** is the way you *read and update*
 application state in SimpleAppState.
 
 If you already understand this sentence:
@@ -10,7 +10,7 @@ If you already understand this sentence:
 
 then you already understand the most important part.
 
-This page explains what a ``StateSlot`` is,
+This page explains what a **StateSlot** is,
 how it is used,
 and why SimpleAppState uses slots instead of fields.
 
@@ -19,7 +19,7 @@ and why SimpleAppState uses slots instead of fields.
 What is a StateSlot?
 --------------------
 
-A ``StateSlot`` represents **one piece of application state**.
+A **StateSlot** represents **one piece of application state**.
 
 For example:
 
@@ -42,9 +42,9 @@ Example:
 
 Here:
 
-- ``count`` is the slot
-- ``int`` is the value type
-- ``'count'`` is the slot name
+- **count** is the slot
+- **int** is the value type
+- **'count'** is the slot name
 
 You never access state directly.
 You always go through the slot.
@@ -83,7 +83,7 @@ Nothing happens implicitly.
 Reading state: get()
 --------------------
 
-To read a value from a slot, use ``get()``:
+To read a value from a slot, use **get()**:
 
 .. code-block:: dart
 
@@ -109,7 +109,7 @@ It prevents accidental state changes.
 Updating state: set()
 ---------------------
 
-To replace a value, use ``set()``:
+To replace a value, use **set()**:
 
 .. code-block:: dart
 
@@ -136,13 +136,13 @@ Updating based on the previous value: update()
 
 Often, the new value depends on the old one.
 
-For this, use ``update()``:
+For this, use **update()**:
 
 .. code-block:: dart
 
    count.update((old) => old + 1);
 
-``update`` works like this:
+**update** works like this:
 
 1. get the current value
 2. create a new value from it
@@ -163,7 +163,7 @@ If a slot is defined as:
 
    final count = appState.slot<int>('count');
 
-Then that slot will always store ``int`` values.
+Then that slot will always store **int** values.
 
 This prevents bugs such as:
 
@@ -177,9 +177,9 @@ Type errors are caught early.
 Slots belong to SimpleAppState
 ------------------------------
 
-A ``StateSlot`` does not store data by itself.
+A **StateSlot** does not store data by itself.
 
-All data lives inside ``SimpleAppState``.
+All data lives inside **SimpleAppState**.
 
 The slot is only a *key* that points to that data.
 
@@ -206,7 +206,7 @@ Widgets *declare* which slots they depend on.
    @override
    List<StateSlot> get slots => [count];
 
-When ``count`` changes:
+When **count** changes:
 
 - SimpleAppState detects the change
 - subscribed widgets rebuild
@@ -219,7 +219,7 @@ This makes rebuild behavior explicit and predictable.
 Summary
 -------
 
-A ``StateSlot``:
+A **StateSlot**:
 
 - represents one piece of application state
 - is the only way to read and update that state

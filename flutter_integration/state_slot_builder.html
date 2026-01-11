@@ -35,26 +35,26 @@
             
   <section id="stateslotbuilder">
 <h1>StateSlotBuilder<a class="headerlink" href="#stateslotbuilder" title="Link to this heading">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> is a helper widget that rebuilds when one or more
-<code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> values change.</p>
+<p><strong>StateSlotBuilder</strong> is a helper widget that rebuilds when one or more
+<strong>StateSlot</strong> values change.</p>
 <p>It provides a simple and explicit way to connect
-<code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> to Flutter widgets,
+<strong>SimpleAppState</strong> to Flutter widgets,
 without changing Flutter’s rebuild model.</p>
 <hr class="docutils" />
 <section id="purpose">
 <h2>Purpose<a class="headerlink" href="#purpose" title="Link to this heading">¶</a></h2>
-<p>The purpose of <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> is limited and clear:</p>
+<p>The purpose of <strong>StateSlotBuilder</strong> is limited and clear:</p>
 <ul class="simple">
-<li><p>declare which <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> objects a widget depends on</p></li>
+<li><p>declare which <strong>StateSlot</strong> objects a widget depends on</p></li>
 <li><p>rebuild the widget when any of those slots change</p></li>
 </ul>
 <p>It does not store state and does not mutate state.
-State ownership always remains in <code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code>.</p>
+State ownership always remains in <strong>SimpleAppState</strong>.</p>
 </section>
 <hr class="docutils" />
 <section id="implementation">
 <h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">¶</a></h2>
-<p>Here is the complete implementation of <code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code>:</p>
+<p>Here is the complete implementation of <strong>StateSlotBuilder</strong>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:flutter/material.dart&#39;</span><span class="p">;</span>
 <span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:simple_app_state/simple_app_state.dart&#39;</span><span class="p">;</span>
 
@@ -101,21 +101,21 @@ State ownership always remains in <code class="docutils literal notranslate"><sp
 <span class="p">);</span>
 </pre></div>
 </div>
-<p>Inside the <code class="docutils literal notranslate"><span class="pre">builder</span></code>, the current values are obtained
-by calling <code class="docutils literal notranslate"><span class="pre">get()</span></code> on each <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code>.</p>
+<p>Inside the <strong>builder</strong>, the current values are obtained
+by calling <strong>get()</strong> on each <strong>StateSlot</strong>.</p>
 </section>
 <hr class="docutils" />
 <section id="relation-to-slotstatefulwidget">
 <h2>Relation to SlotStatefulWidget<a class="headerlink" href="#relation-to-slotstatefulwidget" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> extends <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>.</p>
+<p><strong>StateSlotBuilder</strong> extends <strong>SlotStatefulWidget</strong>.</p>
 <p>This means:</p>
 <ul class="simple">
-<li><p>it declares its dependencies via the <code class="docutils literal notranslate"><span class="pre">slots</span></code> getter</p></li>
+<li><p>it declares its dependencies via the <strong>slots</strong> getter</p></li>
 <li><p>listener registration is handled automatically</p></li>
 <li><p>rebuilds are triggered by slot changes</p></li>
 </ul>
-<p>The <code class="docutils literal notranslate"><span class="pre">slotList</span></code> field is only used to store the slots.
-The actual dependency declaration is done by overriding <code class="docutils literal notranslate"><span class="pre">slots</span></code>:</p>
+<p>The <strong>slotList</strong> field is only used to store the slots.
+The actual dependency declaration is done by overriding <strong>slots</strong>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="nd">@override</span>
 <span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">slotList</span><span class="p">;</span>
 </pre></div>
@@ -125,7 +125,7 @@ The actual dependency declaration is done by overriding <code class="docutils li
 <hr class="docutils" />
 <section id="subscriber-ids-and-rebuilds">
 <h2>Subscriber IDs and rebuilds<a class="headerlink" href="#subscriber-ids-and-rebuilds" title="Link to this heading">¶</a></h2>
-<p>Each <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> is internally registered with a unique
+<p>Each <strong>SlotStatefulWidget</strong> is internally registered with a unique
 <em>subscriber ID</em>.</p>
 <p>This ensures that:</p>
 <ul class="simple">
@@ -139,21 +139,21 @@ You do not need to create or manage them yourself.</p>
 <hr class="docutils" />
 <section id="batch-updates">
 <h2>Batch updates<a class="headerlink" href="#batch-updates" title="Link to this heading">¶</a></h2>
-<p>When slot updates are grouped using <code class="docutils literal notranslate"><span class="pre">SimpleAppState.batch</span></code>:</p>
+<p>When slot updates are grouped using <strong>SimpleAppState.batch</strong>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">state</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">countSlot</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
 <span class="w">  </span><span class="n">nameSlot</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="s1">&#39;Alice&#39;</span><span class="p">);</span>
 <span class="p">});</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> rebuilds once after the batch completes.</p>
+<p><strong>StateSlotBuilder</strong> rebuilds once after the batch completes.</p>
 <p>This behavior is consistent with all widgets based on
-<code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code>.</p>
+<strong>SlotStatefulWidget</strong>.</p>
 </section>
 <hr class="docutils" />
 <section id="what-stateslotbuilder-does-not-do">
 <h2>What StateSlotBuilder does not do<a class="headerlink" href="#what-stateslotbuilder-does-not-do" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> intentionally avoids the following:</p>
+<p><strong>StateSlotBuilder</strong> intentionally avoids the following:</p>
 <ul class="simple">
 <li><p>it does not control the widget tree</p></li>
 <li><p>it does not decide rebuild timing</p></li>
@@ -169,10 +169,10 @@ You do not need to create or manage them yourself.</p>
 <hr class="docutils" />
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">StateSlotBuilder</span></code> is a thin integration layer between:</p>
+<p><strong>StateSlotBuilder</strong> is a thin integration layer between:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">SimpleAppState</span></code> for state ownership</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> for state identity</p></li>
+<li><p><strong>SimpleAppState</strong> for state ownership</p></li>
+<li><p><strong>StateSlot</strong> for state identity</p></li>
 <li><p>Flutter for widget rebuilding</p></li>
 </ul>
 <p>Its role is intentionally small:</p>
@@ -210,6 +210,7 @@ You do not need to create or manage them yourself.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../state_models/index.html">State Models</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Flutter Integration</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="rebuild_model.html">Rebuild Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="slot_stateful_widget.html">SlotStatefulWidget</a></li>

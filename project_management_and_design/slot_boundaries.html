@@ -43,10 +43,10 @@ it is a <strong>contract</strong> between designers, implementers, and reviewers
 <hr class="docutils" />
 <section id="what-is-a-slot-boundary">
 <h2>What is a slot boundary?<a class="headerlink" href="#what-is-a-slot-boundary" title="Link to this heading">¶</a></h2>
-<p>A <em>slot boundary</em> is the set of <code class="docutils literal notranslate"><span class="pre">StateSlot</span></code> objects
+<p>A <em>slot boundary</em> is the set of <strong>StateSlot</strong> objects
 that a widget is allowed to depend on.</p>
 <p>In SimpleAppState, this boundary is declared explicitly
-by <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget.slots</span></code>.</p>
+by <strong>SlotStatefulWidget.slots</strong>.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">UserScreen</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotStatefulWidget</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">UserScreen</span><span class="p">({</span><span class="k">super</span><span class="p">.</span><span class="n">key</span><span class="p">});</span>
 
@@ -63,7 +63,7 @@ by <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidg
 </div>
 <p>This declaration means:</p>
 <ul class="simple">
-<li><p>This screen is allowed to read <code class="docutils literal notranslate"><span class="pre">userSlot</span></code> and <code class="docutils literal notranslate"><span class="pre">settingsSlot</span></code></p></li>
+<li><p>This screen is allowed to read <strong>userSlot</strong> and <strong>settingsSlot</strong></p></li>
 <li><p>Only these slots will trigger rebuilds</p></li>
 <li><p>No other application state should influence this widget</p></li>
 </ul>
@@ -107,11 +107,11 @@ by forcing the slot boundary to be declared explicitly.</p>
 between a manager (or architect) and implementers.</p>
 <p>A typical delegation might be:</p>
 <ul class="simple">
-<li><p>“Implement <code class="docutils literal notranslate"><span class="pre">UserScreen</span></code>”</p></li>
-<li><p>“You may use <code class="docutils literal notranslate"><span class="pre">userSlot</span></code> and <code class="docutils literal notranslate"><span class="pre">settingsSlot</span></code>”</p></li>
+<li><p>“Implement <strong>UserScreen</strong>”</p></li>
+<li><p>“You may use <strong>userSlot</strong> and <strong>settingsSlot</strong>”</p></li>
 <li><p>“Do not depend on any other application state”</p></li>
 </ul>
-<p>Because the boundary is declared in <code class="docutils literal notranslate"><span class="pre">slots</span></code>,
+<p>Because the boundary is declared in <strong>slots</strong>,
 the implementer does not have to guess what is allowed.</p>
 <p>Inside the state class, they can focus purely on UI:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">_UserScreenState</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotState</span><span class="o">&lt;</span><span class="n">UserScreen</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
@@ -153,7 +153,7 @@ state inside build methods (often called “watch”-style APIs).</p>
 <li><p>Difficult code reviews</p></li>
 <li><p>Accidental coupling to unrelated state</p></li>
 </ul>
-<p>By contrast, <code class="docutils literal notranslate"><span class="pre">SlotStatefulWidget</span></code> requires
+<p>By contrast, <strong>SlotStatefulWidget</strong> requires
 all slot dependencies to be declared in one place.</p>
 <p>This makes the widget’s relationship to application state
 easy to see, easy to review, and easy to reason about.</p>
@@ -206,6 +206,7 @@ for clarity and stability.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../state_models/index.html">State Models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Project Management and Design</a><ul class="current">

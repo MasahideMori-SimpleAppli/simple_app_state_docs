@@ -65,7 +65,7 @@ This confirms that your environment is set up correctly.
 Add SimpleAppState
 ------------------
 
-Open ``pubspec.yaml`` and add **SimpleAppState**
+Open **pubspec.yaml** and add **SimpleAppState**
 to your dependencies:
 
 .. code-block:: yaml
@@ -83,10 +83,10 @@ Then fetch the dependencies:
 
 ----
 
-Replace ``lib/main.dart``
+Replace **lib/main.dart**
 -------------------------
 
-Next, replace the contents of ``lib/main.dart``
+Next, replace the contents of **lib/main.dart**
 with the following **complete example**.
 
 This single file contains:
@@ -254,7 +254,7 @@ Even in this small example, several important ideas are visible:
 
 - application state is defined **outside widgets**
 - widgets **subscribe** to state explicitly
-- state updates are performed via ``update``
+- state updates are performed via **update**
 - UI rebuilds are deterministic and predictable
 
 Do not worry if all details are not clear yet.
