@@ -1,0 +1,18 @@
+State Models
+============
+
+SimpleAppState is based on immutable, deep-copied values.
+
+However, some applications need to work with large,
+mutable, or non-serializable objects such as
+3D geometry, vector graphics, or engine-level data.
+
+This section introduces alternative state models
+that trade safety for performance and flexibility.
+
+.. toctree::
+   :maxdepth: 1
+
+   ref_app_state
+   ref_slot
+   when_to_use_ref_state

@@ -1,0 +1,241 @@
+RefAppState
+===========
+
+**RefAppState** is an alternative state model for SimpleAppState
+that works with **reference values instead of deep-copied values**.
+
+It is designed for applications that need to manage
+large, mutable, or non-serializable objects such as:
+
+- 3D or 2D scene graphs (e.g. `sp3d data <https://pub.dev/packages/simple_3d>`_)
+- vector graphics and shape trees
+- large in-memory document or model structures
+- engine-level objects that are expensive to clone
+
+This page explains how **RefAppState** differs from **SimpleAppState**
+and when it should be used.
+
+----
+
+What RefAppState owns
+----------------------
+
+A **RefAppState** instance owns:
+
+- all application state references
+- **RefSlot** definitions and their types
+- listeners and batch update coordination
+
+It does **not** own:
+
+- widgets
+- UI-local objects (controllers, animations, focus nodes)
+- rendering lifecycle
+
+As with **SimpleAppState**, state lifetime and ownership
+are kept explicit and predictable.
+
+----
+
+Reference semantics instead of value semantics
+----------------------------------------------
+
+The fundamental difference from **SimpleAppState** is **how values are stored**.
+
+**SimpleAppState**:
+- always stores deep-copied values
+- enforces value semantics
+- prevents accidental mutation
+
+**RefAppState**:
+- stores **references**
+- does **not** deep-copy on get, set, or update
+- allows direct mutation of stored objects
+
+This makes **RefAppState** much faster and more flexible,
+but also more dangerous if misused.
+
+It should only be used when value semantics are impractical.
+
+----
+
+Creating a RefAppState
+-----------------------
+
+A **RefAppState** is created just like **SimpleAppState**:
+
+.. code-block:: dart
+
+   final refState = RefAppState();
+
+It is usually defined as a global or top-level variable,
+often in **ui/ref_state.dart**.
+
+----
+
+RefSlot instead of StateSlot
+-----------------------------
+
+**RefAppState** does not use **StateSlot<T>**.
+
+Instead, it provides **RefSlot<T>**:
+
+.. code-block:: dart
+
+   final model = refState.slot<MyModel>('model', initial: MyModel());
+
+**RefSlot<T>** behaves like **StateSlot<T>**,
+but with **reference semantics**.
+
+When you read a value:
+
+.. code-block:: dart
+
+   final m = model.get();
+
+You receive the **actual stored object**, not a copy.
+
+Mutating it will immediately affect the state:
+
+.. code-block:: dart
+
+   m.vertices.add(...);   // modifies state directly
+
+This is intentional.
+
+----
+
+Updating reference values
+--------------------------
+
+**RefSlot.update** receives the current reference:
+
+.. code-block:: dart
+
+   model.update((m) {
+     m.recalculate();
+     return m;
+   });
+
+The returned object is stored as-is.
+No copying is performed.
+
+This allows efficient in-place updates
+of large or complex objects.
+
+----
+
+Safety trade-offs
+------------------
+
+Because **RefAppState** uses references:
+
+- accidental mutation can corrupt state
+- undo / redo cannot rely on immutability
+- equality comparisons are not structural
+
+Therefore:
+
+**RefAppState** should be treated as a **low-level, performance-oriented state model**.
+
+It is ideal for:
+
+- geometry editors
+- design tools
+- simulation state
+- large document models
+
+It is **not** recommended for ordinary UI state.
+
+----
+
+Snapshots and undo
+------------------
+
+Although normal reads and writes use references,
+**RefAppState** supports **deep-copy snapshots** for undo and restore.
+
+.. code-block:: dart
+
+   final snapshot = refState.clone();
+
+A cloned **RefAppState**:
+
+- deep-copies all stored data
+- contains no listeners or UI bindings
+- is safe to store in undo stacks
+
+**Important:**
+All values stored in a **RefAppState** must still be *deep-copyable*
+in order to use **clone** or **replaceDataFrom**.
+
+Only the following kinds of objects are supported:
+
+- primitive types (`int`, `double`, `bool`, `String`)
+- JSON-serializable structures (`Map`, `List`, etc)
+- classes that implement
+  `CloneableFile <https://pub.dev/documentation/file_state_manager/latest/file_state_manager/CloneableFile-class.html>`_
+
+
+If any non-copyable object is stored in a slot,
+calling **clone** or **replaceDataFrom** will throw a runtime error.
+
+This is intentional:
+it ensures that undo / redo and persistence remain correct and deterministic.
+
+To restore:
+
+.. code-block:: dart
+
+   refState.replaceDataFrom(snapshot);
+
+This replaces only the stored data,
+while preserving:
+
+- slot definitions
+- widget subscriptions
+- runtime listeners
+
+This model is optimized for large mutable objects:
+you pay the cost of copying **only when taking snapshots**.
+
+----
+
+Batch updates
+-------------
+
+**RefAppState** supports batch updates
+in the same way as **SimpleAppState**:
+
+.. code-block:: dart
+
+   refState.batch(() {
+     model.set(newModel);
+     // update other RefSlots
+   });
+
+Batching controls listener notifications and widget rebuilds,
+but does **not** affect reference semantics.
+
+----
+
+What RefAppState is not
+------------------------
+
+**RefAppState** is not:
+
+- safe against accidental mutation
+- suitable for small UI state
+- a drop-in replacement for **SimpleAppState**
+
+It is a specialized tool for
+**large, mutable, performance-critical state**.
+
+Use it only when value semantics are too expensive or impossible.
+
+----
+
+API
+----
+
+`RefAppState <https://pub.dev/documentation/simple_app_state/latest/simple_app_state/RefAppState-class.html>`_

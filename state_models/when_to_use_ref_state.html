@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>When to use RefAppState &#8212; simple_app_state 2026 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=fc6fd62b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Flutter Integration" href="../flutter_integration/index.html" />
+    <link rel="prev" title="RefSlot" href="ref_slot.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="when-to-use-refappstate">
+<h1>When to use RefAppState<a class="headerlink" href="#when-to-use-refappstate" title="Link to this heading">¶</a></h1>
+<p><strong>RefAppState</strong> and <strong>RefSlot</strong> exist for <strong>performance and scale</strong>.</p>
+<p>They are powerful,
+but they are <strong>not</strong> the default way to manage state in SimpleAppState.</p>
+<p>Most applications should use:</p>
+<ul class="simple">
+<li><p><strong>SimpleAppState</strong></p></li>
+<li><p><strong>StateSlot</strong></p></li>
+</ul>
+<p>almost everywhere.</p>
+<p>This page explains when reference-based state is appropriate,
+and when it is not.</p>
+<hr class="docutils" />
+<section id="the-default-value-semantics">
+<h2>The default: value semantics<a class="headerlink" href="#the-default-value-semantics" title="Link to this heading">¶</a></h2>
+<p><strong>SimpleAppState</strong> uses <strong>value semantics</strong>:</p>
+<ul class="simple">
+<li><p>values are deep-copied on read</p></li>
+<li><p>values are replaced on write</p></li>
+<li><p>state transitions are explicit</p></li>
+<li><p>undo, redo, and persistence are safe</p></li>
+</ul>
+<p>This is what makes SimpleAppState easy to reason about.</p>
+<p>For the vast majority of app state, this is exactly what you want:</p>
+<ul class="simple">
+<li><p>counters</p></li>
+<li><p>selections</p></li>
+<li><p>settings</p></li>
+<li><p>UI state</p></li>
+<li><p>domain objects</p></li>
+<li><p>lists and maps</p></li>
+</ul>
+<p>If you are not sure which to use,
+use <strong>SimpleAppState</strong>.</p>
+</section>
+<hr class="docutils" />
+<section id="what-refappstate-is-for">
+<h2>What RefAppState is for<a class="headerlink" href="#what-refappstate-is-for" title="Link to this heading">¶</a></h2>
+<p><strong>RefAppState</strong> is for data that is:</p>
+<ul class="simple">
+<li><p>very large</p></li>
+<li><p>expensive to copy</p></li>
+<li><p>mutated frequently</p></li>
+<li><p>conceptually a single object</p></li>
+</ul>
+<p>Typical examples:</p>
+<ul class="simple">
+<li><p>3D or 2D scene graphs</p></li>
+<li><p>geometry models (e.g. sp3d data)</p></li>
+<li><p>large document trees</p></li>
+<li><p>binary or image buffers</p></li>
+<li><p>simulation state</p></li>
+</ul>
+<p>Copying these on every read or update
+would be too slow or too memory-intensive.</p>
+<p><strong>RefAppState</strong> allows these objects
+to live as <strong>shared references</strong>
+while still participating in:</p>
+<ul class="simple">
+<li><p>slot-based updates</p></li>
+<li><p>widget rebuilds</p></li>
+<li><p>undo / redo</p></li>
+<li><p>persistence</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="enums-and-identity-based-models">
+<h2>Enums and identity-based models<a class="headerlink" href="#enums-and-identity-based-models" title="Link to this heading">¶</a></h2>
+<p>Another valid use case is <strong>identity-based models</strong>.</p>
+<p>For example:</p>
+<ul class="simple">
+<li><p>enum-like objects</p></li>
+<li><p>flyweight instances</p></li>
+<li><p>canonical singletons</p></li>
+<li><p>object graphs where identity matters</p></li>
+</ul>
+<p>In these cases, copying would break meaning.</p>
+<p>A reference slot preserves identity
+while still letting SimpleAppState track changes.</p>
+</section>
+<hr class="docutils" />
+<section id="why-beginners-should-not-use-refappstate">
+<h2>Why beginners should not use RefAppState<a class="headerlink" href="#why-beginners-should-not-use-refappstate" title="Link to this heading">¶</a></h2>
+<p>Reference semantics are harder to reason about.</p>
+<p>With <strong>StateSlot</strong>:</p>
+<ul class="simple">
+<li><p>reading never mutates state</p></li>
+<li><p>updates are always explicit</p></li>
+<li><p>bugs are localized</p></li>
+</ul>
+<p>With <strong>RefSlot</strong>:</p>
+<ul class="simple">
+<li><p>reading can mutate state</p></li>
+<li><p>changes can happen deep inside objects</p></li>
+<li><p>it is easier to forget to notify</p></li>
+</ul>
+<p>This is powerful,
+but also more dangerous.</p>
+<p>For this reason:</p>
+<p>&gt; <strong>RefAppState</strong> is an advanced tool for special cases.</p>
+<p>Most application logic should stay
+in <strong>SimpleAppState</strong> and <strong>StateSlot</strong>.</p>
+</section>
+<hr class="docutils" />
+<section id="mixing-simpleappstate-and-refappstate">
+<h2>Mixing SimpleAppState and RefAppState<a class="headerlink" href="#mixing-simpleappstate-and-refappstate" title="Link to this heading">¶</a></h2>
+<p>It is normal to use <strong>both</strong> in one application.</p>
+<p>A common pattern:</p>
+<ul class="simple">
+<li><p><strong>SimpleAppState</strong> for UI and domain state</p></li>
+<li><p><strong>RefAppState</strong> for large models or engines</p></li>
+</ul>
+<p>They are designed to work together.</p>
+<p>Widgets can subscribe to slots from both systems,
+and batch updates can coordinate them.</p>
+</section>
+<hr class="docutils" />
+<section id="file-organization">
+<h2>File organization<a class="headerlink" href="#file-organization" title="Link to this heading">¶</a></h2>
+<p>A recommended project structure is:</p>
+<ul class="simple">
+<li><p><strong>app_state.dart</strong>
+contains <strong>SimpleAppState</strong> and all <strong>StateSlot</strong> definitions</p></li>
+<li><p><strong>ref_state.dart</strong>
+contains <strong>RefAppState</strong> and all <strong>RefSlot</strong> definitions</p></li>
+</ul>
+<p>This makes the separation explicit:</p>
+<ul class="simple">
+<li><p>most developers work in <strong>app_state.dart</strong></p></li>
+<li><p>only performance-critical code touches <strong>ref_state.dart</strong></p></li>
+</ul>
+<p>This is a convention, not a requirement,
+but it helps keep reference-based state
+clearly isolated.</p>
+</section>
+<hr class="docutils" />
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
+<p>Use <strong>SimpleAppState</strong> and <strong>StateSlot</strong> by default.</p>
+<p>Use <strong>RefAppState</strong> and <strong>RefSlot</strong> only when:</p>
+<ul class="simple">
+<li><p>copying is too expensive</p></li>
+<li><p>object identity must be preserved</p></li>
+<li><p>the data is inherently large or mutable</p></li>
+</ul>
+<p>If you are in doubt:</p>
+<p><strong>do not use RefAppState.</strong></p>
+<p>It is better to start with value semantics
+and introduce references only when you truly need them.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">simple_app_state</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../core_concepts/index.html">Core Concepts</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">State Models</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ref_app_state.html">RefAppState</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref_slot.html">RefSlot</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">When to use RefAppState</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../flutter_integration/index.html">Flutter Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/index.html">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project_management_and_design/index.html">Project Management and Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notice.html">Notice</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">State Models</a><ul>
+      <li>Previous: <a href="ref_slot.html" title="previous chapter">RefSlot</a></li>
+      <li>Next: <a href="../flutter_integration/index.html" title="next chapter">Flutter Integration</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Masahide Mori.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/state_models/when_to_use_ref_state.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

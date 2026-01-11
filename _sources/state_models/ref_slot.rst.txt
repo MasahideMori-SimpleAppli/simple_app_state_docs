@@ -1,0 +1,236 @@
+RefSlot
+=======
+
+A **RefSlot<T>** is the way you *read and update*
+application state in **RefAppState**.
+
+If you already understand this sentence:
+
+*“I get a reference from a slot, and I update it through the slot.”*
+
+then you already understand the most important part.
+
+This page explains what a **RefSlot** is,
+how it is used,
+and how it differs from **StateSlot**.
+
+----
+
+What is a RefSlot?
+-------------------
+
+A **RefSlot** represents **one piece of application state**
+stored as a **reference**.
+
+For example:
+
+- a geometry model
+- a document tree
+- a large in-memory structure
+- a simulation object
+
+Each slot:
+
+- has a **name**
+- has a **fixed type**
+- belongs to **one RefAppState**
+
+Example:
+
+.. code-block:: dart
+
+   final model = refState.slot<MyModel>('model', initial: MyModel());
+
+Here:
+
+- **model** is the slot
+- **MyModel** is the reference type
+- **'model'** is the slot name
+
+As with **StateSlot**,
+you never access state directly.
+You always go through the slot.
+
+----
+
+Why RefAppState uses RefSlot
+-----------------------------
+
+**RefAppState** does not use **StateSlot** because
+it does **not** use value semantics.
+
+**StateSlot** assumes:
+
+- values are copied on read
+- values are replaced on write
+
+**RefSlot** assumes:
+
+- values are **shared by reference**
+- objects are often **mutated in place**
+
+The slot abstraction is still needed so that:
+
+- changes can be tracked
+- widgets can subscribe
+- batch updates and undo still work
+
+Only the **value semantics** are different.
+
+----
+
+Reading state: get()
+--------------------
+
+To read a value from a **RefSlot**, use **get()**:
+
+.. code-block:: dart
+
+   final model = slot.get();
+
+Important difference from **StateSlot**:
+
+- the returned object is the **actual stored object**
+- it is **not copied**
+
+This means:
+
+.. code-block:: dart
+
+   final m = modelSlot.get();
+   m.vertices.add(v);   // ✅ modifies application state
+
+This is intentional.
+**RefSlot** is designed for large mutable objects
+that cannot be copied cheaply.
+
+----
+
+Updating state: set()
+----------------------
+
+To replace the stored reference, use **set()**:
+
+.. code-block:: dart
+
+   modelSlot.set(newModel);
+
+This:
+
+- replaces the stored reference
+- notifies subscribed widgets
+- triggers rebuilds if needed
+
+This is typically used when you switch
+to a completely new model object.
+
+----
+
+Updating based on the previous value: update()
+----------------------------------------------
+
+**update** provides access to the current reference:
+
+.. code-block:: dart
+
+   modelSlot.update((m) {
+     m.recalculate();
+     return m;
+   });
+
+Unlike **StateSlot.update**:
+
+- the input is the **actual object**
+- the returned object is stored **as-is**
+- no copying is performed
+
+This makes it efficient to perform
+in-place updates on large structures.
+
+----
+
+Slot types are fixed
+---------------------
+
+Each **RefSlot** has a fixed type.
+
+If a slot is defined as:
+
+.. code-block:: dart
+
+   final model = refState.slot<MyModel>('model');
+
+Then that slot will always store **MyModel** references.
+
+This prevents:
+
+- mixing different object types
+- widgets receiving incompatible data
+
+Type safety is still enforced,
+even though values are mutable.
+
+----
+
+Slots belong to RefAppState
+----------------------------
+
+A **RefSlot** does not store data itself.
+
+All data lives inside **RefAppState**.
+
+The slot is only a *key* that points to that data.
+
+This allows:
+
+- snapshots to deep-copy all data
+- listeners to survive data replacement
+- undo / redo to work correctly
+
+Even though references are used at runtime,
+the slot system keeps the architecture structured.
+
+----
+
+Slots and widgets
+-----------------
+
+Widgets declare which **RefSlot** objects they depend on:
+
+.. code-block:: dart
+
+   @override
+   List<RefSlot> get slots => [modelSlot];
+
+When the slot is marked as changed:
+
+- RefAppState detects it
+- subscribed widgets rebuild
+- unrelated widgets do not
+
+Even though mutation may happen in place,
+**notifications still go through the slot system**.
+
+----
+
+Summary
+-------
+
+A **RefSlot**:
+
+- represents one piece of application state
+- stores and returns **references**
+- is the only supported way to access RefAppState data
+- works with RefAppState to control rebuilds
+
+If you remember only one rule:
+
+**All reference state still goes through slots.**
+
+Only the value semantics are different.
+
+----
+
+API
+--------------------------
+`RefSlot <https://pub.dev/documentation/simple_app_state/latest/simple_app_state/RefSlot-class.html>`_

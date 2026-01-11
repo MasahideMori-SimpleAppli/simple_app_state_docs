@@ -1,0 +1,182 @@
+When to use RefAppState
+========================
+
+**RefAppState** and **RefSlot** exist for **performance and scale**.
+
+They are powerful,
+but they are **not** the default way to manage state in SimpleAppState.
+
+Most applications should use:
+
+- **SimpleAppState**
+- **StateSlot**
+
+almost everywhere.
+
+This page explains when reference-based state is appropriate,
+and when it is not.
+
+----
+
+The default: value semantics
+----------------------------
+
+**SimpleAppState** uses **value semantics**:
+
+- values are deep-copied on read
+- values are replaced on write
+- state transitions are explicit
+- undo, redo, and persistence are safe
+
+This is what makes SimpleAppState easy to reason about.
+
+For the vast majority of app state, this is exactly what you want:
+
+- counters
+- selections
+- settings
+- UI state
+- domain objects
+- lists and maps
+
+If you are not sure which to use,
+use **SimpleAppState**.
+
+----
+
+What RefAppState is for
+------------------------
+
+**RefAppState** is for data that is:
+
+- very large
+- expensive to copy
+- mutated frequently
+- conceptually a single object
+
+Typical examples:
+
+- 3D or 2D scene graphs
+- geometry models (e.g. sp3d data)
+- large document trees
+- binary or image buffers
+- simulation state
+
+Copying these on every read or update
+would be too slow or too memory-intensive.
+
+**RefAppState** allows these objects
+to live as **shared references**
+while still participating in:
+
+- slot-based updates
+- widget rebuilds
+- undo / redo
+- persistence
+
+----
+
+Enums and identity-based models
+-------------------------------
+
+Another valid use case is **identity-based models**.
+
+For example:
+
+- enum-like objects
+- flyweight instances
+- canonical singletons
+- object graphs where identity matters
+
+In these cases, copying would break meaning.
+
+A reference slot preserves identity
+while still letting SimpleAppState track changes.
+
+----
+
+Why beginners should not use RefAppState
+----------------------------------------
+
+Reference semantics are harder to reason about.
+
+With **StateSlot**:
+
+- reading never mutates state
+- updates are always explicit
+- bugs are localized
+
+With **RefSlot**:
+
+- reading can mutate state
+- changes can happen deep inside objects
+- it is easier to forget to notify
+
+This is powerful,
+but also more dangerous.
+
+For this reason:
+
+> **RefAppState** is an advanced tool for special cases.
+
+Most application logic should stay
+in **SimpleAppState** and **StateSlot**.
+
+----
+
+Mixing SimpleAppState and RefAppState
+--------------------------------------
+
+It is normal to use **both** in one application.
+
+A common pattern:
+
+- **SimpleAppState** for UI and domain state
+- **RefAppState** for large models or engines
+
+They are designed to work together.
+
+Widgets can subscribe to slots from both systems,
+and batch updates can coordinate them.
+
+----
+
+File organization
+-----------------
+
+A recommended project structure is:
+
+- **app_state.dart**
+  contains **SimpleAppState** and all **StateSlot** definitions
+
+- **ref_state.dart**
+  contains **RefAppState** and all **RefSlot** definitions
+
+This makes the separation explicit:
+
+- most developers work in **app_state.dart**
+- only performance-critical code touches **ref_state.dart**
+
+This is a convention, not a requirement,
+but it helps keep reference-based state
+clearly isolated.
+
+----
+
+Summary
+-------
+
+Use **SimpleAppState** and **StateSlot** by default.
+
+Use **RefAppState** and **RefSlot** only when:
+
+- copying is too expensive
+- object identity must be preserved
+- the data is inherently large or mutable
+
+If you are in doubt:
+
+**do not use RefAppState.**
+
+It is better to start with value semantics
+and introduce references only when you truly need them.
