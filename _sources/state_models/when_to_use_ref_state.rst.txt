@@ -57,10 +57,9 @@ What RefAppState is for
 Typical examples:
 
 - 3D or 2D scene graphs
-- geometry models (e.g. sp3d data)
+- geometry models
 - large document trees
 - binary or image buffers
-- simulation state
 
 Copying these on every read or update
 would be too slow or too memory-intensive.

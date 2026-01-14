@@ -140,7 +140,7 @@ For this, use **update()**:
 
 .. code-block:: dart
 
-   count.update((old) => old + 1);
+   count.update((oldCopy) => oldCopy + 1);
 
 **update** works like this:
 
@@ -161,7 +161,7 @@ If a slot is defined as:
 
 .. code-block:: dart
 
-   final count = appState.slot<int>('count');
+   final count = appState.slot<int>('count', initial: 0);
 
 Then that slot will always store **int** values.
 

@@ -16,8 +16,14 @@ Persistence in **SimpleAppState** is based on dictionary serialization.
 
 This mechanism relies on:
 
-* **toDict()** for serialization
-* **fromDict(...)** for restoration
+* **toDict()** : For serialization
+* **fromDict(...)** : For restoration
+
+These are the basic functions of classes that extend
+`CloneableFile <https://pub.dev/documentation/file_state_manager/latest/file_state_manager/CloneableFile-class.html>`_ ,
+but in addition there are also restoration functions specific to SimpleAppState and RefAppState.
+
+* **LoadFromDict(...)** : Restore the data content while maintaining the listeners.
 
 ----
 
@@ -204,3 +210,5 @@ Use **loadFromDict** when:
 * Slots are already declared
 * You need to inject or replace data at runtime
 * State is loaded asynchronously (e.g. from cloud storage)
+
+In short, loadFromDict is the preferred method in most cases, and fromDict should only be considered in special cases.

@@ -81,7 +81,7 @@ by overriding the **slots** getter:
      List<StateSlot> get slots => [count];
 
      @override
-     State<CounterView> createState() => _CounterViewState();
+     SlotState<CounterView> createState() => _CounterViewState();
    }
 
 This declaration answers a simple question:

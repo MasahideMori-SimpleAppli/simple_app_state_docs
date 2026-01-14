@@ -46,8 +46,14 @@
 </ul>
 <p>This mechanism relies on:</p>
 <ul class="simple">
-<li><p><strong>toDict()</strong> for serialization</p></li>
-<li><p><strong>fromDict(…)</strong> for restoration</p></li>
+<li><p><strong>toDict()</strong> : For serialization</p></li>
+<li><p><strong>fromDict(…)</strong> : For restoration</p></li>
+</ul>
+<p>These are the basic functions of classes that extend
+<a class="reference external" href="https://pub.dev/documentation/file_state_manager/latest/file_state_manager/CloneableFile-class.html">CloneableFile</a> ,
+but in addition there are also restoration functions specific to SimpleAppState and RefAppState.</p>
+<ul class="simple">
+<li><p><strong>LoadFromDict(…)</strong> : Restore the data content while maintaining the listeners.</p></li>
 </ul>
 </section>
 <hr class="docutils" />
@@ -204,6 +210,7 @@ before the UI reacts to the restored state.</p>
 <li><p>You need to inject or replace data at runtime</p></li>
 <li><p>State is loaded asynchronously (e.g. from cloud storage)</p></li>
 </ul>
+<p>In short, loadFromDict is the preferred method in most cases, and fromDict should only be considered in special cases.</p>
 </section>
 </section>
 

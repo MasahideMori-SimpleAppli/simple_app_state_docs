@@ -81,10 +81,9 @@ Example with **update**:
 
 .. code-block:: dart
 
-    logs.update((old) {
-      final next = List<String>.from(old);
-      next.add('new entry');
-      return next;
+    logs.update((oldCopy) {
+      oldCopy.add('new entry');
+      return oldCopy;
     });
 
 In both cases:

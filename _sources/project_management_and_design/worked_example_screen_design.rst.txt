@@ -75,7 +75,7 @@ to create the file they hand over to their implementers.
       List<StateSlot> get slots => [countSlot, logsSlot];
 
       @override
-      State<CounterPage> createState() => _CounterPageState();
+      SlotState<CounterPage> createState() => _CounterPageState();
     }
 
     class _CounterPageState extends SlotState<CounterPage> {
@@ -266,3 +266,7 @@ looks in real code.
         );
       }
     }
+
+The ease of division of labor and high maintainability are clear from this code.
+
+Advanced developers should take this chapter into consideration and strive to maintain a clean project environment.

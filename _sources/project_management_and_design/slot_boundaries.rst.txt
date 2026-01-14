@@ -31,7 +31,7 @@ by **SlotStatefulWidget.slots**.
      ];
 
      @override
-     State<UserScreen> createState() => _UserScreenState();
+     SlotState<UserScreen> createState() => _UserScreenState();
    }
 
 This declaration means:

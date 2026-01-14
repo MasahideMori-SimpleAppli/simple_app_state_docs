@@ -139,49 +139,6 @@ inside another batch.
 
 ----
 
-State-level listener (undo / redo, persistence)
------------------------------------------------
-
-In addition to UI listeners,
-SimpleAppState supports a **state-level listener**.
-
-This listener is designed for:
-
-- undo / redo stacks
-- persistence
-- observing finalized state transitions
-
-Unlike UI listeners:
-
-- it is **not** called for every slot update
-- it is called **once**, after a batch completes
-- it receives the finalized state
-
-Example:
-
-.. code-block:: dart
-
-   appState.setStateListener((nowState) {
-     undoStack.add(nowState.clone());
-   });
-
-With batching:
-
-.. code-block:: dart
-
-   appState.batch(() {
-     count.set(1);
-     total.set(10);
-   });
-
-The state listener is called **once**,
-after both updates are applied.
-
-Intermediate states inside the batch
-are intentionally not reported.
-
-----
-
 Batching during loading and restore
 -----------------------------------
 
@@ -211,14 +168,12 @@ Use **batch** when:
 
 - multiple slot updates represent one action
 - you want UI listeners to observe only the final state
-- undo / redo or persistence should record one step
 
 Typical cases:
 
-- form submission
-- initialization
-- applying settings
-- undo / redo operations
+- Loading data from the cloud
+- Applying settings
+- A series of consecutive operations
 
 For single-slot updates,
 batching is usually unnecessary.

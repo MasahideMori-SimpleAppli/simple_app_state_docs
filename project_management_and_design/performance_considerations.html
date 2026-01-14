@@ -113,12 +113,18 @@ does not undermine design clarity.</p>
 <h2>A conscious trade-off<a class="headerlink" href="#a-conscious-trade-off" title="Link to this heading">¶</a></h2>
 <p>Using <strong>StateSlotBuilder</strong> is always a trade-off:</p>
 <ul class="simple">
-<li><p><strong>Pros</strong>
-* Finer-grained rebuilds
-* Better performance in large trees</p></li>
-<li><p><strong>Cons</strong>
-* Slot dependencies move closer to UI code
-* Screen-level state becomes less visible</p></li>
+<li><p><strong>Pros</strong></p>
+<ul>
+<li><p>Finer-grained rebuilds</p></li>
+<li><p>Better performance in large trees</p></li>
+</ul>
+</li>
+<li><p><strong>Cons</strong></p>
+<ul>
+<li><p>Slot dependencies move closer to UI code</p></li>
+<li><p>Screen-level state becomes less visible</p></li>
+</ul>
+</li>
 </ul>
 <p>For this reason, performance tuning in SimpleAppState
 is always an explicit, intentional decision.</p>

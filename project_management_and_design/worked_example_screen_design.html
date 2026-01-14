@@ -95,7 +95,7 @@ to create the file they hand over to their implementers.</p>
 <span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">countSlot</span><span class="p">,</span><span class="w"> </span><span class="n">logsSlot</span><span class="p">];</span>
 
 <span class="w">  </span><span class="nd">@override</span>
-<span class="w">  </span><span class="n">State</span><span class="o">&lt;</span><span class="n">CounterPage</span><span class="o">&gt;</span><span class="w"> </span><span class="n">createState</span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_CounterPageState</span><span class="p">();</span>
+<span class="w">  </span><span class="n">SlotState</span><span class="o">&lt;</span><span class="n">CounterPage</span><span class="o">&gt;</span><span class="w"> </span><span class="n">createState</span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_CounterPageState</span><span class="p">();</span>
 <span class="p">}</span>
 
 <span class="kd">class</span><span class="w"> </span><span class="nc">_CounterPageState</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotState</span><span class="o">&lt;</span><span class="n">CounterPage</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
@@ -273,6 +273,8 @@ looks in real code.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>The ease of division of labor and high maintainability are clear from this code.</p>
+<p>Advanced developers should take this chapter into consideration and strive to maintain a clean project environment.</p>
 </section>
 </section>
 

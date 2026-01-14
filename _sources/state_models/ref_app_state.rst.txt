@@ -43,11 +43,13 @@ Reference semantics instead of value semantics
 The fundamental difference from **SimpleAppState** is **how values are stored**.
 
 **SimpleAppState**:
+
 - always stores deep-copied values
 - enforces value semantics
 - prevents accidental mutation
 
 **RefAppState**:
+
 - stores **references**
 - does **not** deep-copy on get, set, or update
 - allows direct mutation of stored objects
@@ -70,6 +72,16 @@ A **RefAppState** is created just like **SimpleAppState**:
 
 It is usually defined as a global or top-level variable,
 often in **ui/ref_state.dart**.
+
+.. code-block:: text
+
+   lib/
+   ├── ui/
+   │   ├── app_state.dart
+   │   ├── ref_state.dart # If you use RefAppState, add ref_state.dart.
+   │   └── pages/
+   │       └── counter_page.dart  # UI Widgets
+   └── main.dart               # Entry point
 
 ----
 
@@ -142,7 +154,6 @@ It is ideal for:
 
 - geometry editors
 - design tools
-- simulation state
 - large document models
 
 It is **not** recommended for ordinary UI state.

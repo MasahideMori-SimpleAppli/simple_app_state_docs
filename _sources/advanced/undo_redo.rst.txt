@@ -30,7 +30,9 @@ This mechanism relies on:
 State Snapshots
 ===============
 
-**SimpleAppState** implements the **CloneableFile** interface.
+**SimpleAppState** implements the
+`CloneableFile <https://pub.dev/documentation/file_state_manager/latest/file_state_manager/CloneableFile-class.html>`_
+interface.
 
 This allows the entire application state to be:
 
@@ -196,15 +198,6 @@ This design provides several important guarantees:
 By explicitly controlling push timing,
 **SimpleAppState** ensures predictable and intuitive undo / redo behavior.
 
-----
-
-Design Separation
-=================
-
-Undo / redo is intentionally separated from persistence.
-
-* Persistence uses **toDict()** and **fromDict()**
-* Undo / redo uses **clone()** and snapshot replacement
-
-Keeping these mechanisms independent maintains clarity and avoids
-unexpected interactions between state restoration and persistence.
+These operations are also supported by **RefAppState**.
+To use them with RefAppState, create a RefAppState with only persistable classes registered in its slots,
+and then use that as the operation target.

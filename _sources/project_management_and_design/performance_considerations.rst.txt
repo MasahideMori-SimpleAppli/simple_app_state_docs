@@ -97,10 +97,12 @@ A conscious trade-off
 Using **StateSlotBuilder** is always a trade-off:
 
 * **Pros**
+
   * Finer-grained rebuilds
   * Better performance in large trees
 
 * **Cons**
+
   * Slot dependencies move closer to UI code
   * Screen-level state becomes less visible
 

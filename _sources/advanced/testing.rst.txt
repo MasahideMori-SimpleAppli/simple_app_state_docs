@@ -2,23 +2,24 @@
 Testing
 ======================================
 
-This section describes how **SimpleAppState** can be tested effectively.
-
-Because **SimpleAppState** is deterministic and side-effect free by design,
-most tests are simple and predictable.
+This section describes how to effectively test **SimpleAppState** and **RefAppState**.
 
 ----
 
 Overview
 ========
 
-Testing **SimpleAppState** is based on observing state changes.
+Testing in **SimpleAppState** and **RefAppState** is based on observing state changes.
 
 A dedicated debug listener allows developers to:
 
 * Track every state mutation
 * Observe old and new values
 * Inspect behavior without modifying application logic
+
+Testing can be done in two modes:
+value-based testing using StateSlot and DebugListener,
+and reference-based testing using RefSlot and RefDebugListener.
 
 ----
 
@@ -53,10 +54,8 @@ Each callback provides:
 
 This makes every state transition observable.
 
-----
-
 Using StateSlot as a Test Key
-=============================
+------------------------------
 
 **StateSlot** acts as a stable observation key.
 
@@ -70,25 +69,86 @@ In Flutter applications, widgets subscribe explicitly to slots.
 As a result, observing slot changes is often sufficient to reason
 about UI behavior.
 
-----
-
 Example
-=======
+-------
 
 .. code-block:: dart
 
-   final state = SimpleAppState();
-   final changes = <String>[];
+    // int app_state.dart
+    final state = SimpleAppState();
+    final count = state.slot<int>('count', initial: 0);
 
-   state.setDebugListener((key, oldValue, newValue) {
-     changes.add('${key.name}: $oldValue -> $newValue');
-   });
+    //////////////////
+    // in main.dart //
+    if (kDebugMode) {
+      appState.setDebugListener((slot, oldV, newV) {
+        debugPrint(
+          "Changed Slot:${slot.name}, Value changed from:$oldV, to:$newV",
+        );
+      });
+    }
+    //////////////////
 
-   final count = state.slot<int>('count');
-   count.set(1);
-   count.update((v) => (v ?? 0) + 1);
+    // int runtime code
+    count.set(1);
+    count.update((v) => (v ?? 0) + 1);
 
 The collected log provides a complete trace of state transitions.
+
+----
+
+RefDebugListener (Reference Debugging)
+=======================================
+
+When using **RefAppState** and **RefSlot**, values are stored and updated
+by **reference**, not by deep copy.
+
+In this model, the standard **DebugListener** is not sufficient,
+because there is no meaningful *old vs new* snapshot for mutable objects.
+
+For this purpose, **RefAppState** provides a dedicated reference debugger.
+
+.. code-block:: dart
+
+   typedef RefDebugListener = void Function(RefSlot key, dynamic ref);
+
+The listener receives:
+
+* The **RefSlot** that changed
+* The **current reference value**
+
+This allows tests and debugging tools to observe *which object*
+is currently bound to a slot, even when that object is mutated in place.
+
+Using RefSlot as a Test Key
+----------------------------
+
+Each RefSlot has:
+
+* A stable identity
+* A reference to the currently bound object
+* Equality based on slot identity, not object content
+
+Example
+-------
+
+.. code-block:: dart
+
+    // in ref_state.dart
+    final refState = RefAppState();
+    final obj = state.slot<MyObject>('obj', initial: MyObject());
+
+    //////////////////
+    // in main.dart
+    if (kDebugMode) {
+      refState.setRefDebugListener((slot, ref) {
+        debugPrint("RefSlot:${slot.name}, now refers to:$ref");
+      });
+    }
+    //////////////////
+
+    // in runtime code
+    obj.set(MyObject());
 
 ----
 
@@ -104,12 +164,16 @@ Deterministic Behavior
 This allows tests to assert results immediately after updates,
 without timing control or async handling.
 
+**RefAppState** is also deterministic at the slot level,
+but tests must account for mutable reference objects that can change
+without rebinding the slot.
+
 ----
 
 Testing Perspective
 ===================
 
-Because **StateSlot** sits at the boundary between state and UI:
+Because **StateSlot** and **RefSlot** sit at the boundary between state and UI:
 
 * Tests can focus on slot changes instead of widget trees
 * UI refactoring does not invalidate state-level tests

@@ -35,19 +35,20 @@
             
   <section id="testing">
 <h1>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h1>
-<p>This section describes how <strong>SimpleAppState</strong> can be tested effectively.</p>
-<p>Because <strong>SimpleAppState</strong> is deterministic and side-effect free by design,
-most tests are simple and predictable.</p>
+<p>This section describes how to effectively test <strong>SimpleAppState</strong> and <strong>RefAppState</strong>.</p>
 <hr class="docutils" />
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
-<p>Testing <strong>SimpleAppState</strong> is based on observing state changes.</p>
+<p>Testing in <strong>SimpleAppState</strong> and <strong>RefAppState</strong> is based on observing state changes.</p>
 <p>A dedicated debug listener allows developers to:</p>
 <ul class="simple">
 <li><p>Track every state mutation</p></li>
 <li><p>Observe old and new values</p></li>
 <li><p>Inspect behavior without modifying application logic</p></li>
 </ul>
+<p>Testing can be done in two modes:
+value-based testing using StateSlot and DebugListener,
+and reference-based testing using RefSlot and RefDebugListener.</p>
 </section>
 <hr class="docutils" />
 <section id="debug-listener">
@@ -75,10 +76,8 @@ including intermediate updates inside batch operations.</p>
 </ul>
 <p>This makes every state transition observable.</p>
 </section>
-</section>
-<hr class="docutils" />
 <section id="using-stateslot-as-a-test-key">
-<h2>Using StateSlot as a Test Key<a class="headerlink" href="#using-stateslot-as-a-test-key" title="Link to this heading">¶</a></h2>
+<h3>Using StateSlot as a Test Key<a class="headerlink" href="#using-stateslot-as-a-test-key" title="Link to this heading">¶</a></h3>
 <p><strong>StateSlot</strong> acts as a stable observation key.</p>
 <p>Each slot has:</p>
 <ul class="simple">
@@ -90,22 +89,78 @@ including intermediate updates inside batch operations.</p>
 As a result, observing slot changes is often sufficient to reason
 about UI behavior.</p>
 </section>
-<hr class="docutils" />
 <section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span>
-<span class="kd">final</span><span class="w"> </span><span class="n">changes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">[];</span>
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h3>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// int app_state.dart</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
 
-<span class="n">state</span><span class="p">.</span><span class="n">setDebugListener</span><span class="p">((</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">oldValue</span><span class="p">,</span><span class="w"> </span><span class="n">newValue</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">changes</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">${</span><span class="n">key</span><span class="p">.</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">$</span><span class="n">oldValue</span><span class="s1"> -&gt; </span><span class="si">$</span><span class="n">newValue</span><span class="s1">&#39;</span><span class="p">);</span>
-<span class="p">});</span>
+<span class="c1">//////////////////</span>
+<span class="c1">// in main.dart //</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">kDebugMode</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">appState</span><span class="p">.</span><span class="n">setDebugListener</span><span class="p">((</span><span class="n">slot</span><span class="p">,</span><span class="w"> </span><span class="n">oldV</span><span class="p">,</span><span class="w"> </span><span class="n">newV</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">debugPrint</span><span class="p">(</span>
+<span class="w">      </span><span class="s2">&quot;Changed Slot:</span><span class="si">${</span><span class="n">slot</span><span class="p">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, Value changed from:</span><span class="si">$</span><span class="n">oldV</span><span class="s2">, to:</span><span class="si">$</span><span class="n">newV</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">}</span>
+<span class="c1">//////////////////</span>
 
-<span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">);</span>
+<span class="c1">// int runtime code</span>
 <span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
 <span class="n">count</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>The collected log provides a complete trace of state transitions.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="refdebuglistener-reference-debugging">
+<h2>RefDebugListener (Reference Debugging)<a class="headerlink" href="#refdebuglistener-reference-debugging" title="Link to this heading">¶</a></h2>
+<p>When using <strong>RefAppState</strong> and <strong>RefSlot</strong>, values are stored and updated
+by <strong>reference</strong>, not by deep copy.</p>
+<p>In this model, the standard <strong>DebugListener</strong> is not sufficient,
+because there is no meaningful <em>old vs new</em> snapshot for mutable objects.</p>
+<p>For this purpose, <strong>RefAppState</strong> provides a dedicated reference debugger.</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">typedef</span><span class="w"> </span><span class="n">RefDebugListener</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="kt">Function</span><span class="p">(</span><span class="n">RefSlot</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="w"> </span><span class="n">ref</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The listener receives:</p>
+<ul class="simple">
+<li><p>The <strong>RefSlot</strong> that changed</p></li>
+<li><p>The <strong>current reference value</strong></p></li>
+</ul>
+<p>This allows tests and debugging tools to observe <em>which object</em>
+is currently bound to a slot, even when that object is mutated in place.</p>
+<section id="using-refslot-as-a-test-key">
+<h3>Using RefSlot as a Test Key<a class="headerlink" href="#using-refslot-as-a-test-key" title="Link to this heading">¶</a></h3>
+<p>Each RefSlot has:</p>
+<ul class="simple">
+<li><p>A stable identity</p></li>
+<li><p>A reference to the currently bound object</p></li>
+<li><p>Equality based on slot identity, not object content</p></li>
+</ul>
+</section>
+<section id="id1">
+<h3>Example<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// in ref_state.dart</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">refState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RefAppState</span><span class="p">();</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="n">MyObject</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;obj&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="n">MyObject</span><span class="p">());</span>
+
+<span class="c1">//////////////////</span>
+<span class="c1">// in main.dart</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">kDebugMode</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">refState</span><span class="p">.</span><span class="n">setRefDebugListener</span><span class="p">((</span><span class="n">slot</span><span class="p">,</span><span class="w"> </span><span class="n">ref</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">debugPrint</span><span class="p">(</span><span class="s2">&quot;RefSlot:</span><span class="si">${</span><span class="n">slot</span><span class="p">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, now refers to:</span><span class="si">$</span><span class="n">ref</span><span class="s2">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">}</span>
+<span class="c1">//////////////////</span>
+
+<span class="c1">// in runtime code</span>
+<span class="n">obj</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="n">MyObject</span><span class="p">());</span>
+</pre></div>
+</div>
+</section>
 </section>
 <hr class="docutils" />
 <section id="deterministic-behavior">
@@ -118,11 +173,14 @@ about UI behavior.</p>
 </ul>
 <p>This allows tests to assert results immediately after updates,
 without timing control or async handling.</p>
+<p><strong>RefAppState</strong> is also deterministic at the slot level,
+but tests must account for mutable reference objects that can change
+without rebinding the slot.</p>
 </section>
 <hr class="docutils" />
 <section id="testing-perspective">
 <h2>Testing Perspective<a class="headerlink" href="#testing-perspective" title="Link to this heading">¶</a></h2>
-<p>Because <strong>StateSlot</strong> sits at the boundary between state and UI:</p>
+<p>Because <strong>StateSlot</strong> and <strong>RefSlot</strong> sit at the boundary between state and UI:</p>
 <ul class="simple">
 <li><p>Tests can focus on slot changes instead of widget trees</p></li>
 <li><p>UI refactoring does not invalidate state-level tests</p></li>

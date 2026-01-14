@@ -145,41 +145,6 @@ without needing to know whether they are already
 inside another batch.</p>
 </section>
 <hr class="docutils" />
-<section id="state-level-listener-undo-redo-persistence">
-<h2>State-level listener (undo / redo, persistence)<a class="headerlink" href="#state-level-listener-undo-redo-persistence" title="Link to this heading">¶</a></h2>
-<p>In addition to UI listeners,
-SimpleAppState supports a <strong>state-level listener</strong>.</p>
-<p>This listener is designed for:</p>
-<ul class="simple">
-<li><p>undo / redo stacks</p></li>
-<li><p>persistence</p></li>
-<li><p>observing finalized state transitions</p></li>
-</ul>
-<p>Unlike UI listeners:</p>
-<ul class="simple">
-<li><p>it is <strong>not</strong> called for every slot update</p></li>
-<li><p>it is called <strong>once</strong>, after a batch completes</p></li>
-<li><p>it receives the finalized state</p></li>
-</ul>
-<p>Example:</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">setStateListener</span><span class="p">((</span><span class="n">nowState</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">undoStack</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">nowState</span><span class="p">.</span><span class="n">clone</span><span class="p">());</span>
-<span class="p">});</span>
-</pre></div>
-</div>
-<p>With batching:</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">count</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
-<span class="w">  </span><span class="n">total</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
-<span class="p">});</span>
-</pre></div>
-</div>
-<p>The state listener is called <strong>once</strong>,
-after both updates are applied.</p>
-<p>Intermediate states inside the batch
-are intentionally not reported.</p>
-</section>
-<hr class="docutils" />
 <section id="batching-during-loading-and-restore">
 <h2>Batching during loading and restore<a class="headerlink" href="#batching-during-loading-and-restore" title="Link to this heading">¶</a></h2>
 <p>Batch updates are also used internally.</p>
@@ -205,14 +170,12 @@ and unintended intermediate rebuilds.</p>
 <ul class="simple">
 <li><p>multiple slot updates represent one action</p></li>
 <li><p>you want UI listeners to observe only the final state</p></li>
-<li><p>undo / redo or persistence should record one step</p></li>
 </ul>
 <p>Typical cases:</p>
 <ul class="simple">
-<li><p>form submission</p></li>
-<li><p>initialization</p></li>
-<li><p>applying settings</p></li>
-<li><p>undo / redo operations</p></li>
+<li><p>Loading data from the cloud</p></li>
+<li><p>Applying settings</p></li>
+<li><p>A series of consecutive operations</p></li>
 </ul>
 <p>For single-slot updates,
 batching is usually unnecessary.</p>

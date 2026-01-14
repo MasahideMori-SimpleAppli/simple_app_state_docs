@@ -58,7 +58,9 @@ the <a class="reference external" href="https://pub.dev/packages/file_state_mana
 <hr class="docutils" />
 <section id="state-snapshots">
 <h2>State Snapshots<a class="headerlink" href="#state-snapshots" title="Link to this heading">¶</a></h2>
-<p><strong>SimpleAppState</strong> implements the <strong>CloneableFile</strong> interface.</p>
+<p><strong>SimpleAppState</strong> implements the
+<a class="reference external" href="https://pub.dev/documentation/file_state_manager/latest/file_state_manager/CloneableFile-class.html">CloneableFile</a>
+interface.</p>
 <p>This allows the entire application state to be:</p>
 <ul class="simple">
 <li><p>Deep-copied using <strong>clone()</strong></p></li>
@@ -193,17 +195,9 @@ automatic history pushes during restoration.</p>
 </ul>
 <p>By explicitly controlling push timing,
 <strong>SimpleAppState</strong> ensures predictable and intuitive undo / redo behavior.</p>
-</section>
-<hr class="docutils" />
-<section id="design-separation">
-<h2>Design Separation<a class="headerlink" href="#design-separation" title="Link to this heading">¶</a></h2>
-<p>Undo / redo is intentionally separated from persistence.</p>
-<ul class="simple">
-<li><p>Persistence uses <strong>toDict()</strong> and <strong>fromDict()</strong></p></li>
-<li><p>Undo / redo uses <strong>clone()</strong> and snapshot replacement</p></li>
-</ul>
-<p>Keeping these mechanisms independent maintains clarity and avoids
-unexpected interactions between state restoration and persistence.</p>
+<p>These operations are also supported by <strong>RefAppState</strong>.
+To use them with RefAppState, create a RefAppState with only persistable classes registered in its slots,
+and then use that as the operation target.</p>
 </section>
 </section>
 

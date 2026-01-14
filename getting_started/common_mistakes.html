@@ -152,6 +152,60 @@ you want to separate the app state that is the target of Undo and Redo from the 
 </div>
 </section>
 <hr class="docutils" />
+<section id="storing-secrets-in-slots">
+<h2>Storing secrets in slots<a class="headerlink" href="#storing-secrets-in-slots" title="Link to this heading">¶</a></h2>
+<p><strong>Mistake</strong></p>
+<p>Storing confidential or security-sensitive data in <strong>StateSlots</strong>,
+or using such data as slot names:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// ❌ Bad: secrets should not be in SimpleAppState at all</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;user_password&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="s1">&#39;hunter2&#39;</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">apiKey</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;api_key&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="s1">&#39;sk-live-abcdef&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Why this is a problem</strong></p>
+<p>Slots in <strong>SimpleAppState</strong> are designed for <strong>application state</strong>:</p>
+<ul class="simple">
+<li><p>They have mandatory initial values</p></li>
+<li><p>They participate in persistence and restore</p></li>
+<li><p>They are tracked by undo/redo</p></li>
+<li><p>They can be inspected by debug listeners</p></li>
+<li><p>They may appear in logs, errors, and crash reports</p></li>
+</ul>
+<p>This means any value stored in a slot must be assumed to be:</p>
+<ul class="simple">
+<li><p>Serializable</p></li>
+<li><p>Debuggable</p></li>
+<li><p>Potentially observable</p></li>
+</ul>
+<p>Secrets such as passwords, API keys, tokens, or private credentials
+violate these assumptions. Even if debug tools are disabled in
+production, storing secrets in state objects that are designed
+for persistence and inspection is fundamentally unsafe.</p>
+<p><strong>Correct approach</strong></p>
+<p>Do <strong>not</strong> store secrets in <strong>SimpleAppState</strong> at all.</p>
+<p>Use a dedicated secure storage mechanism instead, such as:</p>
+<ul class="simple">
+<li><p>Platform keychains / keystores</p></li>
+<li><p>Secure enclaves</p></li>
+<li><p>OS-provided credential APIs</p></li>
+<li><p>Encrypted storage services</p></li>
+</ul>
+<p>Slots should only contain data that is safe to:</p>
+<ul class="simple">
+<li><p>Persist</p></li>
+<li><p>Log</p></li>
+<li><p>Restore</p></li>
+<li><p>Debug</p></li>
+</ul>
+<p>If you need to reflect authentication or authorization status in your UI,
+store only <strong>non-sensitive derived state</strong> in slots:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// ✅ Safe: derived, non-secret state</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">isLoggedIn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;is_logged_in&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">userId</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">?&gt;</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="kc">null</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
 <section id="accessing-slots-from-utility-functions">
 <h2>Accessing slots from utility functions<a class="headerlink" href="#accessing-slots-from-utility-functions" title="Link to this heading">¶</a></h2>
 <p><strong>Mistake</strong></p>

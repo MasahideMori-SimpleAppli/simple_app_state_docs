@@ -169,6 +169,71 @@ Always use **absolute package imports** for any file that defines or uses your a
 
 ----
 
+Storing secrets in slots
+-------------------------
+
+**Mistake**
+
+Storing confidential or security-sensitive data in **StateSlots**,
+or using such data as slot names:
+
+.. code-block:: dart
+
+   // ❌ Bad: secrets should not be in SimpleAppState at all
+   final password = appState.slot<String>('user_password', initial: 'hunter2');
+   final apiKey   = appState.slot<String>('api_key', initial: 'sk-live-abcdef');
+
+**Why this is a problem**
+
+Slots in **SimpleAppState** are designed for **application state**:
+
+- They have mandatory initial values
+- They participate in persistence and restore
+- They are tracked by undo/redo
+- They can be inspected by debug listeners
+- They may appear in logs, errors, and crash reports
+
+This means any value stored in a slot must be assumed to be:
+
+- Serializable
+- Debuggable
+- Potentially observable
+
+Secrets such as passwords, API keys, tokens, or private credentials
+violate these assumptions. Even if debug tools are disabled in
+production, storing secrets in state objects that are designed
+for persistence and inspection is fundamentally unsafe.
+
+**Correct approach**
+
+Do **not** store secrets in **SimpleAppState** at all.
+
+Use a dedicated secure storage mechanism instead, such as:
+
+- Platform keychains / keystores
+- Secure enclaves
+- OS-provided credential APIs
+- Encrypted storage services
+
+Slots should only contain data that is safe to:
+
+- Persist
+- Log
+- Restore
+- Debug
+
+If you need to reflect authentication or authorization status in your UI,
+store only **non-sensitive derived state** in slots:
+
+.. code-block:: dart
+
+   // ✅ Safe: derived, non-secret state
+   final isLoggedIn = appState.slot<bool>('is_logged_in', initial: false);
+   final userId    = appState.slot<String?>('user_id', initial: null);
+
+
+----
+
 Accessing slots from utility functions
 ---------------------------------------
 **Mistake**

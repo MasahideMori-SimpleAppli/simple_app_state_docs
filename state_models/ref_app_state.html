@@ -69,14 +69,18 @@ are kept explicit and predictable.</p>
 <section id="reference-semantics-instead-of-value-semantics">
 <h2>Reference semantics instead of value semantics<a class="headerlink" href="#reference-semantics-instead-of-value-semantics" title="Link to this heading">¶</a></h2>
 <p>The fundamental difference from <strong>SimpleAppState</strong> is <strong>how values are stored</strong>.</p>
-<p><strong>SimpleAppState</strong>:
-- always stores deep-copied values
-- enforces value semantics
-- prevents accidental mutation</p>
-<p><strong>RefAppState</strong>:
-- stores <strong>references</strong>
-- does <strong>not</strong> deep-copy on get, set, or update
-- allows direct mutation of stored objects</p>
+<p><strong>SimpleAppState</strong>:</p>
+<ul class="simple">
+<li><p>always stores deep-copied values</p></li>
+<li><p>enforces value semantics</p></li>
+<li><p>prevents accidental mutation</p></li>
+</ul>
+<p><strong>RefAppState</strong>:</p>
+<ul class="simple">
+<li><p>stores <strong>references</strong></p></li>
+<li><p>does <strong>not</strong> deep-copy on get, set, or update</p></li>
+<li><p>allows direct mutation of stored objects</p></li>
+</ul>
 <p>This makes <strong>RefAppState</strong> much faster and more flexible,
 but also more dangerous if misused.</p>
 <p>It should only be used when value semantics are impractical.</p>
@@ -90,6 +94,15 @@ but also more dangerous if misused.</p>
 </div>
 <p>It is usually defined as a global or top-level variable,
 often in <strong>ui/ref_state.dart</strong>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>lib/
+├── ui/
+│   ├── app_state.dart
+│   ├── ref_state.dart # If you use RefAppState, add ref_state.dart.
+│   └── pages/
+│       └── counter_page.dart  # UI Widgets
+└── main.dart               # Entry point
+</pre></div>
+</div>
 </section>
 <hr class="docutils" />
 <section id="refslot-instead-of-stateslot">
@@ -142,7 +155,6 @@ of large or complex objects.</p>
 <ul class="simple">
 <li><p>geometry editors</p></li>
 <li><p>design tools</p></li>
-<li><p>simulation state</p></li>
 <li><p>large document models</p></li>
 </ul>
 <p>It is <strong>not</strong> recommended for ordinary UI state.</p>

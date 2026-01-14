@@ -183,7 +183,7 @@ Creating slots dynamically based on widget instances.
 
 .. code-block:: dart
 
-   final slot = state.slot<int>('count_${widget.hashCode}'); // ❌
+   final slot = state.slot<int>('${widget.hashCode}', initial:0); // ❌
 
 **Why this is a problem**
 

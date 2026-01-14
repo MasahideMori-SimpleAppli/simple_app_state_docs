@@ -140,7 +140,7 @@ It prevents accidental state changes.</p>
 <h2>Updating based on the previous value: update()<a class="headerlink" href="#updating-based-on-the-previous-value-update" title="Link to this heading">¶</a></h2>
 <p>Often, the new value depends on the old one.</p>
 <p>For this, use <strong>update()</strong>:</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">old</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">old</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">count</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">oldCopy</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">oldCopy</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
 </pre></div>
 </div>
 <p><strong>update</strong> works like this:</p>
@@ -156,7 +156,7 @@ It prevents accidental state changes.</p>
 <h2>Slot types are fixed<a class="headerlink" href="#slot-types-are-fixed" title="Link to this heading">¶</a></h2>
 <p>Each slot has a fixed type.</p>
 <p>If a slot is defined as:</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">);</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Then that slot will always store <strong>int</strong> values.</p>
