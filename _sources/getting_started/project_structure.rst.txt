@@ -65,39 +65,37 @@ Next, move your widgets to the **pages/** directory. Use the **package import** 
     // Use absolute package import
     import 'package:simple_app_state_demo/ui/app_state.dart'; 
 
-    class CounterPage extends StatelessWidget {
+    class CounterPage extends SlotStatefulWidget {
       const CounterPage({super.key});
 
       @override
+      List<StateSlot> get slots => [countSlot, logsSlot];
+
+      @override
+      SlotState<CounterPage> createState() => _CounterPageState();
+    }
+
+    class _CounterPageState extends SlotState<CounterPage> {
+      @override
       Widget build(BuildContext context) {
+        final count = countSlot.get();
+        final logs = logsSlot.get();
+
         return Scaffold(
           appBar: AppBar(title: const Text('SimpleAppState Example')),
           body: Column(
             children: [
               const SizedBox(height: 32),
-
-              /// Minimal example of a single slot dependency
-              StateSlotBuilder(
-                slotList: [countSlot],
-                builder: (context) {
-                  final count = countSlot.get();
-                  return Text(
-                    'Count: $count',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  );
-                },
+              Text(
+                'Count: $count',
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: 24),
-
-              /// Batch multiple slot updates
               ElevatedButton(
                 onPressed: () {
                   appState.batch(() {
                     countSlot.update((v) => v + 1);
-
                     logsSlot.update((oldCopy) {
-                      // Since 'oldCopy' is already a deep copy,
-                      // you can safely mutate it using methods like .add() or .remove().
                       oldCopy.add('Increment at ${DateTime.now()}');
                       return oldCopy;
                     });
@@ -106,19 +104,11 @@ Next, move your widgets to the **pages/** directory. Use the **package import** 
                 child: const Text('Increment (batched)'),
               ),
               const Divider(height: 32),
-
-              /// Read-only UI based on deep copy
               Expanded(
-                child: StateSlotBuilder(
-                  slotList: [logsSlot],
-                  builder: (context) {
-                    final items = logsSlot.get();
-                    return ListView.builder(
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(title: Text(items[index]));
-                      },
-                    );
+                child: ListView.builder(
+                  itemCount: logs.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(title: Text(logs[index]));
                   },
                 ),
               ),

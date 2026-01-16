@@ -81,17 +81,18 @@
 <section id="reactive-ui-how-widgets-listen">
 <h2>2. Reactive UI: How Widgets “Listen”<a class="headerlink" href="#reactive-ui-how-widgets-listen" title="Link to this heading">¶</a></h2>
 <p>Widgets do not “own” application state; they <strong>subscribe</strong> to it. When a slot’s value changes, only the widgets listening to that specific slot will rebuild.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">StateSlotBuilder</span><span class="p">(</span>
-<span class="w">  </span><span class="nl">slotList:</span><span class="w"> </span><span class="p">[</span><span class="n">countSlot</span><span class="p">],</span>
-<span class="w">  </span><span class="nl">builder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">countSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span><span class="w"> </span><span class="c1">// Read the current value</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39;Count: </span><span class="si">$</span><span class="n">count</span><span class="s1">&#39;</span><span class="p">);</span>
-<span class="w">  </span><span class="p">},</span>
-<span class="p">)</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">CounterPage</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotStatefulWidget</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CounterPage</span><span class="p">({</span><span class="k">super</span><span class="p">.</span><span class="n">key</span><span class="p">});</span>
+
+<span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">countSlot</span><span class="p">,</span><span class="w"> </span><span class="n">logsSlot</span><span class="p">];</span>
+
+<span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="n">SlotState</span><span class="o">&lt;</span><span class="n">CounterPage</span><span class="o">&gt;</span><span class="w"> </span><span class="n">createState</span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_CounterPageState</span><span class="p">();</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>StateSlotBuilder:</strong> A specialized widget that manages the subscription for you.</p></li>
 <li><p><strong>Minimal Rebuilds:</strong> If you have 10 slots but only subscribe to <cite>countSlot</cite>, changes in other slots will not trigger a rebuild of this widget. This keeps your app performant.</p></li>
 </ul>
 </section>
@@ -129,7 +130,6 @@
 <p>When you need to update multiple slots at once, use <strong>appState.batch()</strong>. This is useful when several changes represent a single logical action.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">countSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
-
 <span class="w">  </span><span class="n">logsSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">oldCopy</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">oldCopy</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;Increment at </span><span class="si">${</span><span class="n">DateTime</span><span class="p">.</span><span class="n">now</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">oldCopy</span><span class="p">;</span>
@@ -150,7 +150,7 @@
 <p>The lifecycle of a SimpleAppState app always follows this loop:</p>
 <ol class="arabic simple">
 <li><p><strong>Define:</strong> Create a <strong>StateSlot</strong> in a global location.</p></li>
-<li><p><strong>Display:</strong> Use <strong>StateSlotBuilder</strong> to show the value in the UI.</p></li>
+<li><p><strong>Display:</strong> Use <strong>SlotStatefulWidget</strong> to show the value in the UI.</p></li>
 <li><p><strong>Act:</strong> Call <strong>update()</strong> or <strong>set()</strong> from a button or event.</p></li>
 <li><p><strong>React:</strong> The UI automatically updates to reflect the new state.</p></li>
 </ol>

@@ -55,15 +55,16 @@ Widgets do not "own" application state; they **subscribe** to it. When a slot's 
 
 .. code-block:: dart
 
-    StateSlotBuilder(
-      slotList: [countSlot],
-      builder: (context) {
-        final count = countSlot.get(); // Read the current value
-        return Text('Count: $count');
-      },
-    )
+    class CounterPage extends SlotStatefulWidget {
+      const CounterPage({super.key});
 
-* **StateSlotBuilder:** A specialized widget that manages the subscription for you.
+      @override
+      List<StateSlot> get slots => [countSlot, logsSlot];
+
+      @override
+      SlotState<CounterPage> createState() => _CounterPageState();
+    }
+
 * **Minimal Rebuilds:** If you have 10 slots but only subscribe to `countSlot`, changes in other slots will not trigger a rebuild of this widget. This keeps your app performant.
 
 ----
@@ -111,7 +112,6 @@ When you need to update multiple slots at once, use **appState.batch()**. This i
 
     appState.batch(() {
       countSlot.update((v) => v + 1);
-
       logsSlot.update((oldCopy) {
         oldCopy.add('Increment at ${DateTime.now()}');
         return oldCopy;
@@ -130,7 +130,7 @@ Summary of the Pattern
 The lifecycle of a SimpleAppState app always follows this loop:
 
 1.  **Define:** Create a **StateSlot** in a global location.
-2.  **Display:** Use **StateSlotBuilder** to show the value in the UI.
+2.  **Display:** Use **SlotStatefulWidget** to show the value in the UI.
 3.  **Act:** Call **update()** or **set()** from a button or event.
 4.  **React:** The UI automatically updates to reflect the new state.
 

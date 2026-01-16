@@ -38,18 +38,19 @@ The example screen is implemented as a **SlotStatefulWidget**.
 At the very top of the widget,
 its slot dependencies are declared explicitly.
 
-This declaration defines:
+This declaration defines the full set of application state
+that the screen is allowed to read, and the state that can
+trigger rebuilds.
 
-* The full set of application state
-  that the screen is allowed to read
-* The state that can trigger rebuilds
-* The boundary of responsibility for this screen
+As a result, the screen’s relationship to state is visible
+and reviewable in one place.
 
-This makes the screen’s relationship to state
-visible and reviewable in one place.
+This means that architects or team leads can prepare a
+screen-level template in advance.
 
-This means that architects or team leads can simply copy and paste the code below and modify it slightly
-to create the file they hand over to their implementers.
+They can copy and paste this code, make small adjustments,
+and hand it over to implementers with a clear contract.
+
 
 .. code-block:: dart
 
@@ -87,6 +88,8 @@ to create the file they hand over to their implementers.
       }
     }
 
+----
+
 Implementation inside the boundary
 ----------------------------------
 
@@ -104,169 +107,9 @@ From the implementer’s point of view,
 they are simply writing a normal Flutter **build()** method
 with access to a clearly defined set of state.
 
-----
+By enforcing clear slot boundaries at the screen level,
+project structure becomes easier to understand for both
+humans and AI tools.
 
-How this differs from a builder-based approach
-----------------------------------------------
-
-Earlier examples in this documentation
-use **StateSlotBuilder** to connect UI to state.
-
-That approach is ideal for:
-
-* Small reactive widgets
-* Incremental adoption
-* Minimal examples
-
-However, it does not express the **full state surface**
-of a screen in one place.
-
-In this worked example,
-the slot boundary is declared at the top level,
-and the UI is built within that contract.
-
-This makes:
-
-* Dependencies obvious
-* Reviews easier
-* Future refactoring safer
-
-----
-
-A complete, intentional design
--------------------------------
-
-This screen is not just a collection of widgets.
-It is a **designed unit** with a clear relationship
-to application state.
-
-That is the core idea behind SimpleAppState’s
-Flutter integration:
-
-State access should be easy,
-but **state ownership should be explicit**.
-
-This example shows how that philosophy
-looks in real code.
-
-----
-
-.. code-block:: dart
-
-    import 'package:flutter/foundation.dart';
-    import 'package:flutter/material.dart';
-    import 'package:simple_app_state/simple_app_state.dart';
-
-    ///////////////////////////////////////////////////////////////////////////////
-    ///
-    /// Application State Definition
-    ///
-    ///////////////////////////////////////////////////////////////////////////////
-
-    final appState = SimpleAppState();
-
-    final countSlot = appState.slot<int>('count', initial: 0);
-
-    final logsSlot = appState.slot<List<String>>(
-      'logs',
-      initial: [],
-      caster: (raw) => (raw as List).cast<String>(),
-    );
-
-    void main() {
-      if (kDebugMode) {
-        appState.setDebugListener((slot, oldV, newV) {
-          debugPrint(
-            "Changed Slot:${slot.name}, Value changed from:$oldV, to:$newV",
-          );
-        });
-      }
-
-      runApp(const MyApp());
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    ///
-    /// Flutter Application
-    ///
-    ///////////////////////////////////////////////////////////////////////////////
-
-    class MyApp extends StatelessWidget {
-      const MyApp({super.key});
-
-      @override
-      Widget build(BuildContext context) {
-        return const MaterialApp(home: CounterPage());
-      }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////
-    ///
-    /// Screen with explicit slot boundary
-    ///
-    ///////////////////////////////////////////////////////////////////////////////
-
-    class CounterPage extends SlotStatefulWidget {
-      const CounterPage({super.key});
-
-      @override
-      List<StateSlot> get slots => [
-            countSlot,
-            logsSlot,
-          ];
-
-      @override
-      State<CounterPage> createState() => _CounterPageState();
-    }
-
-    class _CounterPageState extends SlotState<CounterPage> {
-      @override
-      Widget build(BuildContext context) {
-        final count = countSlot.get();
-        final logs = logsSlot.get();
-
-        return Scaffold(
-          appBar: AppBar(title: const Text('SimpleAppState Example')),
-          body: Column(
-            children: [
-              const SizedBox(height: 32),
-
-              Text(
-                'Count: $count',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 24),
-
-              ElevatedButton(
-                onPressed: () {
-                  appState.batch(() {
-                    countSlot.update((v) => v + 1);
-
-                    logsSlot.update((oldCopy) {
-                      oldCopy.add('Increment at ${DateTime.now()}');
-                      return oldCopy;
-                    });
-                  });
-                },
-                child: const Text('Increment (batched)'),
-              ),
-
-              const Divider(height: 32),
-
-              Expanded(
-                child: ListView.builder(
-                  itemCount: logs.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(title: Text(logs[index]));
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      }
-    }
-
-The ease of division of labor and high maintainability are clear from this code.
-
-Advanced developers should take this chapter into consideration and strive to maintain a clean project environment.
+This clarity reduces integration friction between screens
+and helps keep long-term maintenance costs under control.

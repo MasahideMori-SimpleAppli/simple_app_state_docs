@@ -175,39 +175,37 @@ with the following <strong>complete example</strong>.</p>
 <span class="c1">///</span>
 <span class="c1">///////////////////////////////////////////////////////////////////////////////</span>
 
-<span class="kd">class</span><span class="w"> </span><span class="nc">CounterPage</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">StatelessWidget</span><span class="w"> </span><span class="p">{</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">CounterPage</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotStatefulWidget</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CounterPage</span><span class="p">({</span><span class="k">super</span><span class="p">.</span><span class="n">key</span><span class="p">});</span>
 
 <span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="n">List</span><span class="o">&lt;</span><span class="n">StateSlot</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">get</span><span class="w"> </span><span class="n">slots</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">countSlot</span><span class="p">,</span><span class="w"> </span><span class="n">logsSlot</span><span class="p">];</span>
+
+<span class="w">  </span><span class="nd">@override</span>
+<span class="w">  </span><span class="n">SlotState</span><span class="o">&lt;</span><span class="n">CounterPage</span><span class="o">&gt;</span><span class="w"> </span><span class="n">createState</span><span class="p">()</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">_CounterPageState</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">_CounterPageState</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SlotState</span><span class="o">&lt;</span><span class="n">CounterPage</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nd">@override</span>
 <span class="w">  </span><span class="n">Widget</span><span class="w"> </span><span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">countSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">logs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logsSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
+
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Scaffold</span><span class="p">(</span>
 <span class="w">      </span><span class="nl">appBar:</span><span class="w"> </span><span class="n">AppBar</span><span class="p">(</span><span class="nl">title:</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39;SimpleAppState Example&#39;</span><span class="p">)),</span>
 <span class="w">      </span><span class="nl">body:</span><span class="w"> </span><span class="n">Column</span><span class="p">(</span>
 <span class="w">        </span><span class="nl">children:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">          </span><span class="k">const</span><span class="w"> </span><span class="n">SizedBox</span><span class="p">(</span><span class="nl">height:</span><span class="w"> </span><span class="m">32</span><span class="p">),</span>
-
-<span class="w">          </span><span class="c1">/// Minimal example of a single slot dependency</span>
-<span class="w">          </span><span class="n">StateSlotBuilder</span><span class="p">(</span>
-<span class="w">            </span><span class="nl">slotList:</span><span class="w"> </span><span class="p">[</span><span class="n">countSlot</span><span class="p">],</span>
-<span class="w">            </span><span class="nl">builder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">              </span><span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">countSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
-<span class="w">              </span><span class="k">return</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span>
-<span class="w">                </span><span class="s1">&#39;Count: </span><span class="si">$</span><span class="n">count</span><span class="s1">&#39;</span><span class="p">,</span>
-<span class="w">                </span><span class="nl">style:</span><span class="w"> </span><span class="n">Theme</span><span class="p">.</span><span class="n">of</span><span class="p">(</span><span class="n">context</span><span class="p">).</span><span class="n">textTheme</span><span class="p">.</span><span class="n">headlineMedium</span><span class="p">,</span>
-<span class="w">              </span><span class="p">);</span>
-<span class="w">            </span><span class="p">},</span>
+<span class="w">          </span><span class="n">Text</span><span class="p">(</span>
+<span class="w">            </span><span class="s1">&#39;Count: </span><span class="si">$</span><span class="n">count</span><span class="s1">&#39;</span><span class="p">,</span>
+<span class="w">            </span><span class="nl">style:</span><span class="w"> </span><span class="n">Theme</span><span class="p">.</span><span class="n">of</span><span class="p">(</span><span class="n">context</span><span class="p">).</span><span class="n">textTheme</span><span class="p">.</span><span class="n">headlineMedium</span><span class="p">,</span>
 <span class="w">          </span><span class="p">),</span>
 <span class="w">          </span><span class="k">const</span><span class="w"> </span><span class="n">SizedBox</span><span class="p">(</span><span class="nl">height:</span><span class="w"> </span><span class="m">24</span><span class="p">),</span>
-
-<span class="w">          </span><span class="c1">/// Batch multiple slot updates</span>
 <span class="w">          </span><span class="n">ElevatedButton</span><span class="p">(</span>
 <span class="w">            </span><span class="nl">onPressed:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">              </span><span class="n">appState</span><span class="p">.</span><span class="n">batch</span><span class="p">(()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                </span><span class="n">countSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="p">);</span>
-
 <span class="w">                </span><span class="n">logsSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">oldCopy</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                  </span><span class="c1">// Since &#39;oldCopy&#39; is already a deep copy,</span>
-<span class="w">                  </span><span class="c1">// you can safely mutate it using methods like .add() or .remove().</span>
 <span class="w">                  </span><span class="n">oldCopy</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;Increment at </span><span class="si">${</span><span class="n">DateTime</span><span class="p">.</span><span class="n">now</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
 <span class="w">                  </span><span class="k">return</span><span class="w"> </span><span class="n">oldCopy</span><span class="p">;</span>
 <span class="w">                </span><span class="p">});</span>
@@ -216,19 +214,11 @@ with the following <strong>complete example</strong>.</p>
 <span class="w">            </span><span class="nl">child:</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39;Increment (batched)&#39;</span><span class="p">),</span>
 <span class="w">          </span><span class="p">),</span>
 <span class="w">          </span><span class="k">const</span><span class="w"> </span><span class="n">Divider</span><span class="p">(</span><span class="nl">height:</span><span class="w"> </span><span class="m">32</span><span class="p">),</span>
-
-<span class="w">          </span><span class="c1">/// Read-only UI based on deep copy</span>
 <span class="w">          </span><span class="n">Expanded</span><span class="p">(</span>
-<span class="w">            </span><span class="nl">child:</span><span class="w"> </span><span class="n">StateSlotBuilder</span><span class="p">(</span>
-<span class="w">              </span><span class="nl">slotList:</span><span class="w"> </span><span class="p">[</span><span class="n">logsSlot</span><span class="p">],</span>
-<span class="w">              </span><span class="nl">builder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="kd">final</span><span class="w"> </span><span class="n">items</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logsSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
-<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">ListView</span><span class="p">.</span><span class="n">builder</span><span class="p">(</span>
-<span class="w">                  </span><span class="nl">itemCount:</span><span class="w"> </span><span class="n">items</span><span class="p">.</span><span class="n">length</span><span class="p">,</span>
-<span class="w">                  </span><span class="nl">itemBuilder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="n">ListTile</span><span class="p">(</span><span class="nl">title:</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="n">index</span><span class="p">]));</span>
-<span class="w">                  </span><span class="p">},</span>
-<span class="w">                </span><span class="p">);</span>
+<span class="w">            </span><span class="nl">child:</span><span class="w"> </span><span class="n">ListView</span><span class="p">.</span><span class="n">builder</span><span class="p">(</span>
+<span class="w">              </span><span class="nl">itemCount:</span><span class="w"> </span><span class="n">logs</span><span class="p">.</span><span class="n">length</span><span class="p">,</span>
+<span class="w">              </span><span class="nl">itemBuilder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">ListTile</span><span class="p">(</span><span class="nl">title:</span><span class="w"> </span><span class="n">Text</span><span class="p">(</span><span class="n">logs</span><span class="p">[</span><span class="n">index</span><span class="p">]));</span>
 <span class="w">              </span><span class="p">},</span>
 <span class="w">            </span><span class="p">),</span>
 <span class="w">          </span><span class="p">),</span>

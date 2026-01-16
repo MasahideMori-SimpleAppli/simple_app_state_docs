@@ -49,8 +49,8 @@ This declaration is part of the widget’s design contract.
 StateSlotBuilder implements local reactions
 -------------------------------------------
 
-Inside a **SlotStatefulWidget**, it is often useful
-to rebuild only a small part of the UI.
+When extending an existing class, or within a SlotStatefulWidget,
+it is often useful to rebuild only a small part of the UI.
 
 That is what **StateSlotBuilder** is for.
 

@@ -233,6 +233,23 @@ Declare all slots in a fixed location (for example <strong>app_state.dart</stron
 </ul>
 </section>
 <hr class="docutils" />
+<section id="make-heavy-use-of-stateslotbuilder">
+<h2>Make heavy use of StateSlotBuilder<a class="headerlink" href="#make-heavy-use-of-stateslotbuilder" title="Link to this heading">¶</a></h2>
+<p><strong>Mistake:</strong></p>
+<p>Use <strong>StateSlotBuilder</strong> for no reason.</p>
+<p><strong>Why this is a problem</strong></p>
+<ul class="simple">
+<li><p>Using StateSlotBuilder can make it difficult to understand dependencies in your code.</p></li>
+</ul>
+<p><strong>Correct approach</strong></p>
+<p>Use StateSlotBuilder only when absolutely necessary, such as when you want to extend existing code.</p>
+<p>For a detailed explanation, see:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../project_management_and_design/slot_boundaries.html"><span class="doc">Slot Boundaries and Ownership</span></a></p></li>
+<li><p><a class="reference internal" href="../project_management_and_design/state_builder_strategy.html"><span class="doc">State Builder Strategy</span></a></p></li>
+</ul>
+</section>
+<hr class="docutils" />
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
 <p>Most mistakes come from mixing responsibilities.</p>
