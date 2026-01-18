@@ -1,0 +1,198 @@
+=========================================
+Using AI Prompts to Design a Screen
+=========================================
+
+This chapter explains how to use an AI assistant
+to design and implement Flutter screens managed by
+**SimpleAppState**, while preserving its mental model
+and structural guarantees.
+
+Rather than relying on implicit conventions,
+we provide the AI with a **precise operational prompt**
+that defines how state may be read, written, and updated.
+
+This approach is especially useful when:
+
+- Prototyping complex screens
+- Refactoring existing widgets
+
+----
+
+Why a Dedicated AI Prompt Is Necessary
+--------------------------------------
+
+Generic AI instructions such as *"write a Flutter screen"* often
+lead to incorrect patterns, including:
+
+- Storing state inside widgets
+- Calling setState unnecessarily
+- Mutating values returned from ``slot.get()``
+- Updating state during ``build()``
+
+SimpleAppState intentionally differs from many common Flutter
+state-management approaches.
+To avoid subtle but critical mistakes, the AI must be given
+**explicit rules describing the state semantics**.
+
+The following prompt serves as a **contract** between you and the AI.
+
+----
+
+Canonical AI Prompt
+--------------------
+
+Use the following prompt *verbatim* when asking an AI to implement
+a screen using SimpleAppState.
+
+.. code-block:: text
+
+   You are an AI assistant helping to implement a Flutter screen
+   whose state is managed using the SimpleAppState package.
+
+   I will describe the widget structure (UI mock) in the next message.
+   Your task is to implement the screen logic and state interaction
+   correctly according to the rules below.
+
+   --------------------------------
+   State Access Rules
+   --------------------------------
+
+   - Widgets may read or write external state only through
+     StateSlots declared in `slots`.
+   - Slot values are retrieved using `slot.get()`.
+
+   - If a slot belongs to SimpleAppState,
+     `slot.get()` returns a deep copy of the value.
+   - If a slot belongs to RefAppState,
+     `slot.get()` returns a reference.
+
+   - Whether a slot belongs to SimpleAppState or RefAppState
+     is determined solely by how it was defined
+     (`SimpleAppState.slot(...)` or `RefAppState.slot(...)`).
+     You must not change or reinterpret this.
+
+   --------------------------------
+   State Update Rules
+   --------------------------------
+
+   - Slot values must be updated using `slot.set(value)`
+     or `slot.update((value) => newValue)`.
+
+   - For SimpleAppState:
+     the value passed into `update` is already a deep copy.
+     You must mutate this value directly and return it.
+     Do NOT create another copy.
+
+   - For RefAppState:
+     the value passed into `update` is a reference.
+     RefAppState is explicitly designed for in-place mutation.
+     Do NOT create copies here either.
+
+   - When a slot is updated, widgets subscribing to that slot
+     are rebuilt automatically.
+     Do NOT call `setState()`.
+
+   --------------------------------
+   Batch Updates
+   --------------------------------
+
+   - When updating multiple slots together,
+     you may use `SimpleAppState.batch(() { ... })`.
+
+   - A batch groups multiple slot updates into a single UI rebuild.
+   - Slot updates inside a batch are applied in declaration order.
+     This means that calling `get()` after `set()` inside the same
+     batch returns the updated value.
+
+   - Always call `batch()` on the correct appState instance
+     that owns the slots being updated.
+
+   --------------------------------
+   Custom Classes in Slots
+   --------------------------------
+
+   - Any custom class stored in a slot MUST extend `CloneableFile`
+     from the `file_state_manager` package.
+
+   - You must implement:
+       - `clone()` returning a deep copy of all properties
+       - `toDict()` returning a Map composed only of primitive values
+       - a `fromDict` factory constructor restoring all properties
+
+   - Overriding `==` and `hashCode` is strongly recommended.
+
+   - Classes extending CloneableFile are automatically
+     deep-copied recursively, even when nested inside Lists or Maps.
+
+   --------------------------------
+   Forbidden Actions
+   --------------------------------
+
+   - You must NOT call `slot.set()` or `slot.update()` during `build()`.
+     Doing so causes infinite rebuild loops.
+
+   - All state updates must occur in event handlers,
+     such as button callbacks, Futures, or other
+     non-build-phase logic.
+
+----
+
+How to Use This Prompt
+----------------------
+
+1. Copy the prompt above.
+2. Paste it into your AI tool.
+3. In the **next message**, describe:
+
+   - The widget tree (mock UI)
+   - Which slots already exist
+   - Which interactions should update state
+
+4. Review the generated code, focusing on:
+
+   - Slot usage
+   - Absence of setState
+   - No updates during build()
+
+This two-step interaction produces significantly
+more reliable and maintainable results.
+
+In the **next message**, for example, we give the AI two files:
+
+.. code-block:: dart
+
+    /// Slot definition file. app_state.dart
+    import 'package:flutter/foundation.dart';
+    import 'package:flutter/material.dart';
+    import 'package:simple_app_state/simple_app_state.dart';
+
+    // state and slots
+    final appState = SimpleAppState();
+    final countSlot = appState.slot<int>('count', initial: 0);
+    final logsSlot = appState.slot<List<String>>('logs', initial: [], caster: (raw) => (raw as List).cast<String>());
+
+.. code-block:: dart
+
+    /// counter_page.dart
+    import 'package:flutter/foundation.dart';
+    import 'package:flutter/material.dart';
+    import 'package:simple_app_state/simple_app_state.dart';
+
+    class CounterPage extends SlotStatefulWidget {
+      @override
+      List<StateSlot> get slots => [countSlot, logsSlot];
+
+      @override
+      SlotState<CounterPage> createState() => _CounterPageState();
+    }
+
+    class _CounterPageState extends SlotState<CounterPage> {
+      @override
+      Widget build(BuildContext context) {
+        final count = countSlot.get();
+        final logs = logsSlot.get();
+        return CreatedNewWidget();
+      }
+    }
+
+Then tell it to replace CreatedNewWidget() with the actual widget.

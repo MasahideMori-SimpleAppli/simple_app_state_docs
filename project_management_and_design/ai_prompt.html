@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Worked Example: Designing a Screen with Slot Boundaries &#8212; simple_app_state 2026 documentation</title>
+    <title>Using AI Prompts to Design a Screen &#8212; simple_app_state 2026 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
@@ -14,8 +14,8 @@
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Using AI Prompts to Design a Screen" href="ai_prompt.html" />
-    <link rel="prev" title="Performance Considerations" href="performance_considerations.html" />
+    <link rel="next" title="Appendix" href="../appendix/index.html" />
+    <link rel="prev" title="Worked Example: Designing a Screen with Slot Boundaries" href="worked_example_screen_design.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -33,46 +33,158 @@
 
           <div class="body" role="main">
             
-  <section id="worked-example-designing-a-screen-with-slot-boundaries">
-<h1>Worked Example: Designing a Screen with Slot Boundaries<a class="headerlink" href="#worked-example-designing-a-screen-with-slot-boundaries" title="Link to this heading">¶</a></h1>
-<p>This chapter presents a complete screen example
-that applies the design principles discussed
-in this section of the documentation.</p>
-<p>The goal is not to introduce new APIs,
-but to show how <strong>slot boundaries, ownership,
-and rebuild control</strong> come together
-in a real Flutter screen.</p>
-<hr class="docutils" />
-<section id="what-this-example-demonstrates">
-<h2>What this example demonstrates<a class="headerlink" href="#what-this-example-demonstrates" title="Link to this heading">¶</a></h2>
-<p>This example uses the same simple counter-and-log
-application that appears earlier in the documentation.</p>
-<p>However, instead of focusing on minimal code,
-it focuses on <strong>explicit design</strong>:</p>
+  <section id="using-ai-prompts-to-design-a-screen">
+<h1>Using AI Prompts to Design a Screen<a class="headerlink" href="#using-ai-prompts-to-design-a-screen" title="Link to this heading">¶</a></h1>
+<p>This chapter explains how to use an AI assistant
+to design and implement Flutter screens managed by
+<strong>SimpleAppState</strong>, while preserving its mental model
+and structural guarantees.</p>
+<p>Rather than relying on implicit conventions,
+we provide the AI with a <strong>precise operational prompt</strong>
+that defines how state may be read, written, and updated.</p>
+<p>This approach is especially useful when:</p>
 <ul class="simple">
-<li><p>Which state does this screen depend on?</p></li>
-<li><p>Who is allowed to access that state?</p></li>
-<li><p>What parts of the UI rebuild when it changes?</p></li>
+<li><p>Prototyping complex screens</p></li>
+<li><p>Refactoring existing widgets</p></li>
 </ul>
-<p>These questions are answered structurally,
-before any UI layout is written.</p>
+<hr class="docutils" />
+<section id="why-a-dedicated-ai-prompt-is-necessary">
+<h2>Why a Dedicated AI Prompt Is Necessary<a class="headerlink" href="#why-a-dedicated-ai-prompt-is-necessary" title="Link to this heading">¶</a></h2>
+<p>Generic AI instructions such as <em>“write a Flutter screen”</em> often
+lead to incorrect patterns, including:</p>
+<ul class="simple">
+<li><p>Storing state inside widgets</p></li>
+<li><p>Calling setState unnecessarily</p></li>
+<li><p>Mutating values returned from <code class="docutils literal notranslate"><span class="pre">slot.get()</span></code></p></li>
+<li><p>Updating state during <code class="docutils literal notranslate"><span class="pre">build()</span></code></p></li>
+</ul>
+<p>SimpleAppState intentionally differs from many common Flutter
+state-management approaches.
+To avoid subtle but critical mistakes, the AI must be given
+<strong>explicit rules describing the state semantics</strong>.</p>
+<p>The following prompt serves as a <strong>contract</strong> between you and the AI.</p>
 </section>
 <hr class="docutils" />
-<section id="the-screen-level-contract">
-<h2>The screen-level contract<a class="headerlink" href="#the-screen-level-contract" title="Link to this heading">¶</a></h2>
-<p>The example screen is implemented as a <strong>SlotStatefulWidget</strong>.</p>
-<p>At the very top of the widget,
-its slot dependencies are declared explicitly.</p>
-<p>This declaration defines the full set of application state
-that the screen is allowed to read, and the state that can
-trigger rebuilds.</p>
-<p>As a result, the screen’s relationship to state is visible
-and reviewable in one place.</p>
-<p>This means that architects or team leads can prepare a
-screen-level template in advance.</p>
-<p>They can copy and paste this code, make small adjustments,
-and hand it over to implementers with a clear contract.</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">/// Slot definition file. e.g. app_state.dart</span>
+<section id="canonical-ai-prompt">
+<h2>Canonical AI Prompt<a class="headerlink" href="#canonical-ai-prompt" title="Link to this heading">¶</a></h2>
+<p>Use the following prompt <em>verbatim</em> when asking an AI to implement
+a screen using SimpleAppState.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>You are an AI assistant helping to implement a Flutter screen
+whose state is managed using the SimpleAppState package.
+
+I will describe the widget structure (UI mock) in the next message.
+Your task is to implement the screen logic and state interaction
+correctly according to the rules below.
+
+--------------------------------
+State Access Rules
+--------------------------------
+
+- Widgets may read or write external state only through
+  StateSlots declared in `slots`.
+- Slot values are retrieved using `slot.get()`.
+
+- If a slot belongs to SimpleAppState,
+  `slot.get()` returns a deep copy of the value.
+- If a slot belongs to RefAppState,
+  `slot.get()` returns a reference.
+
+- Whether a slot belongs to SimpleAppState or RefAppState
+  is determined solely by how it was defined
+  (`SimpleAppState.slot(...)` or `RefAppState.slot(...)`).
+  You must not change or reinterpret this.
+
+--------------------------------
+State Update Rules
+--------------------------------
+
+- Slot values must be updated using `slot.set(value)`
+  or `slot.update((value) =&gt; newValue)`.
+
+- For SimpleAppState:
+  the value passed into `update` is already a deep copy.
+  You must mutate this value directly and return it.
+  Do NOT create another copy.
+
+- For RefAppState:
+  the value passed into `update` is a reference.
+  RefAppState is explicitly designed for in-place mutation.
+  Do NOT create copies here either.
+
+- When a slot is updated, widgets subscribing to that slot
+  are rebuilt automatically.
+  Do NOT call `setState()`.
+
+--------------------------------
+Batch Updates
+--------------------------------
+
+- When updating multiple slots together,
+  you may use `SimpleAppState.batch(() { ... })`.
+
+- A batch groups multiple slot updates into a single UI rebuild.
+- Slot updates inside a batch are applied in declaration order.
+  This means that calling `get()` after `set()` inside the same
+  batch returns the updated value.
+
+- Always call `batch()` on the correct appState instance
+  that owns the slots being updated.
+
+--------------------------------
+Custom Classes in Slots
+--------------------------------
+
+- Any custom class stored in a slot MUST extend `CloneableFile`
+  from the `file_state_manager` package.
+
+- You must implement:
+    - `clone()` returning a deep copy of all properties
+    - `toDict()` returning a Map composed only of primitive values
+    - a `fromDict` factory constructor restoring all properties
+
+- Overriding `==` and `hashCode` is strongly recommended.
+
+- Classes extending CloneableFile are automatically
+  deep-copied recursively, even when nested inside Lists or Maps.
+
+--------------------------------
+Forbidden Actions
+--------------------------------
+
+- You must NOT call `slot.set()` or `slot.update()` during `build()`.
+  Doing so causes infinite rebuild loops.
+
+- All state updates must occur in event handlers,
+  such as button callbacks, Futures, or other
+  non-build-phase logic.
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="how-to-use-this-prompt">
+<h2>How to Use This Prompt<a class="headerlink" href="#how-to-use-this-prompt" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Copy the prompt above.</p></li>
+<li><p>Paste it into your AI tool.</p></li>
+<li><p>In the <strong>next message</strong>, describe:</p>
+<ul class="simple">
+<li><p>The widget tree (mock UI)</p></li>
+<li><p>Which slots already exist</p></li>
+<li><p>Which interactions should update state</p></li>
+</ul>
+</li>
+<li><p>Review the generated code, focusing on:</p>
+<ul class="simple">
+<li><p>Slot usage</p></li>
+<li><p>Absence of setState</p></li>
+<li><p>No updates during build()</p></li>
+</ul>
+</li>
+</ol>
+<p>This two-step interaction produces significantly
+more reliable and maintainable results.</p>
+<p>In the <strong>next message</strong>, for example, we give the AI two files:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">/// Slot definition file. app_state.dart</span>
 <span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:flutter/foundation.dart&#39;</span><span class="p">;</span>
 <span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:flutter/material.dart&#39;</span><span class="p">;</span>
 <span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:simple_app_state/simple_app_state.dart&#39;</span><span class="p">;</span>
@@ -83,7 +195,7 @@ and hand it over to implementers with a clear contract.</p>
 <span class="kd">final</span><span class="w"> </span><span class="n">logsSlot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="s1">&#39;logs&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="nl">caster:</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">List</span><span class="p">).</span><span class="n">cast</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">());</span>
 </pre></div>
 </div>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">/// Class template file.</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">/// counter_page.dart</span>
 <span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:flutter/foundation.dart&#39;</span><span class="p">;</span>
 <span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:flutter/material.dart&#39;</span><span class="p">;</span>
 <span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:simple_app_state/simple_app_state.dart&#39;</span><span class="p">;</span>
@@ -106,25 +218,7 @@ and hand it over to implementers with a clear contract.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-</section>
-<hr class="docutils" />
-<section id="implementation-inside-the-boundary">
-<h2>Implementation inside the boundary<a class="headerlink" href="#implementation-inside-the-boundary" title="Link to this heading">¶</a></h2>
-<p>Inside the state class,
-the UI implementation is free to read and update
-any of the declared slots.</p>
-<p>The developer does not need to think about
-subscription management or rebuild wiring.</p>
-<p>All of that is handled by the slot boundary
-declared at the widget level.</p>
-<p>From the implementer’s point of view,
-they are simply writing a normal Flutter <strong>build()</strong> method
-with access to a clearly defined set of state.</p>
-<p>By enforcing clear slot boundaries at the screen level,
-project structure becomes easier to understand for both
-humans and AI tools.</p>
-<p>This clarity reduces integration friction between screens
-and helps keep long-term maintenance costs under control.</p>
+<p>Then tell it to replace CreatedNewWidget() with the actual widget.</p>
 </section>
 </section>
 
@@ -165,8 +259,8 @@ and helps keep long-term maintenance costs under control.</p>
 <li class="toctree-l2"><a class="reference internal" href="slot_boundaries.html">Slot Boundaries and Ownership</a></li>
 <li class="toctree-l2"><a class="reference internal" href="state_builder_strategy.html">State Builder Strategy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="performance_considerations.html">Performance Considerations</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Worked Example: Designing a Screen with Slot Boundaries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ai_prompt.html">Using AI Prompts to Design a Screen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="worked_example_screen_design.html">Worked Example: Designing a Screen with Slot Boundaries</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Using AI Prompts to Design a Screen</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Appendix</a></li>
@@ -178,8 +272,8 @@ and helps keep long-term maintenance costs under control.</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">Project Management and Design</a><ul>
-      <li>Previous: <a href="performance_considerations.html" title="previous chapter">Performance Considerations</a></li>
-      <li>Next: <a href="ai_prompt.html" title="next chapter">Using AI Prompts to Design a Screen</a></li>
+      <li>Previous: <a href="worked_example_screen_design.html" title="previous chapter">Worked Example: Designing a Screen with Slot Boundaries</a></li>
+      <li>Next: <a href="../appendix/index.html" title="next chapter">Appendix</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -204,7 +298,7 @@ and helps keep long-term maintenance costs under control.</p>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
-      <a href="../_sources/project_management_and_design/worked_example_screen_design.rst.txt"
+      <a href="../_sources/project_management_and_design/ai_prompt.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
