@@ -111,10 +111,12 @@ A layered design
 The intended structure is:
 
 * **SlotStatefulWidget**
+
   * Defines which slots a screen is allowed to use
   * Acts as a design-time boundary
 
 * **StateSlotBuilder**
+
   * Applies reactivity inside that boundary
   * Controls which parts of the UI rebuild
 

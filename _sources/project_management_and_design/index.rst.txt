@@ -20,5 +20,5 @@ maintainable over time.
    slot_boundaries
    state_builder_strategy
    performance_considerations
-   worked_example_screen_design
+   how_we_work
    ai_prompt

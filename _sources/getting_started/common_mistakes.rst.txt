@@ -336,7 +336,7 @@ Only update state in response to events
 (such as user actions or lifecycle callbacks).
 
 For a detailed explanation, see:
-:doc:`../flutter_integration/common_mistakes`
+:doc:`../flutter_integration/flutter_common_mistakes`
 
 ----
 
@@ -348,7 +348,9 @@ From here, you can explore more advanced topics depending
 on your interests:
 
 - :doc:`../core_concepts/index`
+- :doc:`../state_models/index`
 - :doc:`../flutter_integration/index`
 - :doc:`../advanced/index`
+- :doc:`../project_management_and_design/index`
 
 Happy development!

@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Worked Example: Designing a Screen with Slot Boundaries &#8212; simple_app_state 2026 documentation</title>
+    <title>How we work &#8212; simple_app_state 2026 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
@@ -33,34 +33,11 @@
 
           <div class="body" role="main">
             
-  <section id="worked-example-designing-a-screen-with-slot-boundaries">
-<h1>Worked Example: Designing a Screen with Slot Boundaries<a class="headerlink" href="#worked-example-designing-a-screen-with-slot-boundaries" title="Link to this heading">¶</a></h1>
-<p>This chapter presents a complete screen example
-that applies the design principles discussed
-in this section of the documentation.</p>
-<p>The goal is not to introduce new APIs,
-but to show how <strong>slot boundaries, ownership,
-and rebuild control</strong> come together
-in a real Flutter screen.</p>
-<hr class="docutils" />
-<section id="what-this-example-demonstrates">
-<h2>What this example demonstrates<a class="headerlink" href="#what-this-example-demonstrates" title="Link to this heading">¶</a></h2>
-<p>This example uses the same simple counter-and-log
-application that appears earlier in the documentation.</p>
-<p>However, instead of focusing on minimal code,
-it focuses on <strong>explicit design</strong>:</p>
-<ul class="simple">
-<li><p>Which state does this screen depend on?</p></li>
-<li><p>Who is allowed to access that state?</p></li>
-<li><p>What parts of the UI rebuild when it changes?</p></li>
-</ul>
-<p>These questions are answered structurally,
-before any UI layout is written.</p>
-</section>
-<hr class="docutils" />
+  <section id="how-we-work">
+<h1>How we work<a class="headerlink" href="#how-we-work" title="Link to this heading">¶</a></h1>
 <section id="the-screen-level-contract">
 <h2>The screen-level contract<a class="headerlink" href="#the-screen-level-contract" title="Link to this heading">¶</a></h2>
-<p>The example screen is implemented as a <strong>SlotStatefulWidget</strong>.</p>
+<p>The example widgets is implemented as a <strong>SlotStatefulWidget</strong>.</p>
 <p>At the very top of the widget,
 its slot dependencies are declared explicitly.</p>
 <p>This declaration defines the full set of application state
@@ -73,8 +50,6 @@ screen-level template in advance.</p>
 <p>They can copy and paste this code, make small adjustments,
 and hand it over to implementers with a clear contract.</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">/// Slot definition file. e.g. app_state.dart</span>
-<span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:flutter/foundation.dart&#39;</span><span class="p">;</span>
-<span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:flutter/material.dart&#39;</span><span class="p">;</span>
 <span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:simple_app_state/simple_app_state.dart&#39;</span><span class="p">;</span>
 
 <span class="c1">// state and slots</span>
@@ -165,7 +140,7 @@ and helps keep long-term maintenance costs under control.</p>
 <li class="toctree-l2"><a class="reference internal" href="slot_boundaries.html">Slot Boundaries and Ownership</a></li>
 <li class="toctree-l2"><a class="reference internal" href="state_builder_strategy.html">State Builder Strategy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="performance_considerations.html">Performance Considerations</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Worked Example: Designing a Screen with Slot Boundaries</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">How we work</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ai_prompt.html">Using AI Prompts to Design a Screen</a></li>
 </ul>
 </li>
@@ -204,7 +179,7 @@ and helps keep long-term maintenance costs under control.</p>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
-      <a href="../_sources/project_management_and_design/worked_example_screen_design.rst.txt"
+      <a href="../_sources/project_management_and_design/how_we_work.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

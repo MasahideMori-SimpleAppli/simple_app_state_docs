@@ -162,8 +162,6 @@ In the **next message**, for example, we give the AI two files:
 .. code-block:: dart
 
     /// Slot definition file. app_state.dart
-    import 'package:flutter/foundation.dart';
-    import 'package:flutter/material.dart';
     import 'package:simple_app_state/simple_app_state.dart';
 
     // state and slots
@@ -196,3 +194,6 @@ In the **next message**, for example, we give the AI two files:
     }
 
 Then tell it to replace CreatedNewWidget() with the actual widget.
+
+You can also ask the AI to add slots or design a data class that extends the Cloneable file.
+Please consider this as needed.

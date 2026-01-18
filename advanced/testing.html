@@ -92,8 +92,8 @@ about UI behavior.</p>
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h3>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// int app_state.dart</span>
-<span class="kd">final</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span>
-<span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">appState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
 
 <span class="c1">//////////////////</span>
 <span class="c1">// in main.dart //</span>
@@ -145,7 +145,7 @@ is currently bound to a slot, even when that object is mutated in place.</p>
 <h3>Example<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">// in ref_state.dart</span>
 <span class="kd">final</span><span class="w"> </span><span class="n">refState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RefAppState</span><span class="p">();</span>
-<span class="kd">final</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="n">MyObject</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;obj&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="n">MyObject</span><span class="p">());</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">refState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="n">MyObject</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;obj&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="n">MyObject</span><span class="p">());</span>
 
 <span class="c1">//////////////////</span>
 <span class="c1">// in main.dart</span>

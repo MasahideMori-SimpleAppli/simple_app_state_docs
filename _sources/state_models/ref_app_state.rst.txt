@@ -143,7 +143,6 @@ Safety trade-offs
 Because **RefAppState** uses references:
 
 - accidental mutation can corrupt state
-- undo / redo cannot rely on immutability
 - equality comparisons are not structural
 
 Therefore:
@@ -208,7 +207,7 @@ while preserving:
 - runtime listeners
 
 This model is optimized for large mutable objects:
-you pay the cost of copying **only when taking snapshots**.
+Copy costs are only incurred when creating or restoring a snapshot.
 
 ----
 

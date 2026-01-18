@@ -1,6 +1,6 @@
-=====================
-Common Mistakes
-=====================
+========================
+Flutter Common Mistakes
+========================
 
 This section describes common mistakes when using
 **SimpleAppState** with Flutter.
@@ -71,10 +71,9 @@ Always update state via **set** or **update**:
 
 .. code-block:: dart
 
-    itemsSlot.update((old) {
-      final next = List<String>.from(old);
-      next.add('new item');
-      return next;
+    itemsSlot.update((oldCopy) {
+      oldCopy.add('new item');
+      return oldCopy;
     });
 
 ----
@@ -134,7 +133,7 @@ These cases are **not** guarded and will trigger rebuilds.
 State updates should be performed in response to:
 
 * user interactions (button presses)
-* lifecycle callbacks (**initState**, **didChangeDependencies**)
+* lifecycle callbacks (initState, didChangeDependencies)
 * external events (timers, streams, async results)
 
 Never perform value-changing updates inside **build()**.

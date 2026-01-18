@@ -75,8 +75,8 @@ Example
 .. code-block:: dart
 
     // int app_state.dart
-    final state = SimpleAppState();
-    final count = state.slot<int>('count', initial: 0);
+    final appState = SimpleAppState();
+    final count = appState.slot<int>('count', initial: 0);
 
     //////////////////
     // in main.dart //
@@ -136,7 +136,7 @@ Example
 
     // in ref_state.dart
     final refState = RefAppState();
-    final obj = state.slot<MyObject>('obj', initial: MyObject());
+    final obj = refState.slot<MyObject>('obj', initial: MyObject());
 
     //////////////////
     // in main.dart

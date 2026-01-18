@@ -51,9 +51,9 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>SimpleAppState instance:</strong> A central container for all your data.</p></li>
+<li><p><strong>SimpleAppState instance (appState):</strong> A central container for all your data.</p></li>
 <li><dl class="simple">
-<dt><strong>StateSlot:</strong> A specific “drawer” in that container. Each slot:</dt><dd><ul>
+<dt><strong>StateSlot (countSlot, logsSlot):</strong> A specific “drawer” in that container. Each slot:</dt><dd><ul>
 <li><p>Has a <strong>unique name</strong> (e.g., <cite>‘count’</cite>) for debugging and persistence.</p></li>
 <li><p>Has a <strong>strict type</strong> (e.g., <cite>&lt;int&gt;</cite>), ensuring type safety throughout the app.</p></li>
 <li><p>Is <strong>globally accessible</strong>, so any widget can find it without passing data through constructors.</p></li>

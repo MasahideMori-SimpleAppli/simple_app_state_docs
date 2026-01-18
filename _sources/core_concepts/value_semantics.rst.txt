@@ -172,6 +172,10 @@ to ensure they are safe to store.
 This prevents subtle bugs caused by
 non-copyable or externally mutable objects.
 
+If you want to save a custom class, or a list or map that contains a custom class,
+use a class that extends `CloneableFile <https://pub.dev/documentation/file_state_manager/latest/file_state_manager/CloneableFile-class.html>`_
+in the `file_state_manager <https://pub.dev/packages/file_state_manager>`_ package.
+
 ----
 
 This may feel unfamiliar at first

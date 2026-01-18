@@ -22,8 +22,8 @@ In SimpleAppState, application state lives **outside** the widget tree. This mak
       caster: (raw) => (raw as List).cast<String>(),
     );
 
-* **SimpleAppState instance:** A central container for all your data.
-* **StateSlot:** A specific "drawer" in that container. Each slot:
+* **SimpleAppState instance (appState):** A central container for all your data.
+* **StateSlot (countSlot, logsSlot):** A specific "drawer" in that container. Each slot:
     * Has a **unique name** (e.g., `'count'`) for debugging and persistence.
     * Has a **strict type** (e.g., `<int>`), ensuring type safety throughout the app.
     * Is **globally accessible**, so any widget can find it without passing data through constructors.

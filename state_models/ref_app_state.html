@@ -146,7 +146,6 @@ of large or complex objects.</p>
 <p>Because <strong>RefAppState</strong> uses references:</p>
 <ul class="simple">
 <li><p>accidental mutation can corrupt state</p></li>
-<li><p>undo / redo cannot rely on immutability</p></li>
 <li><p>equality comparisons are not structural</p></li>
 </ul>
 <p>Therefore:</p>
@@ -199,7 +198,7 @@ while preserving:</p>
 <li><p>runtime listeners</p></li>
 </ul>
 <p>This model is optimized for large mutable objects:
-you pay the cost of copying <strong>only when taking snapshots</strong>.</p>
+Copy costs are only incurred when creating or restoring a snapshot.</p>
 </section>
 <hr class="docutils" />
 <section id="batch-updates">

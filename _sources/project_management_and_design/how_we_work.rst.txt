@@ -1,39 +1,10 @@
-Worked Example: Designing a Screen with Slot Boundaries
+How we work
 =========================================================
-
-This chapter presents a complete screen example
-that applies the design principles discussed
-in this section of the documentation.
-
-The goal is not to introduce new APIs,
-but to show how **slot boundaries, ownership,
-and rebuild control** come together
-in a real Flutter screen.
-
-----
-
-What this example demonstrates
--------------------------------
-
-This example uses the same simple counter-and-log
-application that appears earlier in the documentation.
-
-However, instead of focusing on minimal code,
-it focuses on **explicit design**:
-
-* Which state does this screen depend on?
-* Who is allowed to access that state?
-* What parts of the UI rebuild when it changes?
-
-These questions are answered structurally,
-before any UI layout is written.
-
-----
 
 The screen-level contract
 -------------------------
 
-The example screen is implemented as a **SlotStatefulWidget**.
+The example widgets is implemented as a **SlotStatefulWidget**.
 
 At the very top of the widget,
 its slot dependencies are declared explicitly.
@@ -55,8 +26,6 @@ and hand it over to implementers with a clear contract.
 .. code-block:: dart
 
     /// Slot definition file. e.g. app_state.dart
-    import 'package:flutter/foundation.dart';
-    import 'package:flutter/material.dart';
     import 'package:simple_app_state/simple_app_state.dart';
 
     // state and slots

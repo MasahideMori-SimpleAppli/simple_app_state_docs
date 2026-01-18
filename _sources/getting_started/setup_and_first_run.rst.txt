@@ -31,7 +31,7 @@ You can use any supported IDE:
 - VS Code:
   https://code.visualstudio.com/
 
-After installation, verify your setup:
+After installation, verify the setup from the console.
 
 .. code-block:: bash
 
@@ -64,6 +64,7 @@ This confirms that your environment is set up correctly.
 
 Add SimpleAppState
 ------------------
+Open the simple_app_state_demo project you just created in your IDE.
 
 Open **pubspec.yaml** and add **SimpleAppState**
 to your dependencies:
@@ -80,6 +81,8 @@ Then fetch the dependencies:
 .. code-block:: bash
 
    flutter pub get
+
+If you're using Android Studio, you can also do this by clicking Pub get near the top right.
 
 ----
 

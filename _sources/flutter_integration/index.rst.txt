@@ -9,4 +9,4 @@ This section describes how SimpleAppState integrates with Flutter.
     rebuild_model
     slot_stateful_widget
     state_slot_builder
-    common_mistakes
+    flutter_common_mistakes
