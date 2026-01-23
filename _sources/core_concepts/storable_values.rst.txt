@@ -1,0 +1,283 @@
+Storable Values
+===============
+
+This chapter explains **what kinds of values can be safely stored**
+in **SimpleAppState** slots, and how to handle custom classes correctly.
+
+Understanding these rules is essential for:
+
+- predictable rebuild behavior
+- correct undo / redo
+- reliable persistence
+- avoiding subtle runtime errors
+
+If you only store primitive values, you can skim this chapter.
+If you want to store your own classes, read it carefully.
+
+----
+
+The Core Rule
+-------------
+
+**All values stored in SimpleAppState must be safely deep-copyable.**
+
+SimpleAppState enforces **value semantics**.
+Every value is copied on:
+
+- slot definition
+- set / update
+- get
+- snapshot / restore
+
+If a value cannot be deep-copied safely,
+it cannot be used as application state.
+
+----
+
+Values That Work Out of the Box
+-------------------------------
+
+The following values are supported **without any additional work**:
+
+- primitive values
+  (`int`, `double`, `bool`, `String`, `null`)
+- Lists composed recursively of supported values
+- Maps composed recursively of supported values
+
+Examples:
+
+.. code-block:: dart
+
+   final count = appState.slot<int>('count', initial: 0);
+
+   final tags = appState.slot<List<String>>(
+     'tags',
+     initial: [],
+     caster: (raw) => (raw as List).cast<String>(),
+   );
+
+   final config = appState.slot<Map<String, dynamic>>(
+     'config',
+     initial: {},
+   );
+
+These values are:
+
+- immutable or safely copied
+- JSON-serializable in principle
+- safe for persistence and undo / redo
+
+----
+
+When You Need a Custom Class
+----------------------------
+
+If a value **cannot be represented purely** using primitives,
+Lists, and Maps, it **must** be wrapped in a custom class.
+
+Typical examples that **require** a custom class:
+
+- `DateTime`
+- `Color`
+- `Offset`, `Rect`, `Size`
+- Any Flutter framework class
+- Domain objects with identity or behavior
+
+Typical examples that **do not** require a custom class:
+
+- `int`, `double`, `bool`, `String`
+- `List<String>`
+- `Map<String, dynamic>` composed only of primitives
+
+----
+
+CloneableFile
+-------------
+
+Any custom class stored in a slot **must extend**
+`CloneableFile <https://pub.dev/documentation/file_state_manager/latest/file_state_manager/CloneableFile-class.html>`_
+from the `file_state_manager` package.
+
+This allows SimpleAppState to:
+
+- deep-copy the value automatically
+- serialize it for persistence
+- restore it for undo / redo
+- detect structural changes reliably
+
+----
+
+Required Methods
+----------------
+
+A class extending **CloneableFile** must implement **all** of the following:
+
+1. ``clone()``
+~~~~~~~~~~~~~~~~
+
+Returns a **deep copy** of the object.
+
+- All properties must be copied
+- Nested ``CloneableFile`` objects must also be cloned
+- No references to the original object may remain
+
+2. ``toDict()``
+~~~~~~~~~~~~~~~~
+
+Returns a ``Map<String, dynamic>`` representation.
+
+The returned map may contain only:
+
+- primitive values
+- ``null``
+- Lists or Maps composed recursively of the above
+
+If a property is another custom object,
+it must also extend ``CloneableFile`` and be converted via ``toDict()``.
+
+3. ``factory fromDict(Map<String, dynamic> src)``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Reconstructs the object from the dictionary produced by ``toDict()``.
+
+This method must:
+
+- restore all properties
+- fully reconstruct the object
+- be deterministic
+
+----
+
+Strongly Recommended
+--------------------
+
+Although not required, it is **strongly recommended** to override:
+
+- ``operator ==``
+- ``hashCode``
+
+This ensures:
+
+- correct equality comparison
+- predictable rebuild behavior
+- reliable undo / redo detection
+
+----
+
+Example
+-------
+
+A safe wrapper for ``DateTime``:
+
+.. code-block:: dart
+
+   class AppTimestamp extends CloneableFile {
+     final int epochMillis;
+
+     AppTimestamp(this.epochMillis);
+
+     factory AppTimestamp.fromDateTime(DateTime dt) {
+       return AppTimestamp(dt.millisecondsSinceEpoch);
+     }
+
+     DateTime toDateTime() =>
+         DateTime.fromMillisecondsSinceEpoch(epochMillis);
+
+     @override
+     AppTimestamp clone() => AppTimestamp(epochMillis);
+
+     @override
+     Map<String, dynamic> toDict() => {
+           'epochMillis': epochMillis,
+         };
+
+     factory AppTimestamp.fromDict(Map<String, dynamic> src) {
+       return AppTimestamp(src['epochMillis'] as int);
+     }
+
+     @override
+     bool operator ==(Object other) =>
+         other is AppTimestamp && other.epochMillis == epochMillis;
+
+     @override
+     int get hashCode => epochMillis.hashCode;
+   }
+
+This class is:
+
+- safely copyable
+- serializable
+- undo / redo friendly
+
+----
+
+Deep Copy Semantics
+-------------------
+
+Classes extending ``CloneableFile`` are automatically deep-copied
+by SimpleAppState, even when nested inside Lists or Maps.
+
+Inside ``slot.update()``:
+
+- the value you receive is **already a copy**
+- you must mutate it directly and return it
+- **do not** create additional copies
+
+Example:
+
+.. code-block:: dart
+
+   timestampSlot.update((ts) {
+     ts = AppTimestamp.fromDateTime(DateTime.now());
+     return ts;
+   });
+
+----
+
+What Must Never Be Stored
+--------------------------
+
+The following objects must **never** be stored in slots,
+even if wrapped in a custom class:
+
+- ``BuildContext``
+- ``FocusNode``
+- ``Stream`` or ``Future``
+- callbacks or closures
+- controllers, animations, or UI handles
+- any object tied to the widget lifecycle
+
+These objects represent **runtime behavior**, not application state.
+
+----
+
+Relation to RefAppState
+-----------------------
+
+If you need to store:
+
+- very large objects
+- mutable graph-like structures
+- non-copyable engine-level data
+
+then **SimpleAppState may not be appropriate**.
+
+In such cases, see:
+:doc:`../state_models/ref_app_state`
+
+RefAppState trades safety for performance
+and uses **reference semantics** instead of value semantics.
+
+----
+
+Summary
+-------
+
+- Slots store **values**, not runtime objects
+- All values must be safely deep-copyable
+- Primitive structures work out of the box
+- Custom classes must extend ``CloneableFile``
+- UI and runtime objects never belong in state
+
+Once these rules are understood,
+SimpleAppState becomes predictable, safe, and scalable.
