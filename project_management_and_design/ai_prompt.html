@@ -134,18 +134,118 @@ Batch Updates
 Custom Classes in Slots
 --------------------------------
 
-- Any custom class stored in a slot MUST extend `CloneableFile`
+- Slot values must be JSON-serializable in principle.
+  A value is considered JSON-serializable if it is composed only of:
+    - primitive types (int, double, bool, String, null)
+    - List and Map structures composed recursively of the above.
+
+- If a value cannot be represented using only the structures above,
+  it MUST be wrapped in a custom class extending `CloneableFile`
   from the `file_state_manager` package.
 
-- You must implement:
-    - `clone()` returning a deep copy of all properties
-    - `toDict()` returning a Map composed only of primitive values
-    - a `fromDict` factory constructor restoring all properties
+- Typical examples that REQUIRE a custom class:
+    - DateTime
+    - Color
+    - Offset, Rect, Size
+    - Any Flutter framework class
+    - Any domain object with behavior or identity
 
-- Overriding `==` and `hashCode` is strongly recommended.
+- Typical examples that do NOT require a custom class:
+    - int, double, bool, String
+    - enum values stored as String or int
+    - List&lt;String&gt;, Map&lt;String, dynamic&gt; composed only of primitives
 
-- Classes extending CloneableFile are automatically
-  deep-copied recursively, even when nested inside Lists or Maps.
+--------------------------------
+CloneableFile Requirements
+--------------------------------
+
+- Any custom class stored in a slot MUST extend `CloneableFile`.
+
+- You must implement ALL of the following:
+
+  1. `clone()`
+     - Returns a deep copy of the object.
+     - All properties must be copied.
+     - Nested CloneableFile objects must also be cloned.
+
+  2. `toDict()`
+     - Returns a Map&lt;String, dynamic&gt;.
+     - The Map may contain only:
+         - primitive values
+         - null
+         - Lists or Maps composed only of primitive values
+     - If a property is another custom object,
+       it must also extend CloneableFile and be converted via `toDict()`.
+
+  3. `factory fromDict(Map&lt;String, dynamic&gt; src)`
+     - Restores all properties from the dictionary produced by `toDict()`.
+     - Must be able to fully reconstruct the object.
+
+- Overriding `==` and `hashCode` is strongly recommended
+  to ensure correct state comparison and rebuild behavior.
+
+--------------------------------
+Deep Copy Semantics
+--------------------------------
+
+- Classes extending CloneableFile are automatically deep-copied
+  by SimpleAppState, even when nested inside Lists or Maps.
+
+- You must NOT manually create additional copies
+  inside `slot.update()`.
+
+--------------------------------
+Example
+--------------------------------
+
+class AppTimestamp extends CloneableFile {
+  final int epochMillis;
+
+  AppTimestamp(this.epochMillis);
+
+  factory AppTimestamp.fromDateTime(DateTime dt) {
+    return AppTimestamp(dt.millisecondsSinceEpoch);
+  }
+
+  DateTime toDateTime() =&gt;
+      DateTime.fromMillisecondsSinceEpoch(epochMillis);
+
+  @override
+  AppTimestamp clone() =&gt; AppTimestamp(epochMillis);
+
+  @override
+  Map&lt;String, dynamic&gt; toDict() =&gt; {
+        &#39;epochMillis&#39;: epochMillis,
+      };
+
+  factory AppTimestamp.fromDict(Map&lt;String, dynamic&gt; src) {
+    return AppTimestamp(src[&#39;epochMillis&#39;] as int);
+  }
+
+  @override
+  bool operator ==(Object other) =&gt;
+      other is AppTimestamp &amp;&amp; other.epochMillis == epochMillis;
+
+  @override
+  int get hashCode =&gt; epochMillis.hashCode;
+}
+
+--------------------------------
+Non-Serializable &amp; Non-State Objects
+--------------------------------
+
+- The following objects must NEVER be stored in slots,
+  even if wrapped in a custom class:
+
+    - FocusNode, Stream, Future, callbacks
+    - BuildContext
+    - Any object tied to the widget lifecycle
+
+- These objects represent runtime behavior or UI control,
+  not persistent or logical application state.
+
+- Such objects must be created, owned, and disposed
+  within widgets or controllers, not in AppState.
 
 --------------------------------
 Forbidden Actions
