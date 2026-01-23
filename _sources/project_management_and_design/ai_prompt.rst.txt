@@ -26,8 +26,8 @@ lead to incorrect patterns, including:
 
 - Storing state inside widgets
 - Calling setState unnecessarily
-- Mutating values returned from ``slot.get()``
-- Updating state during ``build()``
+- Mutating values returned from **slot.get()**
+- Updating state during **build()**
 
 SimpleAppState intentionally differs from many common Flutter
 state-management approaches.

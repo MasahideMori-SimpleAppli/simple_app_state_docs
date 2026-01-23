@@ -83,6 +83,7 @@ it cannot be used as application state.</p>
 <span class="kd">final</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;&gt;</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;config&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="nl">initial:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nl">caster:</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Map</span><span class="p">).</span><span class="n">cast</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span><span class="w"> </span><span class="kt">dynamic</span><span class="o">&gt;</span><span class="p">(),</span>
 <span class="p">);</span>
 </pre></div>
 </div>
@@ -132,29 +133,29 @@ from the <cite>file_state_manager</cite> package.</p>
 <h2>Required Methods<a class="headerlink" href="#required-methods" title="Link to this heading">¶</a></h2>
 <p>A class extending <strong>CloneableFile</strong> must implement <strong>all</strong> of the following:</p>
 <section id="clone">
-<h3>1. <code class="docutils literal notranslate"><span class="pre">clone()</span></code><a class="headerlink" href="#clone" title="Link to this heading">¶</a></h3>
+<h3>1. <strong>clone()</strong><a class="headerlink" href="#clone" title="Link to this heading">¶</a></h3>
 <p>Returns a <strong>deep copy</strong> of the object.</p>
 <ul class="simple">
 <li><p>All properties must be copied</p></li>
-<li><p>Nested <code class="docutils literal notranslate"><span class="pre">CloneableFile</span></code> objects must also be cloned</p></li>
+<li><p>Nested <strong>CloneableFile</strong> objects must also be cloned</p></li>
 <li><p>No references to the original object may remain</p></li>
 </ul>
 </section>
 <section id="todict">
-<h3>2. <code class="docutils literal notranslate"><span class="pre">toDict()</span></code><a class="headerlink" href="#todict" title="Link to this heading">¶</a></h3>
-<p>Returns a <code class="docutils literal notranslate"><span class="pre">Map&lt;String,</span> <span class="pre">dynamic&gt;</span></code> representation.</p>
+<h3>2. <strong>toDict()</strong><a class="headerlink" href="#todict" title="Link to this heading">¶</a></h3>
+<p>Returns a <strong>Map&lt;String, dynamic&gt;</strong> representation.</p>
 <p>The returned map may contain only:</p>
 <ul class="simple">
 <li><p>primitive values</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></li>
+<li><p><strong>null</strong></p></li>
 <li><p>Lists or Maps composed recursively of the above</p></li>
 </ul>
 <p>If a property is another custom object,
-it must also extend <code class="docutils literal notranslate"><span class="pre">CloneableFile</span></code> and be converted via <code class="docutils literal notranslate"><span class="pre">toDict()</span></code>.</p>
+it must also extend <strong>CloneableFile</strong> and be converted via <strong>toDict()</strong>.</p>
 </section>
 <section id="factory-fromdict-map-string-dynamic-src">
-<h3>3. <code class="docutils literal notranslate"><span class="pre">factory</span> <span class="pre">fromDict(Map&lt;String,</span> <span class="pre">dynamic&gt;</span> <span class="pre">src)</span></code><a class="headerlink" href="#factory-fromdict-map-string-dynamic-src" title="Link to this heading">¶</a></h3>
-<p>Reconstructs the object from the dictionary produced by <code class="docutils literal notranslate"><span class="pre">toDict()</span></code>.</p>
+<h3>3. <strong>factory fromDict(Map&lt;String, dynamic&gt; src)</strong><a class="headerlink" href="#factory-fromdict-map-string-dynamic-src" title="Link to this heading">¶</a></h3>
+<p>Reconstructs the object from the dictionary produced by <strong>toDict()</strong>.</p>
 <p>This method must:</p>
 <ul class="simple">
 <li><p>restore all properties</p></li>
@@ -168,8 +169,8 @@ it must also extend <code class="docutils literal notranslate"><span class="pre"
 <h2>Strongly Recommended<a class="headerlink" href="#strongly-recommended" title="Link to this heading">¶</a></h2>
 <p>Although not required, it is <strong>strongly recommended</strong> to override:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">==</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">hashCode</span></code></p></li>
+<li><p><strong>operator ==</strong></p></li>
+<li><p><strong>hashCode</strong></p></li>
 </ul>
 <p>This ensures:</p>
 <ul class="simple">
@@ -181,7 +182,7 @@ it must also extend <code class="docutils literal notranslate"><span class="pre"
 <hr class="docutils" />
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
-<p>A safe wrapper for <code class="docutils literal notranslate"><span class="pre">DateTime</span></code>:</p>
+<p>A safe wrapper for <strong>DateTime</strong>:</p>
 <div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nc">AppTimestamp</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">CloneableFile</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">epochMillis</span><span class="p">;</span>
 
@@ -225,9 +226,9 @@ it must also extend <code class="docutils literal notranslate"><span class="pre"
 <hr class="docutils" />
 <section id="deep-copy-semantics">
 <h2>Deep Copy Semantics<a class="headerlink" href="#deep-copy-semantics" title="Link to this heading">¶</a></h2>
-<p>Classes extending <code class="docutils literal notranslate"><span class="pre">CloneableFile</span></code> are automatically deep-copied
+<p>Classes extending <strong>CloneableFile</strong> are automatically deep-copied
 by SimpleAppState, even when nested inside Lists or Maps.</p>
-<p>Inside <code class="docutils literal notranslate"><span class="pre">slot.update()</span></code>:</p>
+<p>Inside <strong>slot.update()</strong>:</p>
 <ul class="simple">
 <li><p>the value you receive is <strong>already a copy</strong></p></li>
 <li><p>you must mutate it directly and return it</p></li>
@@ -247,9 +248,9 @@ by SimpleAppState, even when nested inside Lists or Maps.</p>
 <p>The following objects must <strong>never</strong> be stored in slots,
 even if wrapped in a custom class:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">BuildContext</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">FocusNode</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Stream</span></code> or <code class="docutils literal notranslate"><span class="pre">Future</span></code></p></li>
+<li><p><strong>BuildContext</strong></p></li>
+<li><p><strong>FocusNode</strong></p></li>
+<li><p><strong>Stream</strong> or <strong>Future</strong></p></li>
 <li><p>callbacks or closures</p></li>
 <li><p>controllers, animations, or UI handles</p></li>
 <li><p>any object tied to the widget lifecycle</p></li>
@@ -278,7 +279,7 @@ and uses <strong>reference semantics</strong> instead of value semantics.</p>
 <li><p>Slots store <strong>values</strong>, not runtime objects</p></li>
 <li><p>All values must be safely deep-copyable</p></li>
 <li><p>Primitive structures work out of the box</p></li>
-<li><p>Custom classes must extend <code class="docutils literal notranslate"><span class="pre">CloneableFile</span></code></p></li>
+<li><p>Custom classes must extend <strong>CloneableFile</strong></p></li>
 <li><p>UI and runtime objects never belong in state</p></li>
 </ul>
 <p>Once these rules are understood,
