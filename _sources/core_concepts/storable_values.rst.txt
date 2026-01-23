@@ -59,6 +59,7 @@ Examples:
    final config = appState.slot<Map<String, dynamic>>(
      'config',
      initial: {},
+     caster: (raw) => (raw as Map).cast<String, dynamic>(),
    );
 
 These values are:
@@ -112,33 +113,33 @@ Required Methods
 
 A class extending **CloneableFile** must implement **all** of the following:
 
-1. ``clone()``
+1. **clone()**
 ~~~~~~~~~~~~~~~~
 
 Returns a **deep copy** of the object.
 
 - All properties must be copied
-- Nested ``CloneableFile`` objects must also be cloned
+- Nested **CloneableFile** objects must also be cloned
 - No references to the original object may remain
 
-2. ``toDict()``
+2. **toDict()**
 ~~~~~~~~~~~~~~~~
 
-Returns a ``Map<String, dynamic>`` representation.
+Returns a **Map<String, dynamic>** representation.
 
 The returned map may contain only:
 
 - primitive values
-- ``null``
+- **null**
 - Lists or Maps composed recursively of the above
 
 If a property is another custom object,
-it must also extend ``CloneableFile`` and be converted via ``toDict()``.
+it must also extend **CloneableFile** and be converted via **toDict()**.
 
-3. ``factory fromDict(Map<String, dynamic> src)``
+3. **factory fromDict(Map<String, dynamic> src)**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Reconstructs the object from the dictionary produced by ``toDict()``.
+Reconstructs the object from the dictionary produced by **toDict()**.
 
 This method must:
 
@@ -153,8 +154,8 @@ Strongly Recommended
 
 Although not required, it is **strongly recommended** to override:
 
-- ``operator ==``
-- ``hashCode``
+- **operator ==**
+- **hashCode**
 
 This ensures:
 
@@ -167,7 +168,7 @@ This ensures:
 Example
 -------
 
-A safe wrapper for ``DateTime``:
+A safe wrapper for **DateTime**:
 
 .. code-block:: dart
 
@@ -214,10 +215,10 @@ This class is:
 Deep Copy Semantics
 -------------------
 
-Classes extending ``CloneableFile`` are automatically deep-copied
+Classes extending **CloneableFile** are automatically deep-copied
 by SimpleAppState, even when nested inside Lists or Maps.
 
-Inside ``slot.update()``:
+Inside **slot.update()**:
 
 - the value you receive is **already a copy**
 - you must mutate it directly and return it
@@ -240,9 +241,9 @@ What Must Never Be Stored
 The following objects must **never** be stored in slots,
 even if wrapped in a custom class:
 
-- ``BuildContext``
-- ``FocusNode``
-- ``Stream`` or ``Future``
+- **BuildContext**
+- **FocusNode**
+- **Stream** or **Future**
 - callbacks or closures
 - controllers, animations, or UI handles
 - any object tied to the widget lifecycle
@@ -276,7 +277,7 @@ Summary
 - Slots store **values**, not runtime objects
 - All values must be safely deep-copyable
 - Primitive structures work out of the box
-- Custom classes must extend ``CloneableFile``
+- Custom classes must extend **CloneableFile**
 - UI and runtime objects never belong in state
 
 Once these rules are understood,
