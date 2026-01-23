@@ -103,6 +103,17 @@ SimpleAppState ensures that your application state is a "Fortress." Once data is
 
     print(mySlot.get()['id']); // Always 1
 
+.. note::
+
+    This safety model assumes that values stored in slots can be safely deep-copied.
+    Most common Dart values (primitives, Lists, Maps, etc.) work out of the box.
+
+    If you want to add your own classes,
+    see :doc:`../core_concepts/storable_values`.
+
+    If you need to store large, mutable, or non-copyable objects,
+    see :doc:`../state_models/ref_app_state`.
+
 Batching Updates
 ~~~~~~~~~~~~~~~~
 

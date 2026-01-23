@@ -9,4 +9,5 @@ This section explains the fundamental design of SimpleAppState.
     simple_app_state
     state_slot
     value_semantics
+    storable_values
     batch_updates

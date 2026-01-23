@@ -181,7 +181,7 @@ in order to use **clone** or **replaceDataFrom**.
 
 Only the following kinds of objects are supported:
 
-- primitive types (`int`, `double`, `bool`, `String`)
+- primitive types (`int`, `double`, `bool`, `String`, `null`)
 - JSON-serializable structures (`Map`, `List`, etc)
 - classes that implement
   `CloneableFile <https://pub.dev/documentation/file_state_manager/latest/file_state_manager/CloneableFile-class.html>`_

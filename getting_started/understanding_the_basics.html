@@ -124,6 +124,15 @@
 <span class="n">print</span><span class="p">(</span><span class="n">mySlot</span><span class="p">.</span><span class="kd">get</span><span class="p">()[</span><span class="s1">&#39;id&#39;</span><span class="p">]);</span><span class="w"> </span><span class="c1">// Always 1</span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This safety model assumes that values stored in slots can be safely deep-copied.
+Most common Dart values (primitives, Lists, Maps, etc.) work out of the box.</p>
+<p>If you want to add your own classes,
+see <a class="reference internal" href="../core_concepts/storable_values.html"><span class="doc">Storable Values</span></a>.</p>
+<p>If you need to store large, mutable, or non-copyable objects,
+see <a class="reference internal" href="../state_models/ref_app_state.html"><span class="doc">RefAppState</span></a>.</p>
+</div>
 </section>
 <section id="batching-updates">
 <h3>Batching Updates<a class="headerlink" href="#batching-updates" title="Link to this heading">¶</a></h3>
