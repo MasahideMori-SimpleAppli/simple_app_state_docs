@@ -235,9 +235,8 @@ by SimpleAppState, even when nested inside Lists or Maps.</p>
 <li><p><strong>do not</strong> create additional copies</p></li>
 </ul>
 <p>Example:</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">timestampSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">ts</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">ts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AppTimestamp</span><span class="p">.</span><span class="n">fromDateTime</span><span class="p">(</span><span class="n">DateTime</span><span class="p">.</span><span class="n">now</span><span class="p">());</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">ts</span><span class="p">;</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="n">timestampSlot</span><span class="p">.</span><span class="n">update</span><span class="p">((</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="n">AppTimestamp</span><span class="p">.</span><span class="n">fromDateTime</span><span class="p">(</span><span class="n">DateTime</span><span class="p">.</span><span class="n">now</span><span class="p">());</span>
 <span class="p">});</span>
 </pre></div>
 </div>

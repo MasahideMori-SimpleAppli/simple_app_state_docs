@@ -151,8 +151,7 @@ Custom Classes in Slots
     - Any domain object with behavior or identity
 
 - Typical examples that do NOT require a custom class:
-    - int, double, bool, String
-    - enum values stored as String or int
+    - int, double, bool, String, null
     - List&lt;String&gt;, Map&lt;String, dynamic&gt; composed only of primitives
 
 --------------------------------
@@ -183,6 +182,30 @@ CloneableFile Requirements
 
 - Overriding `==` and `hashCode` is strongly recommended
   to ensure correct state comparison and rebuild behavior.
+
+----------------------------------
+Slots require a caster argument.
+----------------------------------
+Due to a Flutter limitation, when using SimpleAppState.slot with a List or Map,
+the caster must convert internally deep-copied types (e.g., List&lt;dynamic&gt;) to the correct type.
+See the following example:
+
+final logsSlot = appState.slot&lt;List&lt;String&gt;&gt;(
+   &#39;logs&#39;,
+   initial: [],
+   caster: (raw) =&gt; (raw as List).cast&lt;String&gt;(),
+);
+
+final config = appState.slot&lt;Map&lt;String, dynamic&gt;&gt;(
+   &#39;config&#39;,
+   initial: {},
+   caster: (raw) =&gt; (raw as Map).cast&lt;String, dynamic&gt;(),
+);
+
+Only type casting is required here. Do not copy or create new objects.
+Types such as int, double, bool, String, and null do not require casters.
+Also, custom classes created by extending CloneableFile do not require a caster.
+A caster is not required when using RefAppState.slot.
 
 --------------------------------
 Deep Copy Semantics
@@ -230,9 +253,9 @@ class AppTimestamp extends CloneableFile {
   int get hashCode =&gt; epochMillis.hashCode;
 }
 
---------------------------------
+-------------------------------------
 Non-Serializable &amp; Non-State Objects
---------------------------------
+-------------------------------------
 
 - The following objects must NEVER be stored in slots,
   even if wrapped in a custom class:

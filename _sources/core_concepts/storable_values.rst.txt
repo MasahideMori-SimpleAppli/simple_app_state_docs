@@ -228,9 +228,8 @@ Example:
 
 .. code-block:: dart
 
-   timestampSlot.update((ts) {
-     ts = AppTimestamp.fromDateTime(DateTime.now());
-     return ts;
+   timestampSlot.update((_) {
+      return AppTimestamp.fromDateTime(DateTime.now());
    });
 
 ----
