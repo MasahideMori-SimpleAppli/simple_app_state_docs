@@ -122,19 +122,6 @@ Widgets should only <em>read</em> state and rebuild when it changes.</p>
 <li><p>updates that actually change values trigger notifications</p></li>
 <li><p>this can cause repeated rebuilds and unstable behavior</p></li>
 </ul>
-<p><strong>SimpleAppState</strong> does guard against <em>no-op updates</em>:</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">oldValue</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
-</pre></div>
-</div>
-<p>This means that calling <strong>set()</strong> with the same value
-does not trigger notifications.</p>
-<p>However:</p>
-<ul class="simple">
-<li><p><strong>update()</strong> almost always produces a new value</p></li>
-<li><p>mutating a value obtained from <strong>get()</strong> and setting it back
-also produces a change</p></li>
-</ul>
-<p>These cases are <strong>not</strong> guarded and will trigger rebuilds.</p>
 <p><strong>Correct approach</strong></p>
 <p>State updates should be performed in response to:</p>
 <ul class="simple">
@@ -145,7 +132,6 @@ also produces a change</p></li>
 <p>Never perform value-changing updates inside <strong>build()</strong>.</p>
 <p><strong>Key takeaway</strong></p>
 <ul class="simple">
-<li><p>Calling <strong>set()</strong> with the same value is harmless but useless</p></li>
 <li><p>Any update that changes state during <strong>build()</strong> is unsafe</p></li>
 <li><p><strong>build()</strong> must remain a pure function of current state</p></li>
 </ul>

@@ -111,23 +111,6 @@ or:
 * updates that actually change values trigger notifications
 * this can cause repeated rebuilds and unstable behavior
 
-**SimpleAppState** does guard against *no-op updates*:
-
-.. code-block:: dart
-
-   if (oldValue == value) return;
-
-This means that calling **set()** with the same value
-does not trigger notifications.
-
-However:
-
-* **update()** almost always produces a new value
-* mutating a value obtained from **get()** and setting it back
-  also produces a change
-
-These cases are **not** guarded and will trigger rebuilds.
-
 **Correct approach**
 
 State updates should be performed in response to:
@@ -140,7 +123,6 @@ Never perform value-changing updates inside **build()**.
 
 **Key takeaway**
 
-* Calling **set()** with the same value is harmless but useless
 * Any update that changes state during **build()** is unsafe
 * **build()** must remain a pure function of current state
 
