@@ -3,6 +3,14 @@ Core Concepts
 
 This section explains the fundamental design of SimpleAppState.
 
+The concept of this package is based on the question, "How can we ensure that Flutter beginners and AIs write only clean and maintainable code?"
+
+This section mainly explains how data is protected and how easy-to-understand responsiveness to your code is maintained.
+
+If you'd like to learn about architectural protections at the project level, read the next section as well.
+:doc:`../project_management_and_design/index`
+
+
 .. toctree::
     :maxdepth: 1
 
