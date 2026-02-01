@@ -35,8 +35,8 @@ and testing.
      _debugListener = listener;
    }
 
-The debug listener is notified **whenever any value changes**,
-including intermediate updates inside batch operations.
+Debug listeners are notified every time a value is updated,
+including updates to the same value and intermediate updates within a batch operation.
 
 DebugListener Signature
 -----------------------
