@@ -1,0 +1,187 @@
+======================================
+Coordinating Multiple States
+======================================
+
+**AppStateGroup** coordinates batch updates
+across multiple **SimpleAppState** and **RefAppState** instances.
+
+When any member of the group calls **batch**,
+all members are batched together as a unit.
+UI listeners and state listeners are notified only once across the entire group.
+
+----
+
+The problem AppStateGroup solves
+=================================
+
+In larger applications, state is often split across multiple instances:
+
+.. code-block:: dart
+
+   final appState = SimpleAppState();
+   final refState = RefAppState();
+
+When updating both in response to a single user action,
+calling **batch** on one instance does not affect the other:
+
+.. code-block:: dart
+
+   appState.batch(() {
+     valueSlot.set(42);
+     refSlot.set(newObject); // refState is not batching — notifies immediately
+   });
+
+This causes UI listeners registered on **refState** to fire during the batch,
+breaking the "one action, one notification" guarantee.
+
+**AppStateGroup** solves this by coordinating **batch** across all members.
+
+----
+
+Creating a group
+================
+
+Pass state instances to the **AppStateGroup** constructor:
+
+.. code-block:: dart
+
+   final appState = SimpleAppState();
+   final refState = RefAppState();
+
+   final group = AppStateGroup([appState, refState]);
+
+Or add them later:
+
+.. code-block:: dart
+
+   final group = AppStateGroup();
+   appState.joinGroup(group);
+   refState.joinGroup(group);
+
+Both styles produce the same result.
+
+----
+
+Batching across the group
+=========================
+
+Once states are in a group, calling **batch** on any member
+batches all members together:
+
+.. code-block:: dart
+
+   appState.batch(() {
+     valueSlot.set(42);
+     refSlot.set(newObject);
+   });
+
+   // UI listeners on both appState and refState are notified once,
+   // after the batch completes.
+
+You can also call **batch** directly on the group:
+
+.. code-block:: dart
+
+   group.batch(() {
+     valueSlot.set(42);
+     refSlot.set(newObject);
+   });
+
+Both forms are equivalent.
+
+----
+
+Subscriber ID deduplication across states
+==========================================
+
+A widget may subscribe to slots from multiple states using the same subscriber ID.
+
+This is common when a **SlotStatefulWidget** watches slots from both
+**SimpleAppState** and **RefAppState**.
+
+Without a group, the widget's rebuild callback would be triggered once per state.
+
+With a group, the callback is triggered **only once** across all states,
+regardless of how many members are involved.
+
+.. code-block:: dart
+
+   appState.addUIListener(valueSlot, 'widget_1', () => setState(() {}));
+   refState.addUIListener(refSlot,   'widget_1', () => setState(() {}));
+
+   group.batch(() {
+     valueSlot.set(42);
+     refSlot.set(newObject);
+   });
+
+   // setState is called only once, not twice.
+
+----
+
+Leaving a group
+===============
+
+A state can leave its group at any time:
+
+.. code-block:: dart
+
+   appState.leaveGroup();
+
+After leaving, **appState** resumes independent batch processing.
+
+The group continues to coordinate the remaining members.
+
+----
+
+Nested batches are safe
+=======================
+
+Nested calls to **batch** within a group behave correctly.
+
+Only the outermost batch flushes notifications:
+
+.. code-block:: dart
+
+   group.batch(() {
+     group.batch(() {
+       valueSlot.set(1);
+     });
+     valueSlot.set(2); // still inside the outer batch
+   });
+
+   // Notifications are flushed once, after the outer batch completes.
+
+----
+
+State listener behavior
+=======================
+
+Each member's state listener is called independently after the batch completes.
+
+.. code-block:: dart
+
+   appState.setStateListener((_) => fsm.push(appState));
+   refState.setStateListener((_) => fsm.push(refState));
+
+   group.batch(() {
+     valueSlot.set(42);
+     refSlot.set(newObject);
+   });
+
+   // Both listeners are called once each, after the batch.
+
+----
+
+Summary
+=======
+
+**AppStateGroup**:
+
+- coordinates batch updates across multiple state instances
+- notifies each subscriber ID at most once per batch, across all members
+- supports any mix of **SimpleAppState** and **RefAppState**
+- preserves nested batch safety
+- allows states to join or leave the group at any time
+
+Use **AppStateGroup** when a single user action updates
+slots from multiple state instances.

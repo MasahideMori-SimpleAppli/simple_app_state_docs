@@ -10,3 +10,4 @@ for large and complex applications.
     persistence_and_restore
     undo_redo
     testing
+    app_state_group

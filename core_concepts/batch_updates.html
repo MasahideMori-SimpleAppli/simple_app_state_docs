@@ -194,6 +194,14 @@ batching is usually unnecessary.</p>
 <p>When several changes belong together,
 wrap them in <strong>batch</strong>.</p>
 </section>
+<hr class="docutils" />
+<section id="coordinating-batch-across-multiple-states">
+<h2>Coordinating batch across multiple states<a class="headerlink" href="#coordinating-batch-across-multiple-states" title="Link to this heading">¶</a></h2>
+<p>The <strong>batch</strong> described on this page applies to a single state instance.</p>
+<p>When a single user action updates slots across multiple state instances,
+use <strong>AppStateGroup</strong> to coordinate batching across all of them.</p>
+<p>See <a class="reference internal" href="../advanced/app_state_group.html"><span class="doc">Coordinating Multiple States</span></a>.</p>
+</section>
 </section>
 
 

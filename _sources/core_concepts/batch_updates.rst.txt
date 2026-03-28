@@ -194,3 +194,15 @@ Batching is explicit and predictable.
 
 When several changes belong together,
 wrap them in **batch**.
+
+----
+
+Coordinating batch across multiple states
+-----------------------------------------
+
+The **batch** described on this page applies to a single state instance.
+
+When a single user action updates slots across multiple state instances,
+use **AppStateGroup** to coordinate batching across all of them.
+
+See :doc:`../advanced/app_state_group`.
