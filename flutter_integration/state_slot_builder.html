@@ -103,6 +103,29 @@ State ownership always remains in <strong>SimpleAppState</strong>.</p>
 </div>
 <p>Inside the <strong>builder</strong>, the current values are obtained
 by calling <strong>get()</strong> on each <strong>StateSlot</strong>.</p>
+<p>A particularly effective practical example of StateSlotBuilder is its operation with go_router’s ShellRoute.</p>
+<p>For example, by setting the return value of ShellRoute as follows, you can easily lock the entire screen while communicating with
+the server and display an indicator:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="k">return</span><span class="w"> </span><span class="n">StateSlotBuilder</span><span class="p">(</span>
+<span class="w">    </span><span class="nl">slotList:</span><span class="w"> </span><span class="p">[</span><span class="n">isProcessingSlot</span><span class="p">],</span>
+<span class="w">    </span><span class="nl">builder:</span><span class="w"> </span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">final</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">isProcessing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">isProcessingSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Stack</span><span class="p">(</span>
+<span class="w">            </span><span class="nl">children:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="n">child</span><span class="p">,</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isProcessing</span><span class="p">)</span>
+<span class="w">                </span><span class="k">const</span><span class="w"> </span><span class="n">ModalBarrier</span><span class="p">(</span>
+<span class="w">                    </span><span class="nl">color:</span><span class="w"> </span><span class="n">Colors</span><span class="p">.</span><span class="n">black26</span><span class="p">,</span>
+<span class="w">                    </span><span class="nl">dismissible:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                </span><span class="p">),</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isProcessing</span><span class="p">)</span>
+<span class="w">                </span><span class="k">const</span><span class="w"> </span><span class="n">Center</span><span class="p">(</span><span class="nl">child:</span><span class="w"> </span><span class="n">CircularProgressIndicator</span><span class="p">()),</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">);</span>
+</pre></div>
+</div>
 </section>
 <hr class="docutils" />
 <section id="relation-to-slotstatefulwidget">

@@ -34,268 +34,77 @@ state-management approaches.
 To avoid subtle but critical mistakes, the AI must be given
 **explicit rules describing the state semantics**.
 
-The following prompt serves as a **contract** between you and the AI.
+The following prompts serve as a **contract** between you and the AI.
 
 ----
 
-Canonical AI Prompt
---------------------
+Available Prompts
+-----------------
 
-Use the following prompt *verbatim* when asking an AI to implement
-a screen using SimpleAppState.
+The prompts are maintained in the ``prompt/`` directory of this repository.
+Click the link below to open the prompt, copy its contents, and paste it
+as the first message to your AI tool.
 
-.. code-block:: text
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
 
-   You are an AI assistant helping to implement a Flutter screen
-   whose state is managed using the SimpleAppState package.
-
-   I will describe the widget structure (UI mock) in the next message.
-   Your task is to implement the screen logic and state interaction
-   correctly according to the rules below.
-
-   --------------------------------
-   State Access Rules
-   --------------------------------
-
-   - Widgets may read or write external state only through
-     StateSlots declared in `slots`.
-   - Slot values are retrieved using `slot.get()`.
-
-   - If a slot belongs to SimpleAppState,
-     `slot.get()` returns a deep copy of the value.
-   - If a slot belongs to RefAppState,
-     `slot.get()` returns a reference.
-
-   - Whether a slot belongs to SimpleAppState or RefAppState
-     is determined solely by how it was defined
-     (`SimpleAppState.slot(...)` or `RefAppState.slot(...)`).
-     You must not change or reinterpret this.
-
-   --------------------------------
-   State Update Rules
-   --------------------------------
-
-   - Slot values must be updated using `slot.set(value)`
-     or `slot.update((value) => newValue)`.
-
-   - For SimpleAppState:
-     the value passed into `update` is already a deep copy.
-     You must mutate this value directly and return it.
-     Do NOT create another copy.
-
-   - For RefAppState:
-     the value passed into `update` is a reference.
-     RefAppState is explicitly designed for in-place mutation.
-     Do NOT create copies here either.
-
-   - When a slot is updated, widgets subscribing to that slot
-     are rebuilt automatically.
-     Do NOT call `setState()`.
-
-   --------------------------------
-   Batch Updates
-   --------------------------------
-
-   - When updating multiple slots together,
-     you may use `SimpleAppState.batch(() { ... })`.
-
-   - A batch groups multiple slot updates into a single UI rebuild.
-   - Slot updates inside a batch are applied in declaration order.
-     This means that calling `get()` after `set()` inside the same
-     batch returns the updated value.
-
-   - Always call `batch()` on the correct appState instance
-     that owns the slots being updated.
-
-   --------------------------------
-   Custom Classes in Slots
-   --------------------------------
-
-   - Slot values must be JSON-serializable in principle.
-     A value is considered JSON-serializable if it is composed only of:
-       - primitive types (int, double, bool, String, null)
-       - List and Map structures composed recursively of the above.
-
-   - If a value cannot be represented using only the structures above,
-     it MUST be wrapped in a custom class extending `CloneableFile`
-     from the `file_state_manager` package.
-
-   - Typical examples that REQUIRE a custom class:
-       - DateTime
-       - Color
-       - Offset, Rect, Size
-       - Any Flutter framework class
-       - Any domain object with behavior or identity
-
-   - Typical examples that do NOT require a custom class:
-       - int, double, bool, String, null
-       - List<String>, Map<String, dynamic> composed only of primitives
-
-   --------------------------------
-   CloneableFile Requirements
-   --------------------------------
-
-   - Any custom class stored in a slot MUST extend `CloneableFile`.
-
-   - You must implement ALL of the following:
-
-     1. `clone()`
-        - Returns a deep copy of the object.
-        - All properties must be copied.
-        - Nested CloneableFile objects must also be cloned.
-
-     2. `toDict()`
-        - Returns a Map<String, dynamic>.
-        - The Map may contain only:
-            - primitive values
-            - null
-            - Lists or Maps composed only of primitive values
-        - If a property is another custom object,
-          it must also extend CloneableFile and be converted via `toDict()`.
-
-     3. `factory fromDict(Map<String, dynamic> src)`
-        - Restores all properties from the dictionary produced by `toDict()`.
-        - Must be able to fully reconstruct the object.
-
-   - Overriding `==` and `hashCode` is strongly recommended
-     to ensure correct state comparison and rebuild behavior.
-
-   ----------------------------------
-   Slots require a caster argument.
-   ----------------------------------
-   Due to a Flutter limitation, when using SimpleAppState.slot with a List or Map,
-   the caster must convert internally deep-copied types (e.g., List<dynamic>) to the correct type.
-   See the following example:
-
-   final logsSlot = appState.slot<List<String>>(
-      'logs',
-      initial: [],
-      caster: (raw) => (raw as List).cast<String>(),
-   );
-
-   final config = appState.slot<Map<String, dynamic>>(
-      'config',
-      initial: {},
-      caster: (raw) => (raw as Map).cast<String, dynamic>(),
-   );
-
-   Only type casting is required here. Do not copy or create new objects.
-   Types such as int, double, bool, String, and null do not require casters.
-   Also, custom classes created by extending CloneableFile do not require a caster.
-   A caster is not required when using RefAppState.slot.
-
-   --------------------------------
-   Deep Copy Semantics
-   --------------------------------
-
-   - Classes extending CloneableFile are automatically deep-copied
-     by SimpleAppState, even when nested inside Lists or Maps.
-
-   - You must NOT manually create additional copies
-     inside `slot.update()`.
-
-   --------------------------------
-   Example
-   --------------------------------
-
-   class AppTimestamp extends CloneableFile {
-     final int epochMillis;
-
-     AppTimestamp(this.epochMillis);
-
-     factory AppTimestamp.fromDateTime(DateTime dt) {
-       return AppTimestamp(dt.millisecondsSinceEpoch);
-     }
-
-     DateTime toDateTime() =>
-         DateTime.fromMillisecondsSinceEpoch(epochMillis);
-
-     @override
-     AppTimestamp clone() => AppTimestamp(epochMillis);
-
-     @override
-     Map<String, dynamic> toDict() => {
-           'epochMillis': epochMillis,
-         };
-
-     factory AppTimestamp.fromDict(Map<String, dynamic> src) {
-       return AppTimestamp(src['epochMillis'] as int);
-     }
-
-     @override
-     bool operator ==(Object other) =>
-         other is AppTimestamp && other.epochMillis == epochMillis;
-
-     @override
-     int get hashCode => epochMillis.hashCode;
-   }
-
-   -------------------------------------
-   Non-Serializable & Non-State Objects
-   -------------------------------------
-
-   - The following objects must NEVER be stored in slots,
-     even if wrapped in a custom class:
-
-       - FocusNode, Stream, Future, callbacks
-       - BuildContext
-       - Any object tied to the widget lifecycle
-
-   - These objects represent runtime behavior or UI control,
-     not persistent or logical application state.
-
-   - Such objects must be created, owned, and disposed
-     within widgets or controllers, not in AppState.
-
-   --------------------------------
-   Forbidden Actions
-   --------------------------------
-
-   - You must NOT call `slot.set()` or `slot.update()` during `build()`.
-     Doing so causes infinite rebuild loops.
-
-   - All state updates must occur in event handlers,
-     such as button callbacks, Futures, or other
-     non-build-phase logic.
+   * - File
+     - Purpose
+   * - `screen_implementation.md <https://github.com/MasahideMori-SimpleAppli/simple_app_state_docs/blob/main/prompt/screen_implementation.md>`_
+     - Comprehensive prompt for implementing or refactoring a Flutter screen.
+       Covers state access, updates, batch processing, CloneableFile,
+       caster rules, persistence, undo/redo, and forbidden patterns.
 
 ----
 
-How to Use This Prompt
-----------------------
+How to Use a Prompt
+-------------------
 
-1. Copy the prompt above.
-2. Paste it into your AI tool.
-3. In the **next message**, describe:
+1. Open the prompt file linked above.
+2. Copy the text inside the code block.
+3. Paste it as the **first message** to your AI tool.
+4. In the **next message**, describe:
 
    - The widget tree (mock UI)
    - Which slots already exist
    - Which interactions should update state
 
-4. Review the generated code, focusing on:
+5. Review the generated code, focusing on:
 
-   - Slot usage
+   - Slot usage (StateSlot vs RefSlot)
    - Absence of setState
    - No updates during build()
+   - Correct use of casters for typed collections
+   - CloneableFile implementation if custom classes are needed
 
 This two-step interaction produces significantly
 more reliable and maintainable results.
 
-In the **next message**, for example, we give the AI two files:
+----
+
+Example Second Message
+----------------------
+
+In the **next message**, provide the AI with your existing slot definitions
+and a partial widget skeleton. For example:
 
 .. code-block:: dart
 
-    /// Slot definition file. app_state.dart
+    /// Slot definition file: lib/ui/app_state.dart
     import 'package:simple_app_state/simple_app_state.dart';
 
-    // state and slots
     final appState = SimpleAppState();
     final countSlot = appState.slot<int>('count', initial: 0);
-    final logsSlot = appState.slot<List<String>>('logs', initial: [], caster: (raw) => (raw as List).cast<String>());
+    final logsSlot = appState.slot<List<String>>(
+      'logs',
+      initial: [],
+      caster: (raw) => (raw as List).cast<String>(),
+    );
 
 .. code-block:: dart
 
-    /// counter_page.dart
-    import 'package:flutter/foundation.dart';
+    /// Partial screen file: lib/ui/counter_page.dart
     import 'package:flutter/material.dart';
     import 'package:simple_app_state/simple_app_state.dart';
 
@@ -312,11 +121,10 @@ In the **next message**, for example, we give the AI two files:
       Widget build(BuildContext context) {
         final count = countSlot.get();
         final logs = logsSlot.get();
-        return CreatedNewWidget();
+        return CreatedNewWidget(); // ← ask AI to replace this
       }
     }
 
-Then tell it to replace CreatedNewWidget() with the actual widget.
-
-You can also ask the AI to add slots or design a data class that extends the Cloneable file.
-Please consider this as needed.
+Then ask the AI to replace ``CreatedNewWidget()`` with the actual widget tree,
+add button callbacks, and implement any new slots or CloneableFile classes
+needed for the screen.

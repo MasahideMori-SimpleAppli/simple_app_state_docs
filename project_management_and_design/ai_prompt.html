@@ -62,233 +62,40 @@ lead to incorrect patterns, including:</p>
 state-management approaches.
 To avoid subtle but critical mistakes, the AI must be given
 <strong>explicit rules describing the state semantics</strong>.</p>
-<p>The following prompt serves as a <strong>contract</strong> between you and the AI.</p>
+<p>The following prompts serve as a <strong>contract</strong> between you and the AI.</p>
 </section>
 <hr class="docutils" />
-<section id="canonical-ai-prompt">
-<h2>Canonical AI Prompt<a class="headerlink" href="#canonical-ai-prompt" title="Link to this heading">¶</a></h2>
-<p>Use the following prompt <em>verbatim</em> when asking an AI to implement
-a screen using SimpleAppState.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>You are an AI assistant helping to implement a Flutter screen
-whose state is managed using the SimpleAppState package.
-
-I will describe the widget structure (UI mock) in the next message.
-Your task is to implement the screen logic and state interaction
-correctly according to the rules below.
-
---------------------------------
-State Access Rules
---------------------------------
-
-- Widgets may read or write external state only through
-  StateSlots declared in `slots`.
-- Slot values are retrieved using `slot.get()`.
-
-- If a slot belongs to SimpleAppState,
-  `slot.get()` returns a deep copy of the value.
-- If a slot belongs to RefAppState,
-  `slot.get()` returns a reference.
-
-- Whether a slot belongs to SimpleAppState or RefAppState
-  is determined solely by how it was defined
-  (`SimpleAppState.slot(...)` or `RefAppState.slot(...)`).
-  You must not change or reinterpret this.
-
---------------------------------
-State Update Rules
---------------------------------
-
-- Slot values must be updated using `slot.set(value)`
-  or `slot.update((value) =&gt; newValue)`.
-
-- For SimpleAppState:
-  the value passed into `update` is already a deep copy.
-  You must mutate this value directly and return it.
-  Do NOT create another copy.
-
-- For RefAppState:
-  the value passed into `update` is a reference.
-  RefAppState is explicitly designed for in-place mutation.
-  Do NOT create copies here either.
-
-- When a slot is updated, widgets subscribing to that slot
-  are rebuilt automatically.
-  Do NOT call `setState()`.
-
---------------------------------
-Batch Updates
---------------------------------
-
-- When updating multiple slots together,
-  you may use `SimpleAppState.batch(() { ... })`.
-
-- A batch groups multiple slot updates into a single UI rebuild.
-- Slot updates inside a batch are applied in declaration order.
-  This means that calling `get()` after `set()` inside the same
-  batch returns the updated value.
-
-- Always call `batch()` on the correct appState instance
-  that owns the slots being updated.
-
---------------------------------
-Custom Classes in Slots
---------------------------------
-
-- Slot values must be JSON-serializable in principle.
-  A value is considered JSON-serializable if it is composed only of:
-    - primitive types (int, double, bool, String, null)
-    - List and Map structures composed recursively of the above.
-
-- If a value cannot be represented using only the structures above,
-  it MUST be wrapped in a custom class extending `CloneableFile`
-  from the `file_state_manager` package.
-
-- Typical examples that REQUIRE a custom class:
-    - DateTime
-    - Color
-    - Offset, Rect, Size
-    - Any Flutter framework class
-    - Any domain object with behavior or identity
-
-- Typical examples that do NOT require a custom class:
-    - int, double, bool, String, null
-    - List&lt;String&gt;, Map&lt;String, dynamic&gt; composed only of primitives
-
---------------------------------
-CloneableFile Requirements
---------------------------------
-
-- Any custom class stored in a slot MUST extend `CloneableFile`.
-
-- You must implement ALL of the following:
-
-  1. `clone()`
-     - Returns a deep copy of the object.
-     - All properties must be copied.
-     - Nested CloneableFile objects must also be cloned.
-
-  2. `toDict()`
-     - Returns a Map&lt;String, dynamic&gt;.
-     - The Map may contain only:
-         - primitive values
-         - null
-         - Lists or Maps composed only of primitive values
-     - If a property is another custom object,
-       it must also extend CloneableFile and be converted via `toDict()`.
-
-  3. `factory fromDict(Map&lt;String, dynamic&gt; src)`
-     - Restores all properties from the dictionary produced by `toDict()`.
-     - Must be able to fully reconstruct the object.
-
-- Overriding `==` and `hashCode` is strongly recommended
-  to ensure correct state comparison and rebuild behavior.
-
-----------------------------------
-Slots require a caster argument.
-----------------------------------
-Due to a Flutter limitation, when using SimpleAppState.slot with a List or Map,
-the caster must convert internally deep-copied types (e.g., List&lt;dynamic&gt;) to the correct type.
-See the following example:
-
-final logsSlot = appState.slot&lt;List&lt;String&gt;&gt;(
-   &#39;logs&#39;,
-   initial: [],
-   caster: (raw) =&gt; (raw as List).cast&lt;String&gt;(),
-);
-
-final config = appState.slot&lt;Map&lt;String, dynamic&gt;&gt;(
-   &#39;config&#39;,
-   initial: {},
-   caster: (raw) =&gt; (raw as Map).cast&lt;String, dynamic&gt;(),
-);
-
-Only type casting is required here. Do not copy or create new objects.
-Types such as int, double, bool, String, and null do not require casters.
-Also, custom classes created by extending CloneableFile do not require a caster.
-A caster is not required when using RefAppState.slot.
-
---------------------------------
-Deep Copy Semantics
---------------------------------
-
-- Classes extending CloneableFile are automatically deep-copied
-  by SimpleAppState, even when nested inside Lists or Maps.
-
-- You must NOT manually create additional copies
-  inside `slot.update()`.
-
---------------------------------
-Example
---------------------------------
-
-class AppTimestamp extends CloneableFile {
-  final int epochMillis;
-
-  AppTimestamp(this.epochMillis);
-
-  factory AppTimestamp.fromDateTime(DateTime dt) {
-    return AppTimestamp(dt.millisecondsSinceEpoch);
-  }
-
-  DateTime toDateTime() =&gt;
-      DateTime.fromMillisecondsSinceEpoch(epochMillis);
-
-  @override
-  AppTimestamp clone() =&gt; AppTimestamp(epochMillis);
-
-  @override
-  Map&lt;String, dynamic&gt; toDict() =&gt; {
-        &#39;epochMillis&#39;: epochMillis,
-      };
-
-  factory AppTimestamp.fromDict(Map&lt;String, dynamic&gt; src) {
-    return AppTimestamp(src[&#39;epochMillis&#39;] as int);
-  }
-
-  @override
-  bool operator ==(Object other) =&gt;
-      other is AppTimestamp &amp;&amp; other.epochMillis == epochMillis;
-
-  @override
-  int get hashCode =&gt; epochMillis.hashCode;
-}
-
--------------------------------------
-Non-Serializable &amp; Non-State Objects
--------------------------------------
-
-- The following objects must NEVER be stored in slots,
-  even if wrapped in a custom class:
-
-    - FocusNode, Stream, Future, callbacks
-    - BuildContext
-    - Any object tied to the widget lifecycle
-
-- These objects represent runtime behavior or UI control,
-  not persistent or logical application state.
-
-- Such objects must be created, owned, and disposed
-  within widgets or controllers, not in AppState.
-
---------------------------------
-Forbidden Actions
---------------------------------
-
-- You must NOT call `slot.set()` or `slot.update()` during `build()`.
-  Doing so causes infinite rebuild loops.
-
-- All state updates must occur in event handlers,
-  such as button callbacks, Futures, or other
-  non-build-phase logic.
-</pre></div>
-</div>
+<section id="available-prompts">
+<h2>Available Prompts<a class="headerlink" href="#available-prompts" title="Link to this heading">¶</a></h2>
+<p>The prompts are maintained in the <code class="docutils literal notranslate"><span class="pre">prompt/</span></code> directory of this repository.
+Click the link below to open the prompt, copy its contents, and paste it
+as the first message to your AI tool.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://github.com/MasahideMori-SimpleAppli/simple_app_state_docs/blob/main/prompt/screen_implementation.md">screen_implementation.md</a></p></td>
+<td><p>Comprehensive prompt for implementing or refactoring a Flutter screen.
+Covers state access, updates, batch processing, CloneableFile,
+caster rules, persistence, undo/redo, and forbidden patterns.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <hr class="docutils" />
-<section id="how-to-use-this-prompt">
-<h2>How to Use This Prompt<a class="headerlink" href="#how-to-use-this-prompt" title="Link to this heading">¶</a></h2>
+<section id="how-to-use-a-prompt">
+<h2>How to Use a Prompt<a class="headerlink" href="#how-to-use-a-prompt" title="Link to this heading">¶</a></h2>
 <ol class="arabic simple">
-<li><p>Copy the prompt above.</p></li>
-<li><p>Paste it into your AI tool.</p></li>
+<li><p>Open the prompt file linked above.</p></li>
+<li><p>Copy the text inside the code block.</p></li>
+<li><p>Paste it as the <strong>first message</strong> to your AI tool.</p></li>
 <li><p>In the <strong>next message</strong>, describe:</p>
 <ul class="simple">
 <li><p>The widget tree (mock UI)</p></li>
@@ -298,26 +105,35 @@ Forbidden Actions
 </li>
 <li><p>Review the generated code, focusing on:</p>
 <ul class="simple">
-<li><p>Slot usage</p></li>
+<li><p>Slot usage (StateSlot vs RefSlot)</p></li>
 <li><p>Absence of setState</p></li>
 <li><p>No updates during build()</p></li>
+<li><p>Correct use of casters for typed collections</p></li>
+<li><p>CloneableFile implementation if custom classes are needed</p></li>
 </ul>
 </li>
 </ol>
 <p>This two-step interaction produces significantly
 more reliable and maintainable results.</p>
-<p>In the <strong>next message</strong>, for example, we give the AI two files:</p>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">/// Slot definition file. app_state.dart</span>
+</section>
+<hr class="docutils" />
+<section id="example-second-message">
+<h2>Example Second Message<a class="headerlink" href="#example-second-message" title="Link to this heading">¶</a></h2>
+<p>In the <strong>next message</strong>, provide the AI with your existing slot definitions
+and a partial widget skeleton. For example:</p>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">/// Slot definition file: lib/ui/app_state.dart</span>
 <span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:simple_app_state/simple_app_state.dart&#39;</span><span class="p">;</span>
 
-<span class="c1">// state and slots</span>
 <span class="kd">final</span><span class="w"> </span><span class="n">appState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleAppState</span><span class="p">();</span>
 <span class="kd">final</span><span class="w"> </span><span class="n">countSlot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="m">0</span><span class="p">);</span>
-<span class="kd">final</span><span class="w"> </span><span class="n">logsSlot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="s1">&#39;logs&#39;</span><span class="p">,</span><span class="w"> </span><span class="nl">initial:</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="nl">caster:</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">List</span><span class="p">).</span><span class="n">cast</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">());</span>
+<span class="kd">final</span><span class="w"> </span><span class="n">logsSlot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">appState</span><span class="p">.</span><span class="n">slot</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;&gt;</span><span class="p">(</span>
+<span class="w">  </span><span class="s1">&#39;logs&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">initial:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nl">caster:</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">raw</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">List</span><span class="p">).</span><span class="n">cast</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span><span class="p">(),</span>
+<span class="p">);</span>
 </pre></div>
 </div>
-<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">/// counter_page.dart</span>
-<span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:flutter/foundation.dart&#39;</span><span class="p">;</span>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="c1">/// Partial screen file: lib/ui/counter_page.dart</span>
 <span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:flutter/material.dart&#39;</span><span class="p">;</span>
 <span class="k">import</span><span class="w"> </span><span class="s1">&#39;package:simple_app_state/simple_app_state.dart&#39;</span><span class="p">;</span>
 
@@ -334,14 +150,14 @@ more reliable and maintainable results.</p>
 <span class="w">  </span><span class="n">Widget</span><span class="w"> </span><span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">countSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
 <span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">logs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">logsSlot</span><span class="p">.</span><span class="kd">get</span><span class="p">();</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">CreatedNewWidget</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">CreatedNewWidget</span><span class="p">();</span><span class="w"> </span><span class="c1">// ← ask AI to replace this</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Then tell it to replace CreatedNewWidget() with the actual widget.</p>
-<p>You can also ask the AI to add slots or design a data class that extends the Cloneable file.
-Please consider this as needed.</p>
+<p>Then ask the AI to replace <code class="docutils literal notranslate"><span class="pre">CreatedNewWidget()</span></code> with the actual widget tree,
+add button callbacks, and implement any new slots or CloneableFile classes
+needed for the screen.</p>
 </section>
 </section>
 

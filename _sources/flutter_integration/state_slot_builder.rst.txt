@@ -82,6 +82,32 @@ A typical usage looks like this:
 Inside the **builder**, the current values are obtained
 by calling **get()** on each **StateSlot**.
 
+A particularly effective practical example of StateSlotBuilder is its operation with go_router's ShellRoute.
+
+For example, by setting the return value of ShellRoute as follows, you can easily lock the entire screen while communicating with
+the server and display an indicator:
+
+.. code-block:: dart
+
+    return StateSlotBuilder(
+        slotList: [isProcessingSlot],
+        builder: (context) {
+            final bool isProcessing = isProcessingSlot.get();
+            return Stack(
+                children: [
+                    child,
+                    if (isProcessing)
+                    const ModalBarrier(
+                        color: Colors.black26,
+                        dismissible: false,
+                    ),
+                    if (isProcessing)
+                    const Center(child: CircularProgressIndicator()),
+                ],
+            );
+        },
+    );
+
 ----
 
 Relation to SlotStatefulWidget
