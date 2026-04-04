@@ -184,20 +184,55 @@ slot changes.
     @override
     List<StateSlot> get slots => []; // ❌ empty — widget will never rebuild
 
-StateSlotBuilder — use sparingly:
-  StateSlotBuilder is for localizing reactivity inside an existing screen,
-  NOT for replacing SlotStatefulWidget. Using many scattered builders hides
-  the screen's true state surface. Prefer SlotStatefulWidget as the primary
-  declaration point. Only use StateSlotBuilder when you need to rebuild a
-  small subtree independently.
+StateSlotBuilder — valid use cases:
 
-  StateSlotBuilder(
-    slotList: [slotA],
-    builder: (context) {
-      final a = slotA.get();
-      return Text('$a');
-    },
-  )
+  1. Router shell wrappers (e.g. go_router ShellRoute body)
+     When a router widget owns the child, there is no parent
+     SlotStatefulWidget to add the slot to. StateSlotBuilder is the right
+     tool for applying global overlays such as loading indicators or modals:
+
+       // Inside a go_router ShellRoute builder:
+       return StateSlotBuilder(
+         slotList: [isProcessingSlot],
+         builder: (context) {
+           final isProcessing = isProcessingSlot.get();
+           return Stack(
+             children: [
+               child,
+               if (isProcessing)
+                 const ModalBarrier(color: Colors.black26, dismissible: false),
+               if (isProcessing)
+                 const Center(child: CircularProgressIndicator()),
+             ],
+           );
+         },
+       );
+
+  2. Isolating a small reactive subtree within a large screen
+     When only a tiny part of a complex screen needs to react to a slot,
+     wrapping just that subtree avoids rebuilding the entire widget tree:
+
+       Column(
+         children: [
+           StaticHeader(),
+           StateSlotBuilder(
+             slotList: [counterSlot],
+             builder: (context) => Text('${counterSlot.get()}'),
+           ),
+           StaticFooter(),
+         ],
+       )
+
+  3. Incremental adoption in existing code
+     When refactoring a large existing screen all at once is impractical,
+     StateSlotBuilder lets you add reactivity incrementally to specific
+     parts without restructuring the whole screen.
+
+  When NOT to use StateSlotBuilder:
+    Do not scatter multiple StateSlotBuilders across a screen as a
+    substitute for declaring slot dependencies in SlotStatefulWidget.slots.
+    Doing so hides the screen's true state surface and weakens the design
+    contract. Prefer SlotStatefulWidget as the primary declaration point.
 
 ================================================================
 7. BATCH UPDATES
