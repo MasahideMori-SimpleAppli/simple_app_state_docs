@@ -148,6 +148,7 @@ Update from previous value:
 STATE UPDATES ARE FORBIDDEN INSIDE build().
 All set() / update() calls must happen in event handlers, lifecycle callbacks,
 or async completions — never during widget construction.
+
 Violating this rule causes repeated rebuilds and unstable behavior.
 
 ================================================================
@@ -493,8 +494,12 @@ references and widget subscriptions intact. It triggers a full rebuild.
 
 NEVER do these:
 
-  ✗ Call slot.set() or slot.update() inside build()
-  ✗ Call setState() — rebuilds are triggered automatically
+  ✗ Call slot.set() or slot.update() inside build().
+    This also applies inside initState().
+    If necessary within initState, you must use WidgetsBinding.instance.addPostFrameCallback.
+  ✗ Unnecessary setState calls — rebuilds are triggered automatically(set or update).
+    However, for processes that don't require creating a slot (e.g., parameters that don't span multiple widgets),
+    it's fine to use them alongside regular `setState` calls
   ✗ Mutate the value returned by StateSlot.get()
       (it is a copy; mutations are silently discarded)
   ✗ Store FocusNode, Stream, Future, BuildContext, or callbacks in a slot
